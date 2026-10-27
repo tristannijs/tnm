@@ -17,7 +17,8 @@
   color-scheme:dark;
 }
 *{box-sizing:border-box}
-html{scroll-behavior:smooth;scroll-padding-top:80px;overflow-x:clip}
+html{scroll-behavior:smooth;scroll-padding-top:80px;overflow-x:clip;overscroll-behavior-y:none}
+body{overscroll-behavior-y:none}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--f);-webkit-font-smoothing:antialiased}
 a{color:inherit;text-decoration:none}
