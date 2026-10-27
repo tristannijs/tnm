@@ -7,6 +7,7 @@
   const BY = Object.fromEntries(P.map(p=>[p.id,p]));
   const COLOR = c => "var(--c-"+(["fictie","docu","iao"].includes(c)?"ritcs":c)+")";
   const yt = (id,q) => `https://i.ytimg.com/vi/${id}/${q}.jpg`;
+  const flat = s => s.replace(/\s*\n\s*/g, " ");
 
   // image for a card: own cover, else YouTube's (maxres, falling back to hq)
   function coverImg(p){
@@ -23,7 +24,7 @@
   }
   function cap(p){
     const c = document.createElement("div"); c.className = "cap";
-    c.innerHTML = `<b>${esc(p.label)}</b><span>${esc(p.sub)}</span>`;
+    c.innerHTML = `<b>${p.label.split("\n").map(esc).join("<br>")}</b><span>${esc(p.sub)}</span>`;
     return c;
   }
 
@@ -79,7 +80,7 @@
   const cfItems = feat.map((p,i) => {
     const b = document.createElement("button");
     b.type = "button"; b.className = "cf-item"; b.style.setProperty("--c", COLOR(p.cat));
-    b.setAttribute("aria-label", `${p.label}, ${p.sub}`);
+    b.setAttribute("aria-label", `${flat(p.label)}, ${p.sub}`);
     b.append(face(p), cap(p));
     b.addEventListener("click", () => {
       if(drag.moved) return;
@@ -113,14 +114,17 @@
   cf.querySelectorAll(".arrow").forEach(a => a.addEventListener("click", () => turn(+a.dataset.dir)));
   cf.addEventListener("keydown", e => { if(e.key === "ArrowRight") turn(1); if(e.key === "ArrowLeft") turn(-1); });
   // sideways scroll (trackpad, shift + wheel) turns it; plain up/down scrolling keeps scrolling the page
-  let acc = 0, accT = 0;
+  // one swipe = one turn: after a turn, the rest of that gesture (including trackpad
+  // momentum) is ignored until the wheel has been quiet for a moment
+  let acc = 0, spent = false, quiet = null;
   cf.addEventListener("wheel", e => {
     const dx = e.shiftKey && !e.deltaX ? e.deltaY : e.deltaX;
     if(Math.abs(dx) <= Math.abs(e.shiftKey ? 0 : e.deltaY)) return;
     e.preventDefault();
-    const now = performance.now(); if(now - accT > 250) acc = 0; accT = now;
+    clearTimeout(quiet); quiet = setTimeout(() => { spent = false; acc = 0; }, 220);
+    if(spent) return;
     acc += dx;
-    if(Math.abs(acc) > 40 && !busy){ turn(acc > 0 ? 1 : -1); acc = 0; }
+    if(Math.abs(acc) > 30){ turn(acc > 0 ? 1 : -1); spent = true; acc = 0; }
   }, {passive:false});
   // drag or swipe
   const drag = {on:false, x:0, moved:false};
@@ -128,7 +132,7 @@
   addEventListener("pointermove", e => {
     if(!drag.on) return;
     const dx = e.clientX - drag.x;
-    if(Math.abs(dx) > 50){ turn(dx < 0 ? 1 : -1); drag.x = e.clientX; drag.moved = true; }
+    if(!drag.moved && Math.abs(dx) > 50){ turn(dx < 0 ? 1 : -1); drag.moved = true; }
   });
   addEventListener("pointerup", () => { drag.on = false; setTimeout(() => drag.moved = false, 0); });
   cf.addEventListener("dragstart", e => e.preventDefault());
@@ -139,7 +143,7 @@
   [...P].sort((a,b) => end(b) - end(a) || D(b.t0) - D(a.t0)).forEach(p => {
     const b = document.createElement("button");
     b.type = "button"; b.className = "rc-card"; b.style.setProperty("--c", COLOR(p.cat));
-    b.setAttribute("aria-label", `${p.label}, ${p.sub}, ${p.date}`);
+    b.setAttribute("aria-label", `${flat(p.label)}, ${p.sub}, ${p.date}`);
     b.append(face(p), cap(p));
     b.addEventListener("click", () => { if(!rcDrag.moved) openPlayer(p); });
     list.appendChild(b);
@@ -177,7 +181,7 @@
   const MN = ["jan","feb","mrt","apr","mei","jun","jul","aug","sep","okt","nov","dec"];
   const iso = t => new Date(t).toISOString().slice(0,10);
   const TODAY = Date.now();
-  const tlName = p => p.name || p.label;
+  const tlName = p => p.name || flat(p.label);
 
   const hoverThumb = (() => {
     const el = document.createElement("div"); el.className = "hthumb"; el.setAttribute("aria-hidden","true");
@@ -189,7 +193,7 @@
       show(p, cx, cy){
         if(cur !== p.id){
           cur = p.id; el.style.setProperty("--c", COLOR(p.cat));
-          b.textContent = p.label; s.textContent = p.sub + " · " + p.date;
+          b.textContent = flat(p.label); s.textContent = p.sub + " · " + p.date;
           im.innerHTML = ""; if(p.cover || p.yt) im.appendChild(coverImg(p));
         }
         el.classList.add("on");
@@ -235,7 +239,7 @@
         its.forEach(it => {
           items.push(it); const p = it.p;
           const c = document.createElement("button"); c.type = "button"; c.className = "clip"; c.dataset.id = p.id; c.style.setProperty("--c", COLOR(p.cat));
-          c.style.left = x(it.a); c.style.width = w(it.b - it.a); c.textContent = tlName(p); c.setAttribute("aria-label", `${p.label}, ${p.date}`);
+          c.style.left = x(it.a); c.style.width = w(it.b - it.a); c.textContent = tlName(p); c.setAttribute("aria-label", `${flat(p.label)}, ${p.date}`);
           if(lanes > 1){ c.style.top = (7 + it.lane*LANE) + "px"; c.style.bottom = "auto"; c.style.height = (LANE - 4) + "px"; }
           row.appendChild(c);
         });
@@ -254,7 +258,7 @@
     function hl(id){
       clips.forEach(c => c.classList.toggle("hl", c.dataset.id === id));
       if(!id){ readout.innerHTML = hint; return; }
-      const p = BY[id]; readout.innerHTML = `${esc(p.label)} <span>· ${esc(p.date)}</span>`;
+      const p = BY[id]; readout.innerHTML = `${esc(flat(p.label))} <span>· ${esc(p.date)}</span>`;
     }
     inner.addEventListener("mousemove", e => {
       const r = inner.getBoundingClientRect(), f = Math.max(0, Math.min(1, (e.clientX - r.left)/r.width)), t = start + f*span;
@@ -364,11 +368,11 @@
   function show(p,k){
     const scr = $("#plScreen"), link = $("#plLink");
     if(p.vids){ const v = p.vids[k]; scr.innerHTML = `<video src="${v.src}" poster="${v.poster}" controls autoplay playsinline></video>`; link.hidden = true; }
-    else { scr.innerHTML = ytFrame(p.yt, p.label); link.hidden = false; link.href = "https://www.youtube.com/watch?v=" + p.yt; }
+    else { scr.innerHTML = ytFrame(p.yt, flat(p.label)); link.hidden = false; link.href = "https://www.youtube.com/watch?v=" + p.yt; }
     $("#plParts").querySelectorAll("button").forEach((b,i) => b.setAttribute("aria-pressed", i === k));
   }
   function openPlayer(p){
-    $("#plTitle").textContent = p.label;
+    $("#plTitle").textContent = flat(p.label);
     $("#plMeta").textContent = p.sub + " · " + p.date;
     const parts = $("#plParts"); parts.innerHTML = "";
     if(p.vids && p.vids.length > 1) p.vids.forEach((v,k) => {

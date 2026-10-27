@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="378" viewBox="0 0 1440 378.00">
+<defs>
+<clipPath id="track-area"><rect x="150" y="40" width="1290.00" height="338.00"/></clipPath>
+<linearGradient id="clip-7aa5d9" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8ab0de"/><stop offset=".45" stop-color="#7aa5d9"/><stop offset="1" stop-color="#5f81a9"/></linearGradient>
+<clipPath id="cp-event-0"><rect x="514.06" y="98" width="28.11" height="30.00" rx="2"/></clipPath>
+<clipPath id="cp-event-1"><rect x="648.38" y="98" width="28.11" height="30.00" rx="2"/></clipPath>
+<clipPath id="cp-event-2"><rect x="996.64" y="98" width="28.11" height="30.00" rx="2"/></clipPath>
+<clipPath id="cp-event-3"><rect x="1209.03" y="98" width="28.11" height="30.00" rx="2"/></clipPath>
+<clipPath id="cp-event-4"><rect x="1268.38" y="98" width="28.11" height="30.00" rx="2"/></clipPath>
+<linearGradient id="clip-e6c65c" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e9cd70"/><stop offset=".45" stop-color="#e6c65c"/><stop offset="1" stop-color="#b39a48"/></linearGradient>
+<clipPath id="cp-trouw-0"><rect x="732.7" y="136" width="28.11" height="30.00" rx="2"/></clipPath>
+<clipPath id="cp-trouw-1"><rect x="1082.53" y="136" width="28.11" height="30.00" rx="2"/></clipPath>
+<linearGradient id="clip-a691d8" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b19edd"/><stop offset=".45" stop-color="#a691d8"/><stop offset="1" stop-color="#8171a8"/></linearGradient>
+<clipPath id="cp-promo-0"><rect x="1016.94" y="174" width="28.11" height="30.00" rx="2"/></clipPath>
+<clipPath id="cp-promo-1"><rect x="1045.05" y="174" width="28.11" height="30.00" rx="2"/></clipPath>
+<linearGradient id="clip-b5615d" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#be7470"/><stop offset=".45" stop-color="#b5615d"/><stop offset="1" stop-color="#8d4c49"/></linearGradient>
+<clipPath id="cp-fictie-0"><rect x="275.11" y="236" width="46.84" height="30.00" rx="2"/></clipPath>
+<clipPath id="cp-fictie-1"><rect x="415.67" y="236" width="93.70" height="30.00" rx="2"/></clipPath>
+<clipPath id="cp-docu-0"><rect x="510.94" y="277" width="93.70" height="26.00" rx="2"/></clipPath>
+<clipPath id="cp-docu-1"><rect x="510.94" y="307" width="93.70" height="26.00" rx="2"/></clipPath>
+<clipPath id="cp-docu-2"><rect x="749.88" y="277" width="93.70" height="26.00" rx="2"/></clipPath>
+<clipPath id="cp-docu-3"><rect x="985.7" y="277" width="93.70" height="26.00" rx="2"/></clipPath>
+<clipPath id="cp-docu-4"><rect x="985.7" y="307" width="93.70" height="26.00" rx="2"/></clipPath>
+<clipPath id="cp-iao-0"><rect x="156.42" y="344" width="448.22" height="30.00" rx="2"/></clipPath>
+</defs>
+<g id="background">
+<rect x="0" y="0" width="1440.00" height="378.00" fill="#141414"/>
+</g>
+<g id="toolbar">
+<rect x="0" y="0" width="1440.00" height="40.00" fill="#131313"/>
+<rect x="18.5" y="9" width="87.75" height="22" fill="#0b0b0b" stroke="#2a2a2a"/>
+<text x="28" y="24.35" font-family="Roboto" font-size="12" font-weight="500" fill="#ff8a1f" letter-spacing="0.48">27:10:2026</text>
+<text x="118.75" y="24.35" font-family="Figtree" font-size="12.5" font-weight="400" fill="#8a8a8a">Sleep om te verschuiven · Alt/⌥ + scroll om te zoomen</text>
+<rect x="1219.45" y="7.5" width="26.265625" height="25" fill="none" stroke="#2a2a2a" opacity="0.35"/><text x="1227.95" y="24.43" font-family="Figtree" font-size="14" font-weight="400" fill="#c8c8c8" opacity="0.35">−</text>
+<rect x="1294.72" y="7.5" width="26.265625" height="25" fill="none" stroke="#2a2a2a"/><text x="1303.22" y="24.43" font-family="Figtree" font-size="14" font-weight="400" fill="#c8c8c8">+</text>
+<rect x="1329.98" y="7.5" width="65.515625" height="25" fill="none" stroke="#2a2a2a"/><text x="1338.48" y="23.85" font-family="Figtree" font-size="12" font-weight="400" fill="#c8c8c8">Passend</text>
+<text x="1254.97" y="24.06" font-family="Figtree" font-size="11.5" font-weight="400" fill="#8a8a8a">100%</text>
+</g>
+<g id="track-names">
+<rect x="0" y="40" width="150.00" height="338.00" fill="#121212"/>
+<rect x="0" y="40" width="150.00" height="30.00" fill="#151515"/>
+<rect x="0" y="70" width="150.00" height="24.00" fill="#ffffff" fill-opacity="0.035"/>
+<text x="18" y="85.77" font-family="Figtree" font-size="10.5" font-weight="600" fill="#8a8a8a" letter-spacing="0.94">VIDEOGRAFIE</text>
+<rect x="0" y="208" width="150.00" height="24.00" fill="#ffffff" fill-opacity="0.035"/>
+<text x="18" y="223.77" font-family="Figtree" font-size="10.5" font-weight="600" fill="#8a8a8a" letter-spacing="0.94">RITCS</text>
+<rect x="18" y="108.5" width="9.00" height="9.00" fill="#7aa5d9"/>
+<text x="37" y="117.35" font-family="Figtree" font-size="12.5" font-weight="400" fill="#c8c8c8">Aftermovies</text>
+<rect x="18" y="146.5" width="9.00" height="9.00" fill="#e6c65c"/>
+<text x="37" y="155.35" font-family="Figtree" font-size="12.5" font-weight="400" fill="#c8c8c8">Trouwfilms</text>
+<rect x="18" y="184.5" width="9.00" height="9.00" fill="#a691d8"/>
+<text x="37" y="193.35" font-family="Figtree" font-size="12.5" font-weight="400" fill="#c8c8c8">Promotievideo's</text>
+<rect x="18" y="246.5" width="9.00" height="9.00" fill="#b5615d"/>
+<text x="37" y="255.35" font-family="Figtree" font-size="12.5" font-weight="400" fill="#c8c8c8">Fictie</text>
+<rect x="18" y="300.5" width="9.00" height="9.00" fill="#b5615d"/>
+<text x="37" y="309.35" font-family="Figtree" font-size="12.5" font-weight="400" fill="#c8c8c8">Documentaire</text>
+<rect x="18" y="354.5" width="9.00" height="9.00" fill="#b5615d"/>
+<text x="37" y="363.35" font-family="Figtree" font-size="12.5" font-weight="400" fill="#c8c8c8">IAO</text>
+</g>
+<g id="group-bands" clip-path="url(#track-area)">
+<rect x="133" y="70" width="1290.00" height="24.00" fill="#ffffff" fill-opacity="0.035"/>
+<rect x="133" y="208" width="1290.00" height="24.00" fill="#ffffff" fill-opacity="0.035"/>
+</g>
+<g id="ruler" clip-path="url(#track-area)">
+<rect x="133" y="40" width="1290.00" height="30.00" fill="#151515"/>
+<path d="M133.5 65v5M144.43 65v5M155.36 65v5M166.29 65v5M177.21 65v5M188.14 65v5M199.07 65v5M210 65v5M220.93 65v5M231.86 65v5M242.79 65v5M253.71 65v5M264.64 65v5M275.57 65v5M286.5 65v5M297.43 65v5M308.36 65v5M319.29 65v5M330.21 65v5M341.14 65v5M352.07 65v5M363 65v5M373.93 65v5M384.86 65v5M395.79 65v5M406.72 65v5M417.64 65v5M428.57 65v5M439.5 65v5M450.43 65v5M461.36 65v5M472.29 65v5M483.22 65v5M494.14 65v5M505.07 65v5M516 65v5M526.93 65v5M537.86 65v5M548.79 65v5M559.72 65v5M570.64 65v5M581.57 65v5M592.5 65v5M603.43 65v5M614.36 65v5M625.29 65v5M636.22 65v5M647.14 65v5M658.07 65v5M669 65v5M679.93 65v5M690.86 65v5M701.79 65v5M712.72 65v5M723.64 65v5M734.57 65v5M745.5 65v5M756.43 65v5M767.36 65v5M778.29 65v5M789.22 65v5M800.14 65v5M811.07 65v5M822 65v5M832.93 65v5M843.86 65v5M854.79 65v5M865.72 65v5M876.64 65v5M887.57 65v5M898.5 65v5M909.43 65v5M920.36 65v5M931.29 65v5M942.22 65v5M953.14 65v5M964.07 65v5M975 65v5M985.93 65v5M996.86 65v5M1007.79 65v5M1018.72 65v5M1029.65 65v5M1040.57 65v5M1051.5 65v5M1062.43 65v5M1073.36 65v5M1084.29 65v5M1095.22 65v5M1106.15 65v5M1117.07 65v5M1128 65v5M1138.93 65v5M1149.86 65v5M1160.79 65v5M1171.72 65v5M1182.65 65v5M1193.57 65v5M1204.5 65v5M1215.43 65v5M1226.36 65v5M1237.29 65v5M1248.22 65v5M1259.15 65v5M1270.07 65v5M1281 65v5M1291.93 65v5M1302.86 65v5M1313.79 65v5M1324.72 65v5M1335.65 65v5M1346.57 65v5M1357.5 65v5M1368.43 65v5M1379.36 65v5M1390.29 65v5M1401.22 65v5M1412.15 65v5M1423.07 65v5" stroke="#3a3a3a" stroke-width="1"/>
+<line x1="133.5" y1="40" x2="133.5" y2="70" stroke="#4a4a4a"/>
+<text x="139" y="54.27" font-family="Figtree" font-size="10.5" font-weight="400" fill="#8a8a8a">sep</text>
+<line x1="180.34" y1="40" x2="180.34" y2="70" stroke="#4a4a4a"/>
+<text x="185.84" y="54.27" font-family="Figtree" font-size="10.5" font-weight="400" fill="#8a8a8a">okt</text>
+<line x1="228.77" y1="40" x2="228.77" y2="70" stroke="#4a4a4a"/>
+<text x="234.27" y="54.27" font-family="Figtree" font-size="10.5" font-weight="400" fill="#8a8a8a">nov</text>
+<line x1="275.61" y1="40" x2="275.61" y2="70" stroke="#4a4a4a"/>
+<text x="281.11" y="54.27" font-family="Figtree" font-size="10.5" font-weight="400" fill="#8a8a8a">dec</text>
+<line x1="324.03" y1="40" x2="324.03" y2="70" stroke="#666666"/>
+<text x="329.53" y="54.27" font-family="Figtree" font-size="10.5" font-weight="600" fill="#ffffff">2025</text>
+<line x1="372.44" y1="40" x2="372.44" y2="70" stroke="#4a4a4a"/>
+<text x="377.94" y="54.27" font-family="Figtree" font-size="10.5" font-weight="400" fill="#8a8a8a">feb</text>
+<line x1="416.17" y1="40" x2="416.17" y2="70" stroke="#4a4a4a"/>
+<text x="421.67" y="54.27" font-family="Figtree" font-size="10.5" font-weight="400" fill="#8a8a8a">mrt</text>
+<line x1="464.58" y1="40" x2="464.58" y2="70" stroke="#4a4a4a"/>
+<text x="470.08" y="54.27" font-family="Figtree" font-size="10.5" font-weight="400" fill="#8a8a8a">apr</text>
+<line x1="511.44" y1="40" x2="511.44" y2="70" stroke="#4a4a4a"/>
+<text x="516.94" y="54.27" font-family="Figtree" font-size="10.5" font-weight="400" fill="#8a8a8a">mei</text>
+<line x1="559.84" y1="40" x2="559.84" y2="70" stroke="#4a4a4a"/>
+<text x="565.34" y="54.27" font-family="Figtree" font-size="10.5" font-weight="400" fill="#8a8a8a">jun</text>
+<line x1="606.7" y1="40" x2="606.7" y2="70" stroke="#4a4a4a"/>
+<text x="612.2" y="54.27" font-family="Figtree" font-size="10.5" font-weight="400" fill="#8a8a8a">jul</text>
+<line x1="655.11" y1="40" x2="655.11" y2="70" stroke="#4a4a4a"/>
+<text x="660.61" y="54.27" font-family="Figtree" font-size="10.5" font-weight="400" fill="#8a8a8a">aug</text>
+<line x1="703.53" y1="40" x2="703.53" y2="70" stroke="#4a4a4a"/>
+<text x="709.03" y="54.27" font-family="Figtree" font-size="10.5" font-weight="400" fill="#8a8a8a">sep</text>
+<line x1="750.38" y1="40" x2="750.38" y2="70" stroke="#4a4a4a"/>
+<text x="755.88" y="54.27" font-family="Figtree" font-size="10.5" font-weight="400" fill="#8a8a8a">okt</text>
+<line x1="798.8" y1="40" x2="798.8" y2="70" stroke="#4a4a4a"/>
+<text x="804.3" y="54.27" font-family="Figtree" font-size="10.5" font-weight="400" fill="#8a8a8a">nov</text>
+<line x1="845.64" y1="40" x2="845.64" y2="70" stroke="#4a4a4a"/>
+<text x="851.14" y="54.27" font-family="Figtree" font-size="10.5" font-weight="400" fill="#8a8a8a">dec</text>
+<line x1="894.06" y1="40" x2="894.06" y2="70" stroke="#666666"/>
+<text x="899.56" y="54.27" font-family="Figtree" font-size="10.5" font-weight="600" fill="#ffffff">2026</text>
+<line x1="942.47" y1="40" x2="942.47" y2="70" stroke="#4a4a4a"/>
+<text x="947.97" y="54.27" font-family="Figtree" font-size="10.5" font-weight="400" fill="#8a8a8a">feb</text>
+<line x1="986.2" y1="40" x2="986.2" y2="70" stroke="#4a4a4a"/>
+<text x="991.7" y="54.27" font-family="Figtree" font-size="10.5" font-weight="400" fill="#8a8a8a">mrt</text>
+<line x1="1034.63" y1="40" x2="1034.63" y2="70" stroke="#4a4a4a"/>
+<text x="1040.13" y="54.27" font-family="Figtree" font-size="10.5" font-weight="400" fill="#8a8a8a">apr</text>
+<line x1="1081.47" y1="40" x2="1081.47" y2="70" stroke="#4a4a4a"/>
+<text x="1086.97" y="54.27" font-family="Figtree" font-size="10.5" font-weight="400" fill="#8a8a8a">mei</text>
+<line x1="1129.89" y1="40" x2="1129.89" y2="70" stroke="#4a4a4a"/>
+<text x="1135.39" y="54.27" font-family="Figtree" font-size="10.5" font-weight="400" fill="#8a8a8a">jun</text>
+<line x1="1176.73" y1="40" x2="1176.73" y2="70" stroke="#4a4a4a"/>
+<text x="1182.23" y="54.27" font-family="Figtree" font-size="10.5" font-weight="400" fill="#8a8a8a">jul</text>
+<line x1="1225.16" y1="40" x2="1225.16" y2="70" stroke="#4a4a4a"/>
+<text x="1230.66" y="54.27" font-family="Figtree" font-size="10.5" font-weight="400" fill="#8a8a8a">aug</text>
+<line x1="1273.56" y1="40" x2="1273.56" y2="70" stroke="#4a4a4a"/>
+<text x="1279.06" y="54.27" font-family="Figtree" font-size="10.5" font-weight="400" fill="#8a8a8a">sep</text>
+<line x1="1320.42" y1="40" x2="1320.42" y2="70" stroke="#4a4a4a"/>
+<text x="1325.92" y="54.27" font-family="Figtree" font-size="10.5" font-weight="400" fill="#8a8a8a">okt</text>
+<line x1="1368.83" y1="40" x2="1368.83" y2="70" stroke="#4a4a4a"/>
+<text x="1374.33" y="54.27" font-family="Figtree" font-size="10.5" font-weight="400" fill="#8a8a8a">nov</text>
+<line x1="1415.69" y1="40" x2="1415.69" y2="70" stroke="#4a4a4a"/>
+<text x="1421.19" y="54.27" font-family="Figtree" font-size="10.5" font-weight="400" fill="#8a8a8a">dec</text>
+</g>
+<g id="clips-event" clip-path="url(#track-area)">
+<g id="Mens-Sana-2025"><rect x="514.56" y="98.5" width="27.11" height="29.00" rx="2" fill="url(#clip-7aa5d9)" stroke="#435b77"/><rect x="517.06" y="117" width="22.11" height="7" rx="1" fill="#000" fill-opacity="0.1"/><path d="M517.56 117.00v7M524.56 117.00v7M531.56 117.00v7M538.56 117.00v7" stroke="#000" stroke-opacity="0.28" stroke-width="1"/></g>
+<g id="ICDS-7"><rect x="648.88" y="98.5" width="27.11" height="29.00" rx="2" fill="url(#clip-7aa5d9)" stroke="#435b77"/><rect x="651.38" y="117" width="22.11" height="7" rx="1" fill="#000" fill-opacity="0.1"/><path d="M651.88 117.00v7M658.88 117.00v7M665.88 117.00v7M672.88 117.00v7" stroke="#000" stroke-opacity="0.28" stroke-width="1"/></g>
+<g id="Fairtrade-Banana-Run"><rect x="997.14" y="98.5" width="27.11" height="29.00" rx="2" fill="url(#clip-7aa5d9)" stroke="#435b77"/><rect x="999.64" y="117" width="22.11" height="7" rx="1" fill="#000" fill-opacity="0.1"/><path d="M1000.14 117.00v7M1007.14 117.00v7M1014.14 117.00v7M1021.14 117.00v7" stroke="#000" stroke-opacity="0.28" stroke-width="1"/></g>
+<g id="Wejo-Bocco"><rect x="1209.53" y="98.5" width="27.11" height="29.00" rx="2" fill="url(#clip-7aa5d9)" stroke="#435b77"/><rect x="1212.03" y="117" width="22.11" height="7" rx="1" fill="#000" fill-opacity="0.1"/><path d="M1212.53 117.00v7M1219.53 117.00v7M1226.53 117.00v7M1233.53 117.00v7" stroke="#000" stroke-opacity="0.28" stroke-width="1"/></g>
+<g id="Dokfeesten-2026"><rect x="1268.88" y="98.5" width="27.11" height="29.00" rx="2" fill="url(#clip-7aa5d9)" stroke="#435b77"/><rect x="1271.38" y="117" width="22.11" height="7" rx="1" fill="#000" fill-opacity="0.1"/><path d="M1271.88 117.00v7M1278.88 117.00v7M1285.88 117.00v7M1292.88 117.00v7" stroke="#000" stroke-opacity="0.28" stroke-width="1"/></g>
+</g>
+<g id="clips-trouw" clip-path="url(#track-area)">
+<g id="Elien-amp-Jens"><rect x="733.2" y="136.5" width="27.11" height="29.00" rx="2" fill="url(#clip-e6c65c)" stroke="#7f6d33"/><rect x="735.7" y="155" width="22.11" height="7" rx="1" fill="#000" fill-opacity="0.1"/><path d="M736.20 155.00v7M743.20 155.00v7M750.20 155.00v7M757.20 155.00v7" stroke="#000" stroke-opacity="0.28" stroke-width="1"/></g>
+<g id="Joachim-amp-Felien"><rect x="1083.03" y="136.5" width="27.11" height="29.00" rx="2" fill="url(#clip-e6c65c)" stroke="#7f6d33"/><rect x="1085.53" y="155" width="22.11" height="7" rx="1" fill="#000" fill-opacity="0.1"/><path d="M1086.03 155.00v7M1093.03 155.00v7M1100.03 155.00v7M1107.03 155.00v7" stroke="#000" stroke-opacity="0.28" stroke-width="1"/></g>
+</g>
+<g id="clips-promo" clip-path="url(#track-area)">
+<g id="Spring-Drop-Announcement"><rect x="1017.44" y="174.5" width="27.11" height="29.00" rx="2" fill="url(#clip-a691d8)" stroke="#5b5077"/><rect x="1019.94" y="193" width="22.11" height="7" rx="1" fill="#000" fill-opacity="0.1"/><path d="M1020.44 193.00v7M1027.44 193.00v7M1034.44 193.00v7M1041.44 193.00v7" stroke="#000" stroke-opacity="0.28" stroke-width="1"/></g>
+<g id="Raw-Collection"><rect x="1045.55" y="174.5" width="27.11" height="29.00" rx="2" fill="url(#clip-a691d8)" stroke="#5b5077"/><rect x="1048.05" y="193" width="22.11" height="7" rx="1" fill="#000" fill-opacity="0.1"/><path d="M1048.55 193.00v7M1055.55 193.00v7M1062.55 193.00v7M1069.55 193.00v7" stroke="#000" stroke-opacity="0.28" stroke-width="1"/></g>
+</g>
+<g id="clips-fictie" clip-path="url(#track-area)">
+<g id="De-Koffer"><rect x="275.61" y="236.5" width="45.84" height="29.00" rx="2" fill="url(#clip-b5615d)" stroke="#643533"/><rect x="278.11" y="255" width="40.84" height="7" rx="1" fill="#000" fill-opacity="0.1"/><path d="M278.61 255.00v7M285.61 255.00v7M292.61 255.00v7M299.61 255.00v7M306.61 255.00v7M313.61 255.00v7" stroke="#000" stroke-opacity="0.28" stroke-width="1"/></g>
+<g id="Atelier-Fictie-1"><rect x="416.17" y="236.5" width="92.70" height="29.00" rx="2" fill="url(#clip-b5615d)" stroke="#643533"/><rect x="418.67" y="255" width="87.70" height="7" rx="1" fill="#000" fill-opacity="0.1"/><path d="M419.17 255.00v7M426.17 255.00v7M433.17 255.00v7M440.17 255.00v7M447.17 255.00v7M454.17 255.00v7M461.17 255.00v7M468.17 255.00v7M475.17 255.00v7M482.17 255.00v7M489.17 255.00v7M496.17 255.00v7M503.17 255.00v7" stroke="#000" stroke-opacity="0.28" stroke-width="1"/><text x="423.67" y="256.27" font-family="Figtree" font-size="10.5" font-weight="600" fill="#111111" clip-path="url(#cp-fictie-1)">Atelier Fictie 1</text></g>
+</g>
+<g id="clips-docu" clip-path="url(#track-area)">
+<g id="Film-van-Maxence"><rect x="511.44" y="277.5" width="92.70" height="25.00" rx="2" fill="url(#clip-b5615d)" stroke="#643533"/><rect x="513.94" y="292" width="87.70" height="7" rx="1" fill="#000" fill-opacity="0.1"/><path d="M514.44 292.00v7M521.44 292.00v7M528.44 292.00v7M535.44 292.00v7M542.44 292.00v7M549.44 292.00v7M556.44 292.00v7M563.44 292.00v7M570.44 292.00v7M577.44 292.00v7M584.44 292.00v7M591.44 292.00v7M598.44 292.00v7" stroke="#000" stroke-opacity="0.28" stroke-width="1"/><text x="518.94" y="295.27" font-family="Figtree" font-size="10.5" font-weight="600" fill="#111111" clip-path="url(#cp-docu-0)">Film van Maxence</text></g>
+<g id="Film-van-Nelson-Van-Herzele"><rect x="511.44" y="307.5" width="92.70" height="25.00" rx="2" fill="url(#clip-b5615d)" stroke="#643533"/><rect x="513.94" y="322" width="87.70" height="7" rx="1" fill="#000" fill-opacity="0.1"/><path d="M514.44 322.00v7M521.44 322.00v7M528.44 322.00v7M535.44 322.00v7M542.44 322.00v7M549.44 322.00v7M556.44 322.00v7M563.44 322.00v7M570.44 322.00v7M577.44 322.00v7M584.44 322.00v7M591.44 322.00v7M598.44 322.00v7" stroke="#000" stroke-opacity="0.28" stroke-width="1"/><text x="518.94" y="325.27" font-family="Figtree" font-size="10.5" font-weight="600" fill="#111111" clip-path="url(#cp-docu-1)">Film van Nelson Van Herzele</text></g>
+<g id="Filippenzen-3-13"><rect x="750.38" y="277.5" width="92.70" height="25.00" rx="2" fill="url(#clip-b5615d)" stroke="#643533"/><rect x="752.88" y="292" width="87.70" height="7" rx="1" fill="#000" fill-opacity="0.1"/><path d="M753.38 292.00v7M760.38 292.00v7M767.38 292.00v7M774.38 292.00v7M781.38 292.00v7M788.38 292.00v7M795.38 292.00v7M802.38 292.00v7M809.38 292.00v7M816.38 292.00v7M823.38 292.00v7M830.38 292.00v7M837.38 292.00v7" stroke="#000" stroke-opacity="0.28" stroke-width="1"/><text x="757.88" y="295.27" font-family="Figtree" font-size="10.5" font-weight="600" fill="#111111" clip-path="url(#cp-docu-2)">Filippenzen 3:13</text></g>
+<g id="Nieuw-Gent"><rect x="986.2" y="277.5" width="92.70" height="25.00" rx="2" fill="url(#clip-b5615d)" stroke="#643533"/><rect x="988.7" y="292" width="87.70" height="7" rx="1" fill="#000" fill-opacity="0.1"/><path d="M989.20 292.00v7M996.20 292.00v7M1003.20 292.00v7M1010.20 292.00v7M1017.20 292.00v7M1024.20 292.00v7M1031.20 292.00v7M1038.20 292.00v7M1045.20 292.00v7M1052.20 292.00v7M1059.20 292.00v7M1066.20 292.00v7M1073.20 292.00v7" stroke="#000" stroke-opacity="0.28" stroke-width="1"/><text x="993.7" y="295.27" font-family="Figtree" font-size="10.5" font-weight="600" fill="#111111" clip-path="url(#cp-docu-3)">Nieuw Gent</text></g>
+<g id="87-Seconds"><rect x="986.2" y="307.5" width="92.70" height="25.00" rx="2" fill="url(#clip-b5615d)" stroke="#643533"/><rect x="988.7" y="322" width="87.70" height="7" rx="1" fill="#000" fill-opacity="0.1"/><path d="M989.20 322.00v7M996.20 322.00v7M1003.20 322.00v7M1010.20 322.00v7M1017.20 322.00v7M1024.20 322.00v7M1031.20 322.00v7M1038.20 322.00v7M1045.20 322.00v7M1052.20 322.00v7M1059.20 322.00v7M1066.20 322.00v7M1073.20 322.00v7" stroke="#000" stroke-opacity="0.28" stroke-width="1"/><text x="993.7" y="325.27" font-family="Figtree" font-size="10.5" font-weight="600" fill="#111111" clip-path="url(#cp-docu-4)">87 Seconds</text></g>
+</g>
+<g id="clips-iao" clip-path="url(#track-area)">
+<g id="Ten-Anker"><rect x="156.92" y="344.5" width="447.22" height="29.00" rx="2" fill="url(#clip-b5615d)" stroke="#643533"/><rect x="159.42" y="363" width="442.22" height="7" rx="1" fill="#000" fill-opacity="0.1"/><path d="M159.92 363.00v7M166.92 363.00v7M173.92 363.00v7M180.92 363.00v7M187.92 363.00v7M194.92 363.00v7M201.92 363.00v7M208.92 363.00v7M215.92 363.00v7M222.92 363.00v7M229.92 363.00v7M236.92 363.00v7M243.92 363.00v7M250.92 363.00v7M257.92 363.00v7M264.92 363.00v7M271.92 363.00v7M278.92 363.00v7M285.92 363.00v7M292.92 363.00v7M299.92 363.00v7M306.92 363.00v7M313.92 363.00v7M320.92 363.00v7M327.92 363.00v7M334.92 363.00v7M341.92 363.00v7M348.92 363.00v7M355.92 363.00v7M362.92 363.00v7M369.92 363.00v7M376.92 363.00v7M383.92 363.00v7M390.92 363.00v7M397.92 363.00v7M404.92 363.00v7M411.92 363.00v7M418.92 363.00v7M425.92 363.00v7M432.92 363.00v7M439.92 363.00v7M446.92 363.00v7M453.92 363.00v7M460.92 363.00v7M467.92 363.00v7M474.92 363.00v7M481.92 363.00v7M488.92 363.00v7M495.92 363.00v7M502.92 363.00v7M509.92 363.00v7M516.92 363.00v7M523.92 363.00v7M530.92 363.00v7M537.92 363.00v7M544.92 363.00v7M551.92 363.00v7M558.92 363.00v7M565.92 363.00v7M572.92 363.00v7M579.92 363.00v7M586.92 363.00v7M593.92 363.00v7M600.92 363.00v7" stroke="#000" stroke-opacity="0.28" stroke-width="1"/><text x="164.42" y="364.27" font-family="Figtree" font-size="10.5" font-weight="600" fill="#111111" clip-path="url(#cp-iao-0)">Ten Anker</text></g>
+</g>
+<g id="now" clip-path="url(#track-area)">
+<line x1="1361.02" y1="40" x2="1361.02" y2="378" stroke="#666" stroke-dasharray="3 3"/>
+<text x="1365.52" y="372" font-family="Figtree" font-size="10.5" fill="#8a8a8a">Nu</text>
+</g>
+<g id="playhead" clip-path="url(#track-area)">
+<line x1="1361.02" y1="40" x2="1361.02" y2="378" stroke="#ff8a1f"/>
+<polygon points="1354.02,42 1367.02,42 1367.02,52.54 1360.52,59 1354.02,52.54" fill="#ff8a1f"/>
+</g>
+</svg>

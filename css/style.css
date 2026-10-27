@@ -78,7 +78,7 @@ img{display:block;max-width:100%}
 .face{position:absolute;inset:0;overflow:hidden;background:#1c1c1c}
 .face img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .face::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 50%,rgba(0,0,0,.55) 100%)}
-.cap{position:absolute;z-index:1;left:0;bottom:0;display:flex;flex-direction:column;border-left:2px solid var(--c);text-transform:uppercase;line-height:1.05;text-align:left;white-space:nowrap}
+.cap{position:absolute;z-index:1;left:0;right:0;bottom:0;display:flex;flex-direction:column;align-items:flex-start;border-left:2px solid var(--c);text-transform:uppercase;line-height:1.08;text-align:left;overflow-wrap:break-word;text-wrap:balance}
 .cap b{font-weight:800}
 .cap span{font-weight:400}
 
@@ -90,7 +90,7 @@ img{display:block;max-width:100%}
 .cf-item[data-pos="0"]{transform:translate(-50%,-50%) translateZ(0)}
 .cf-item[data-pos="1"]{transform:translate(-50%,-50%) translateX(118%) translateZ(-600px) rotateY(-22deg);filter:brightness(.6)}
 .cf-item[data-pos="-1"]{transform:translate(-50%,-50%) translateX(-118%) translateZ(-600px) rotateY(22deg);filter:brightness(.6)}
-.cf-item .cap{margin:0 0 6.5% 3.5%;padding-left:8px}
+.cf-item .cap{margin:0 3.5% 6.5% 3.5%;padding-left:8px}
 .cf-item .cap b{font-size:clamp(14px,1.95vw,34px)}
 .cf-item .cap span{font-size:clamp(11px,1.4vw,24px);margin-top:3px}
 /* the black fade at both sides */
@@ -103,7 +103,7 @@ img{display:block;max-width:100%}
 .rc-list{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-inline:27px;padding:0 27px;scrollbar-width:none;overscroll-behavior-x:contain}
 .rc-list::-webkit-scrollbar{display:none}
 .rc-card{position:relative;flex:none;width:clamp(230px,24.6vw,420px);aspect-ratio:16/9;border:0;padding:0;background:none;cursor:pointer;scroll-snap-align:start}
-.rc-card .cap{margin:0 0 6% 4%;padding-left:5px}
+.rc-card .cap{margin:0 4% 6% 4%;padding-left:5px}
 .rc-card .cap b{font-size:clamp(12px,1.15vw,19px)}
 .rc-card .cap span{font-size:clamp(9px,.8vw,13px);margin-top:2px}
 .rc-card:hover img{filter:brightness(1.08)}
