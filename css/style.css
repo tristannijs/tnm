@@ -155,10 +155,10 @@ html:has(.tl-sec){background:#000}
 .sep{position:absolute;left:156px;right:0;height:1px;background:var(--tl-rule);pointer-events:none;z-index:7}
 
 /* clips: collapsed they're the coloured bar; expanded they show a filmstrip with the name in a bar underneath */
-.clip{position:absolute;top:4px;height:30px;border-radius:2px;border:1px solid color-mix(in srgb,var(--c) 55%,#000);
+.clip{position:absolute;top:4px;height:30px;border:1px solid color-mix(in srgb,var(--c) 55%,#000);
   background:linear-gradient(180deg,color-mix(in srgb,var(--c) 88%,#fff) 0,var(--c) 45%,color-mix(in srgb,var(--c) 78%,#000) 100%);
   padding:0;font-family:var(--f);font-size:11.5px;font-weight:700;color:#111;text-align:left;cursor:pointer;min-width:6px;overflow:hidden;display:block}
-.clip::after{content:"";position:absolute;left:3px;right:3px;bottom:4px;height:7px;background:rgba(0,0,0,.11);border-radius:1px;transition:opacity .15s}
+.clip::after{content:"";position:absolute;left:3px;right:3px;bottom:4px;height:7px;background:rgba(0,0,0,.11);transition:opacity .15s}
 .clip .nm{position:absolute;z-index:1;left:0;right:0;bottom:0;top:0;padding:0 7px;display:flex;align-items:center;white-space:nowrap}
 .clip .nm span{overflow:hidden;text-overflow:ellipsis;min-width:0}
 .clip.narrow .nm{visibility:hidden}
