@@ -25,6 +25,6 @@ window.PROJECTS = [
   {id:"de-koffer", cat:"fictie", name:"De Koffer", label:"Atelier Fictie: De Koffer", sub:"BA1 Editing", date:"December 2024", t0:"2024-12-01", t1:"2024-12-31", yt:"pkkMk5IcIpE", cover:"assets/covers/de-koffer.jpg"}
 ];
 
-// "Uitgelicht": exactly three project ids. The first one starts in the middle,
-// the second sits on the right, the third on the left.
-window.FEATURED = ["ten-anker", "filippenzen", "dokfeesten-2026"];
+// "Uitgelicht": the projects that turn on the carousel, in order. The first starts in the middle,
+// the second on the right, the last on the left; any others wait behind the middle one.
+window.FEATURED = ["ten-anker", "nieuw-gent", "fairtrade", "icds-7"];

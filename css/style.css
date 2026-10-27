@@ -89,10 +89,12 @@ img{display:block;max-width:100%}
 .cf{position:relative;height:clamp(240px,37vw,640px);perspective:1500px;overflow:hidden;outline-offset:-2px;touch-action:pan-y;user-select:none}
 .cf-track{position:absolute;inset:0;transform-style:preserve-3d}
 .cf-item{position:absolute;left:50%;top:50%;width:45.6%;aspect-ratio:16/9;border:0;padding:0;background:none;cursor:pointer;
-  transform-style:preserve-3d;transition:transform .75s cubic-bezier(.22,.7,.2,1),filter .75s ease;box-shadow:0 18px 50px rgba(0,0,0,.6)}
+  transform-style:preserve-3d;transition:transform .75s cubic-bezier(.22,.7,.2,1),filter .75s ease,opacity .5s ease;box-shadow:0 18px 50px rgba(0,0,0,.6)}
 .cf-item[data-pos="0"]{transform:translate(-50%,-50%) translateZ(0)}
 .cf-item[data-pos="1"]{transform:translate(-50%,-50%) translateX(118%) translateZ(-600px) rotateY(-22deg);filter:brightness(.6)}
 .cf-item[data-pos="-1"]{transform:translate(-50%,-50%) translateX(-118%) translateZ(-600px) rotateY(22deg);filter:brightness(.6)}
+/* cards beyond the three visible ones wait out of sight behind the middle one */
+.cf-item[data-pos="2"],.cf-item[data-pos="-2"]{transform:translate(-50%,-50%) translateZ(-1100px);filter:brightness(.4);opacity:0;pointer-events:none}
 .cf-item .cap{margin:0 3.5% 6.5% 3.5%;padding-left:8px}
 .cf-item .cap b{font-size:clamp(14px,1.95vw,34px)}
 .cf-item .cap span{font-size:clamp(11px,1.4vw,24px);margin-top:3px}

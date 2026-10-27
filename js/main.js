@@ -97,7 +97,7 @@
     cfItems.forEach((el,i) => {
       const pos = posOf(i);
       // the card that goes from one side to the other passes behind the centre; fade it through
-      if(prev && Math.abs(pos - prev[i]) > 1 && el.animate) el.animate([{opacity:1},{opacity:0,offset:.5},{opacity:1}], {duration:750, easing:"ease"});
+      if(prev && Math.abs(pos) <= 1 && Math.abs(prev[i]) <= 1 && Math.abs(pos - prev[i]) > 1 && el.animate) el.animate([{opacity:1},{opacity:0,offset:.5},{opacity:1}], {duration:750, easing:"ease"});
       el.dataset.pos = pos;
       el.tabIndex = pos === 0 ? 0 : -1;
       el.setAttribute("aria-hidden", pos === 0 ? "false" : "true");
