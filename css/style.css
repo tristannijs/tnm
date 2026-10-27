@@ -68,7 +68,7 @@ img{display:block;max-width:100%}
 
 /* ---------- section heading ---------- */
 .sec{padding-top:56px}
-.sh{margin:0;text-align:center;font-size:15px;font-weight:400;letter-spacing:.04em;text-transform:uppercase;color:#e8e8e8;padding-bottom:10px;border-bottom:1px solid var(--line)}
+.sh{margin:0;text-align:center;font-size:19.5px;font-weight:400;letter-spacing:.04em;text-transform:uppercase;color:#e8e8e8;padding-bottom:10px;border-bottom:1px solid var(--line)}
 
 /* ---------- arrows (shared) ---------- */
 .arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:5;background:none;border:0;padding:10px;cursor:pointer;color:#e8e8e8;opacity:.9;transition:opacity .2s}
@@ -116,48 +116,68 @@ img{display:block;max-width:100%}
 .rc.scrolled::before{opacity:1}
 #recent{padding-bottom:clamp(20px,3vw,50px)}
 
-/* ---------- Tijdlijn ---------- */
-#tijdlijn{padding-bottom:120px}
-#tl{margin-top:24px;border-bottom:1px solid var(--line);padding-bottom:28px}
-.tl{display:grid;grid-template-columns:150px minmax(0,1fr);font-family:var(--f);background:#141414}
-.tl-bar{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;gap:12px;height:40px;padding:0 var(--gut) 0 18px;background:#131313}
-.tc{flex:none;font-family:var(--f-tl);font-size:12px;font-weight:500;color:var(--accent);background:#0b0b0b;border:1px solid #2a2a2a;padding:3px 9px;letter-spacing:.04em}
-.readout{flex:1;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
-.readout span{color:var(--muted)}
-.zoom{display:flex;align-items:center;gap:4px;flex:none}
+/* ---------- Tijdlijn ----------
+   Measured off Tristan's 1440px design: #111 fades to black, then a minimal black timeline. */
+#recent{padding-bottom:87px}
+.tl-sec{--tl-rule:#999;border-top:1px solid var(--tl-rule);padding:218px 0 53px;background:linear-gradient(180deg,var(--bg) 35px,#000 183px)}
+html:has(.tl-sec){background:#000}
+.tl-head{position:relative;height:65px;margin:0 9px;border-bottom:1px solid var(--tl-rule);display:flex;align-items:center;justify-content:center}
+.tl-head .sh{border:0;padding:0;color:#fff}
+.tl-head .zoom{position:absolute;right:16px;top:50%;transform:translateY(-50%)}
+#tl{margin-top:17px;position:relative}
+#tl::after{content:"";display:block;height:1px;background:var(--tl-rule);margin:16px 9px 0}
+.zoom{display:flex;align-items:center;gap:4px;flex:none;font-family:var(--f)}
 .zb{background:none;border:1px solid #2a2a2a;color:var(--fg-2);height:26px;min-width:26px;padding:0 8px;font-size:14px;line-height:1;cursor:pointer}
 .zb:hover:not(:disabled){color:var(--fg);border-color:#555}
 .zb:disabled{opacity:.35;cursor:default}
 .zb.fit{font-size:12px;margin-left:4px}
 .zl{font-size:11.5px;color:var(--muted);min-width:40px;text-align:center}
-.heads{background:#121212}
-.heads .sp{height:30px;background:#151515}
-.grp{height:24px;display:flex;align-items:center;padding:0 18px;background:rgba(255,255,255,.035);font-size:10.5px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
-.grp-row{height:24px;background:rgba(255,255,255,.035)}
-.head{height:38px;display:flex;align-items:center;gap:10px;padding:0 18px;font-size:12.5px;color:var(--fg-2)}
+
+.tl{position:relative;display:grid;grid-template-columns:138px minmax(0,1fr);background:#000}
+.heads{border-right:1px solid var(--tl-rule)}
+.heads .sp{height:30px;padding-left:18px}
+.tc{display:inline-block;font-family:var(--f-tl);font-size:12px;font-weight:500;color:var(--accent);background:#0b0b0b;border:1px solid #2a2a2a;padding:3px 9px;letter-spacing:.04em;line-height:15px}
+.grp{height:24px;display:flex;align-items:flex-start;padding:4px 0 0 18px;font-size:10.5px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);line-height:13px}
+.grp-row{height:24px}
+.head{height:38px;display:flex;align-items:center;gap:10px;padding:0 0 0 18px;font-size:12.5px;color:var(--fg-2);white-space:nowrap;overflow:hidden}
 .sw{width:9px;height:9px;background:var(--c);flex:none}
-.tl-scroll{overflow-x:auto;overflow-y:hidden;min-width:0;scrollbar-color:#2a2a2a transparent}
+.nm-s{display:none}
+.tl-scroll{overflow-x:auto;overflow-y:hidden;min-width:0;scrollbar-width:none}
+.tl-scroll::-webkit-scrollbar{display:none}
 .tl-in{position:relative;min-width:760px;cursor:grab;user-select:none}
 .tl-in.dragging,.tl-in.dragging .clip{cursor:grabbing}
-.ruler{position:relative;height:30px;background-color:#151515;background-image:linear-gradient(to right,#3a3a3a 1px,transparent 1px);background-repeat:repeat-x;background-position:0 100%;background-size:20px 5px;touch-action:none}
+.ruler{position:relative;height:30px;background-image:linear-gradient(to right,#3a3a3a 1px,transparent 1px);background-repeat:repeat-x;background-position:0 100%;background-size:20px 5px;touch-action:none}
 .tick{position:absolute;top:0;bottom:0;border-left:1px solid #4a4a4a;font-size:10.5px;color:var(--muted);padding:4px 0 0 5px;white-space:nowrap}
 .tick.y{border-left-color:#666;color:var(--fg);font-weight:600}
 .trk{position:relative;height:38px}
-.clip{position:absolute;top:4px;bottom:4px;border-radius:2px;border:1px solid color-mix(in srgb,var(--c) 55%,#000);
+/* the black fades at both ends of the track area, and the group lines that sit above them */
+.fade{position:absolute;top:0;bottom:0;width:68px;pointer-events:none;z-index:6}
+.fade.l{left:138px;background:linear-gradient(90deg,#000,rgba(0,0,0,0))}
+.fade.r{right:0;background:linear-gradient(270deg,#000,rgba(0,0,0,0))}
+.sep{position:absolute;left:156px;right:0;height:1px;background:var(--tl-rule);pointer-events:none;z-index:7}
+
+/* clips: collapsed they're the coloured bar; expanded they show a filmstrip with the name in a bar underneath */
+.clip{position:absolute;top:4px;height:30px;border-radius:2px;border:1px solid color-mix(in srgb,var(--c) 55%,#000);
   background:linear-gradient(180deg,color-mix(in srgb,var(--c) 88%,#fff) 0,var(--c) 45%,color-mix(in srgb,var(--c) 78%,#000) 100%);
-  padding:3px 7px 0;font-family:var(--f);font-size:10.5px;font-weight:600;color:#111;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:13px;cursor:pointer;text-align:left;min-width:6px}
-.clip::after{content:"";position:absolute;left:3px;right:3px;bottom:4px;height:7px;background:repeating-linear-gradient(90deg,rgba(0,0,0,.28) 0 1px,transparent 1px 7px),rgba(0,0,0,.1);border-radius:1px}
-.clip.narrow{color:transparent}
+  padding:0;font-family:var(--f);font-size:11.5px;font-weight:700;color:#111;text-align:left;cursor:pointer;min-width:6px;overflow:hidden;display:block}
+.clip::after{content:"";position:absolute;left:3px;right:3px;bottom:4px;height:7px;background:rgba(0,0,0,.11);border-radius:1px;transition:opacity .15s}
+.clip .nm{position:absolute;z-index:1;left:0;right:0;bottom:0;top:0;padding:0 7px;display:flex;align-items:center;white-space:nowrap}
+.clip .nm span{overflow:hidden;text-overflow:ellipsis;min-width:0}
+.clip.narrow .nm{visibility:hidden}
+.clip .film{position:absolute;left:0;right:0;top:0;display:none;overflow:hidden;background:#000;border-bottom:1px solid color-mix(in srgb,var(--c) 55%,#000)}
+.clip .film img{display:block;height:100%;width:auto;flex:none;object-fit:cover;pointer-events:none}
+.clip.x .film{display:flex}
+.clip.x::after{opacity:0}
+.clip.x .nm{top:auto;height:var(--bar,18px)}
 .clip.hl{z-index:2;outline:2px solid var(--fg)}
 .now{position:absolute;top:0;bottom:0;border-left:1px dashed #666;pointer-events:none}
-.now::after{content:"Nu";position:absolute;bottom:4px;left:5px;font-size:10.5px;color:var(--muted)}
 .playhead{position:absolute;top:0;bottom:0;border-left:1px solid var(--accent);pointer-events:none;z-index:4}
 .playhead::before{content:"";position:absolute;top:2px;left:-7px;width:13px;height:17px;background:var(--accent);clip-path:polygon(0 0,100% 0,100% 62%,50% 100%,0 62%)}
 .hthumb{position:fixed;left:0;top:0;z-index:60;width:240px;background:var(--bar);border:1px solid #2a2a2a;pointer-events:none;opacity:0;transition:opacity .12s;box-shadow:0 12px 32px rgba(0,0,0,.5)}
 .hthumb.on{opacity:1}
 .hthumb .im{position:relative;aspect-ratio:16/9;background:#1c1c1c;overflow:hidden}
 .hthumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.hthumb .tx{display:flex;flex-direction:column;gap:2px;padding:8px 10px 10px;border-left:2px solid var(--c);margin:8px 10px 10px;padding:0 0 0 7px}
+.hthumb .tx{display:flex;flex-direction:column;gap:2px;border-left:2px solid var(--c);margin:8px 10px 10px;padding:0 0 0 7px}
 .hthumb b{font-size:13px;font-weight:800;text-transform:uppercase;line-height:1.1}
 .hthumb span{font-size:11px;color:var(--fg-2)}
 @media (hover:none){.hthumb{display:none}}
@@ -196,8 +216,12 @@ dialog::backdrop{background:rgba(0,0,0,.88)}
   .rc-card .cap b{font-size:13px}
   .rc-card .cap span{font-size:10px}
   .rc-list{padding:0 var(--gut);scroll-padding-inline:var(--gut)}
-  .tl{grid-template-columns:112px minmax(0,1fr)}
-  .head,.grp{padding:0 10px}
-  .tl-bar .readout,.tl-bar .zl,.tl-bar .fit{display:none}
-  .tl-bar .zoom{margin-left:auto}
+  .tl{grid-template-columns:108px minmax(0,1fr)}
+  .fade.l{left:108px;width:40px} .fade.r{width:40px}
+  .sep{left:118px}
+  .head,.grp,.heads .sp{padding-left:10px}
+  .tl-head .zl,.tl-head .fit{display:none}
+  .tl-head .zoom{right:4px}
+  .tl-sec{padding-top:140px}
+  .nm-l{display:none} .nm-s{display:inline}
 }

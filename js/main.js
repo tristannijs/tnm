@@ -207,45 +207,47 @@
     };
   })();
 
-  function timeline(host, o){
+  function timeline(sec, host, o){
     const start = D(o.start), stop = D(o.end), span = stop - start;
     const x = t => ((t - start) / span * 100) + "%", w = d => (d / span * 100) + "%";
-    const hint = "<span>Sleep om te verschuiven · Alt/⌥ + scroll om te zoomen</span>";
-    host.innerHTML = `<div class="tl"><div class="tl-bar"><span class="tc"></span><div class="readout">${hint}</div>
-        <div class="zoom" role="group" aria-label="Zoom"><button type="button" class="zb" data-z="out" aria-label="Uitzoomen">−</button><span class="zl">100%</span><button type="button" class="zb" data-z="in" aria-label="Inzoomen">+</button><button type="button" class="zb fit" data-z="fit">Passend</button></div></div>
-      <div class="heads"><div class="sp"></div></div>
-      <div class="tl-scroll"><div class="tl-in"><div class="ruler"></div><div class="trks"></div><div class="now"></div><div class="playhead"></div></div></div></div>`;
-    const heads = host.querySelector(".heads"), trks = host.querySelector(".trks"), ruler = host.querySelector(".ruler"), inner = host.querySelector(".tl-in");
-    const readout = host.querySelector(".readout"), ph = host.querySelector(".playhead"), tcEl = host.querySelector(".tc");
+    host.innerHTML = `<div class="tl"><div class="heads"><div class="sp"><span class="tc"></span></div></div>
+      <div class="tl-scroll"><div class="tl-in"><div class="ruler"></div><div class="trks"></div><div class="now"></div><div class="playhead"></div></div></div>
+      <div class="fade l"></div><div class="fade r"></div></div>`;
+    const tl = host.querySelector(".tl"), heads = host.querySelector(".heads"), trks = host.querySelector(".trks"), ruler = host.querySelector(".ruler"), inner = host.querySelector(".tl-in");
+    const ph = host.querySelector(".playhead"), tcEl = host.querySelector(".tc");
     const p2 = v => String(v).padStart(2,"0");
     const tcOf = t => { const d = new Date(t); return p2(d.getUTCDate())+":"+p2(d.getUTCMonth()+1)+":"+d.getUTCFullYear(); };
     let phT = D(o.now);
     const placePH = t => { ph.style.left = x(t); tcEl.textContent = tcOf(t); };
     const park = () => placePH(phT);
-    const items = [], LANE = 30;
+
+    // ----- build: group headers, tracks, clips -----
+    const items = [], rows = [], seps = [];
     o.groups.forEach(g => {
       const gh = document.createElement("div"); gh.className = "grp"; gh.textContent = g.label; heads.appendChild(gh);
       const gr = document.createElement("div"); gr.className = "grp-row"; trks.appendChild(gr);
+      const line = document.createElement("div"); line.className = "sep"; tl.appendChild(line);
+      seps.push({row:gr, el:line});
       g.tracks.forEach(tr => {
         const h = document.createElement("div"); h.className = "head"; h.style.setProperty("--c", COLOR(tr.cat));
-        h.innerHTML = `<span class="sw"></span><span>${tr.name}</span>`; heads.appendChild(h);
+        h.innerHTML = `<span class="sw"></span><span class="nm-l">${tr.name}</span><span class="nm-s">${tr.short || tr.name}</span>`; heads.appendChild(h);
         const row = document.createElement("div"); row.className = "trk"; row.dataset.cat = tr.cat;
         // projects that overlap in time get their own lane inside the track
         const its = P.filter(p => p.cat === tr.cat).map(p => { const a = D(p.t0); return {p, a, b:Math.max(p.t1 ? D(p.t1) : a, a + o.minDays*DAY)}; }).sort((m,k) => m.a - k.a);
         const laneEnd = [];
         its.forEach(it => { let l = laneEnd.findIndex(e => e <= it.a); if(l < 0){ l = laneEnd.length; laneEnd.push(0); } laneEnd[l] = it.b; it.lane = l; });
-        const lanes = Math.max(1, laneEnd.length);
-        if(lanes > 1){ const hg = (10 + lanes*LANE) + "px"; row.style.height = hg; h.style.height = hg; }
         its.forEach(it => {
           items.push(it); const p = it.p;
           const c = document.createElement("button"); c.type = "button"; c.className = "clip"; c.dataset.id = p.id; c.style.setProperty("--c", COLOR(p.cat));
-          c.style.left = x(it.a); c.style.width = w(it.b - it.a); c.textContent = tlName(p); c.setAttribute("aria-label", `${flat(p.label)}, ${p.date}`);
-          if(lanes > 1){ c.style.top = (7 + it.lane*LANE) + "px"; c.style.bottom = "auto"; c.style.height = (LANE - 4) + "px"; }
-          row.appendChild(c);
+          c.style.left = x(it.a); c.style.width = w(it.b - it.a); c.setAttribute("aria-label", `${flat(p.label)}, ${p.date}`);
+          c.innerHTML = `<span class="film"></span><span class="nm"><span>${esc(tlName(p))}</span></span>`;
+          it.el = c; row.appendChild(c);
         });
+        rows.push({head:h, row, its, lanes:Math.max(1, laneEnd.length)});
         trks.appendChild(row);
       });
     });
+    const clips = items.map(it => it.el);
     const d0 = new Date(start); let yy = d0.getUTCFullYear(), mm = d0.getUTCMonth();
     for(;;){ const t = Date.UTC(yy,mm,1,12); if(t > stop) break;
       if(t >= start - DAY){ const el = document.createElement("div"); el.className = "tick"+(mm===0?" y":""); el.dataset.m = mm; el.style.left = x(Math.max(t,start)); el.textContent = mm===0 ? yy : MN[mm]; ruler.appendChild(el); }
@@ -253,23 +255,68 @@
     const ticks = [...ruler.querySelectorAll(".tick")];
     const months = span / (30.44*DAY);
     host.querySelector(".now").style.left = x(D(o.now));
-    const clips = [...inner.querySelectorAll(".clip")];
 
-    function hl(id){
-      clips.forEach(c => c.classList.toggle("hl", c.dataset.id === id));
-      if(!id){ readout.innerHTML = hint; return; }
-      const p = BY[id]; readout.innerHTML = `${esc(flat(p.label))} <span>· ${esc(p.date)}</span>`;
+    // ----- track height: shift + scroll makes the tracks taller, like in Resolve -----
+    const HMIN = 30, HMAX = 132, EXPAND = 46, BAR = 18;
+    let clipH = HMIN;
+    function films(){
+      items.forEach(it => {
+        const c = it.el, film = c.querySelector(".film");
+        const fh = Math.max(1, it.h - BAR - 3), tw = fh * 16/9;
+        const n = Math.max(1, Math.ceil(c.offsetWidth / tw));
+        film.style.height = fh + "px";
+        if(+film.dataset.n !== n){
+          const src = it.p.frames && it.p.frames.length ? it.p.frames : [it.p.cover].filter(Boolean);
+          film.dataset.n = n; film.innerHTML = "";
+          for(let i = 0; i < n && src.length; i++){
+            const im = new Image(); im.alt = ""; im.decoding = "async"; im.draggable = false;
+            im.src = src[Math.floor(i * src.length / n)];
+            film.appendChild(im);
+          }
+        }
+        film.querySelectorAll("img").forEach(im => im.style.width = tw + "px");
+      });
     }
+    function layoutV(){
+      rows.forEach(r => {
+        const multi = r.lanes > 1, rowH = multi ? 10 + r.lanes*clipH : clipH + 8;
+        r.row.style.height = r.head.style.height = rowH + "px";
+        r.its.forEach(it => {
+          it.h = multi ? clipH - 4 : clipH;
+          it.el.style.top = (multi ? 7 + it.lane*clipH : 4) + "px";
+          it.el.style.height = it.h + "px";
+        });
+      });
+      const ex = clipH >= EXPAND;
+      clips.forEach(c => c.classList.toggle("x", ex));
+      if(ex) films();
+      seps.forEach(sp => sp.el.style.top = (inner.offsetTop + sp.row.offsetTop + 10) + "px");
+    }
+    function setH(h){
+      h = Math.round(Math.max(HMIN, Math.min(HMAX, h)));
+      if(h === clipH) return;
+      clipH = h; layoutV();
+    }
+    tl.addEventListener("wheel", e => {
+      if(!e.shiftKey || e.altKey || e.ctrlKey) return;
+      e.preventDefault();
+      // with shift held, browsers often report the wheel as sideways; either way, up = taller
+      const d = e.deltaY || e.deltaX;
+      setH(clipH - d * .25);
+    }, {passive:false});
+
+    // ----- hover, click -----
+    function hl(id){ clips.forEach(c => c.classList.toggle("hl", c.dataset.id === id)); }
     inner.addEventListener("mousemove", e => {
       const r = inner.getBoundingClientRect(), f = Math.max(0, Math.min(1, (e.clientX - r.left)/r.width)), t = start + f*span;
       ph.style.left = (f*100) + "%"; tcEl.textContent = tcOf(t);
-      const row = e.target.closest(".trk");
+      const row = e.target.closest(".trk"), rr = row && rows.find(q => q.row === row);
       let lane = null;
-      if(row && row.style.height) lane = Math.max(0, Math.floor((e.clientY - row.getBoundingClientRect().top - 7)/LANE));
+      if(rr && rr.lanes > 1) lane = Math.max(0, Math.floor((e.clientY - row.getBoundingClientRect().top - 7)/clipH));
       const vis = items.filter(it => (!row || row.dataset.cat === it.p.cat) && (lane == null || it.lane === lane));
       let hit = vis.filter(it => t >= it.a && t <= it.b).sort((a,b) => (a.b-a.a) - (b.b-b.a))[0];
-      if(!hit){ let best = null, bd = 25*DAY; vis.forEach(it => { const dd = Math.abs((it.a+it.b)/2 - t); if(dd < bd){ bd = dd; best = it; } }); hit = best; }
-      if(hit) hl(hit.p.id); else { hl(null); const dt = new Date(t); readout.innerHTML = `<span>${MN[dt.getUTCMonth()]} ${dt.getUTCFullYear()}</span>`; }
+      if(!hit && row){ let best = null, bd = 25*DAY; vis.forEach(it => { const dd = Math.abs((it.a+it.b)/2 - t); if(dd < bd){ bd = dd; best = it; } }); hit = best; }
+      hl(hit ? hit.p.id : null);
       const over = e.target.closest(".clip");
       if(over && !drag.moved) hoverThumb.show(BY[over.dataset.id], e.clientX, e.clientY); else hoverThumb.hide();
     });
@@ -281,9 +328,10 @@
       // clicking empty space parks the playhead there, like in an editor
       const r = inner.getBoundingClientRect(); phT = start + Math.max(0, Math.min(1, (e.clientX - r.left)/r.width))*span;
     });
+    inner.addEventListener("focusin", e => { const c = e.target.closest(".clip"); if(c) hl(c.dataset.id); });
 
-    // zoom + pan
-    const sc = host.querySelector(".tl-scroll"), zl = host.querySelector(".zl");
+    // ----- zoom + pan -----
+    const sc = host.querySelector(".tl-scroll"), zoomEl = sec.querySelector(".zoom"), zl = zoomEl.querySelector(".zl");
     const ZMIN = 1, ZMAX = 8; let zoom = 1;
     const baseW = () => Math.max(760, sc.clientWidth);
     function labelTicks(){
@@ -293,6 +341,7 @@
       const minor = pxm/4.35 >= 9 ? pxm/4.35 : pxm/2;
       ruler.style.backgroundSize = Math.max(4, minor) + "px 5px";
       clips.forEach(c => c.classList.toggle("narrow", c.offsetWidth < 56));
+      if(clipH >= EXPAND) films();
     }
     function setZoom(z, ax){
       z = Math.max(ZMIN, Math.min(ZMAX, z));
@@ -301,13 +350,13 @@
       zoom = z; inner.style.width = (baseW()*z) + "px";
       sc.scrollLeft = f*inner.offsetWidth - ax;
       zl.textContent = Math.round(z*100) + "%";
-      host.querySelector('[data-z="out"]').disabled = z <= ZMIN;
-      host.querySelector('[data-z="in"]').disabled = z >= ZMAX;
+      zoomEl.querySelector('[data-z="out"]').disabled = z <= ZMIN;
+      zoomEl.querySelector('[data-z="in"]').disabled = z >= ZMAX;
       labelTicks();
     }
-    host.querySelector(".zoom").addEventListener("click", e => {
+    zoomEl.addEventListener("click", e => {
       const b = e.target.closest(".zb"); if(!b) return; userMoved = true;
-      if(b.dataset.z === "in") setZoom(zoom*1.5); else if(b.dataset.z === "out") setZoom(zoom/1.5); else setZoom(1);
+      if(b.dataset.z === "in") setZoom(zoom*1.5); else if(b.dataset.z === "out") setZoom(zoom/1.5); else { setZoom(1); setH(HMIN); }
     });
     sc.addEventListener("wheel", e => {
       if(!(e.altKey || e.ctrlKey)) return;
@@ -320,20 +369,21 @@
     const scrubTo = cx => {
       const r = inner.getBoundingClientRect(), t = start + Math.max(0, Math.min(1, (cx - r.left)/r.width))*span;
       phT = t; placePH(t);
-      let hit = items.filter(it => t >= it.a && t <= it.b).sort((a,b) => (a.b-a.a) - (b.b-b.a))[0];
+      const hit = items.filter(it => t >= it.a && t <= it.b).sort((a,b) => (a.b-a.a) - (b.b-b.a))[0];
       hl(hit ? hit.p.id : null);
     };
     ruler.addEventListener("touchstart", e => { if(e.touches.length !== 1) return; scrubbing = true; scrubTo(e.touches[0].clientX); }, {passive:true});
     ruler.addEventListener("touchmove", e => { if(!scrubbing || e.touches.length !== 1) return; e.preventDefault(); scrubTo(e.touches[0].clientX); }, {passive:false});
     ruler.addEventListener("touchend", () => { scrubbing = false; });
-    // pinch
+    // pinch: sideways zooms time, upright spreads the tracks
     let pinch = null;
-    const dist = t => Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY);
-    sc.addEventListener("touchstart", e => { if(e.touches.length === 2) pinch = {d:dist(e.touches), z:zoom}; }, {passive:true});
+    const spread = t => ({x:Math.abs(t[0].clientX - t[1].clientX), y:Math.abs(t[0].clientY - t[1].clientY)});
+    sc.addEventListener("touchstart", e => { if(e.touches.length === 2) pinch = {s:spread(e.touches), z:zoom, h:clipH}; }, {passive:true});
     sc.addEventListener("touchmove", e => {
       if(!pinch || e.touches.length !== 2) return; e.preventDefault(); userMoved = true;
-      const r = sc.getBoundingClientRect(), mid = (e.touches[0].clientX + e.touches[1].clientX)/2 - r.left;
-      setZoom(pinch.z*dist(e.touches)/pinch.d, mid);
+      const s = spread(e.touches), r = sc.getBoundingClientRect(), mid = (e.touches[0].clientX + e.touches[1].clientX)/2 - r.left;
+      if(pinch.s.x >= pinch.s.y) setZoom(pinch.z * Math.max(1,s.x)/Math.max(1,pinch.s.x), mid);
+      else setH(pinch.h + (s.y - pinch.s.y) * .6);
     }, {passive:false});
     sc.addEventListener("touchend", e => { if(e.touches.length < 2) pinch = null; });
     // drag to pan
@@ -349,16 +399,15 @@
     // open on the most recent part when the timeline is wider than its box
     let userMoved = false;
     const showRecent = () => { sc.scrollLeft = Math.max(0, (phT - start)/span*inner.offsetWidth - sc.clientWidth*.85); };
-    new ResizeObserver(() => { setZoom(zoom); if(!userMoved && sc.clientWidth > 0) showRecent(); }).observe(sc);
-    setZoom(1); park(); showRecent();
-    inner.addEventListener("focusin", e => { const c = e.target.closest(".clip"); if(c) hl(c.dataset.id); });
+    new ResizeObserver(() => { setZoom(zoom); layoutV(); if(!userMoved && sc.clientWidth > 0) showRecent(); }).observe(sc);
+    setZoom(1); layoutV(); park(); showRecent();
   }
 
-  timeline($("#tl"), {
+  timeline($("#tijdlijn"), $("#tl"), {
     start:"2024-09-01", end:iso(TODAY + 40*DAY), now:iso(TODAY), minDays:18,
     groups:[
-      {label:"Videografie", tracks:[{cat:"event",name:"Aftermovies"},{cat:"trouw",name:"Trouwfilms"},{cat:"promo",name:"Promotievideo's"}]},
-      {label:"RITCS", tracks:[{cat:"fictie",name:"Fictie"},{cat:"docu",name:"Documentaire"},{cat:"iao",name:"IAO"}]}
+      {label:"Videografie", tracks:[{cat:"event",name:"Aftermovies"},{cat:"trouw",name:"Trouwfilms"},{cat:"promo",name:"Promotievideo's",short:"Promo"}]},
+      {label:"RITCS", tracks:[{cat:"fictie",name:"Fictie"},{cat:"docu",name:"Documentaire",short:"Docu"},{cat:"iao",name:"IAO"}]}
     ]
   });
 
