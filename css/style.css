@@ -89,8 +89,9 @@ img{display:block;max-width:100%}
 .cf{--sx:118;position:relative;height:clamp(240px,37vw,640px);perspective:1500px;overflow:hidden;outline:none;touch-action:pan-y;user-select:none}
 .cf-track{position:absolute;inset:0;transform-style:preserve-3d}
 .cf-item{position:absolute;left:50%;top:50%;width:45.6%;aspect-ratio:16/9;border:0;padding:0;background:none;cursor:pointer;
-  transform-style:preserve-3d;will-change:transform;box-shadow:0 18px 50px rgba(0,0,0,.6)}
+  transform-style:preserve-3d;will-change:transform,opacity;backface-visibility:hidden;box-shadow:0 18px 50px rgba(0,0,0,.6)}
 .cf-item .cap{margin:0 3.5% 6.5% 3.5%;padding-left:8px}
+.cf-item .shade{position:absolute;inset:0;z-index:2;background:#000;opacity:0;pointer-events:none}
 .cf-item .cap b{font-size:clamp(14px,1.95vw,34px)}
 .cf-item .cap span{font-size:clamp(11px,1.4vw,24px);margin-top:3px}
 /* the black fade at both sides */

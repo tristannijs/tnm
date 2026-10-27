@@ -77,110 +77,98 @@
   const cf = $("#cf"), track = $("#cfTrack");
   const feat = window.FEATURED.map(id => BY[id]).filter(Boolean);
   const n = feat.length;
-  // `offset` is which card is in the middle, as a continuous number: 1.4 means
-  // 40% of the way from card 1 to card 2. Every frame, each card's place is worked out from it.
-  let offset = 0;
+  // `offset` is which card is in the middle, as a continuous number (1.4 = 40% of the way
+  // from card 1 to card 2). Input moves `goal`; every frame `offset` glides toward it.
+  let offset = 0, goal = 0;
   const wrap = d => { d = ((d % n) + n) % n; return d >= n/2 ? d - n : d; };
   const centerIdx = () => ((Math.round(offset) % n) + n) % n;
   const cfItems = feat.map((p,i) => {
     const b = document.createElement("button");
     b.type = "button"; b.className = "cf-item"; b.style.setProperty("--c", COLOR(p.cat));
     b.setAttribute("aria-label", `${flat(p.label)}, ${p.sub}`);
-    b.append(face(p), cap(p));
+    const shade = document.createElement("span"); shade.className = "shade";
+    b.append(face(p), cap(p), shade);
     b.addEventListener("click", () => {
-      if(drag.moved) return;
+      if(moved) return;
       const d = wrap(i - offset);
-      if(Math.abs(d) < .5) openPlayer(p); else go(Math.round(offset) + Math.sign(d));
+      if(Math.abs(d) < .5) openPlayer(p); else { goal = Math.round(goal) + Math.sign(d); run(); }
     });
     track.appendChild(b);
-    return b;
+    return {el:b, shade};
   });
+  let sx = 118;
+  const readSx = () => { sx = parseFloat(getComputedStyle(cf).getPropertyValue("--sx")) || 118; };
   function render(){
-    const sx = parseFloat(getComputedStyle(cf).getPropertyValue("--sx")) || 118;
-    cfItems.forEach((el,i) => {
+    const front = centerIdx();
+    cfItems.forEach(({el, shade}, i) => {
       const p = n > 1 ? wrap(i - offset) : 0, a = Math.abs(p), sg = Math.sign(p);
       let X, Z, R, B, O;
-      if(a <= 1){ X = sx*p; Z = -600*a; R = -22*p; B = 1 - .4*a; O = 1; }
-      else { X = sg*(sx + (a-1)*sx*.6); Z = -600 - (a-1)*400; R = -22*sg; B = .6; O = Math.max(0, Math.min(1, (1.5 - a)/.45)); }
-      el.style.transform = `translate(-50%,-50%) translateX(${X.toFixed(3)}%) translateZ(${Z.toFixed(2)}px) rotateY(${R.toFixed(3)}deg)`;
-      el.style.filter = `brightness(${B.toFixed(3)})`;
+      if(a <= 1){ X = sx*p; Z = -600*a; R = -22*p; B = .4*a; O = 1; }
+      else { X = sg*(sx + (a-1)*sx*.6); Z = -600 - (a-1)*400; R = -22*sg; B = .4; O = Math.max(0, Math.min(1, (1.5 - a)/.45)); }
+      el.style.transform = `translate(-50%,-50%) translate3d(${X.toFixed(3)}%,0,${Z.toFixed(2)}px) rotateY(${R.toFixed(3)}deg)`;
       el.style.opacity = O.toFixed(3);
+      el.style.visibility = O < .01 ? "hidden" : "";
       el.style.pointerEvents = O < .5 ? "none" : "";
-      el.style.zIndex = String(10 - Math.round(a*2));
-      const front = i === centerIdx();
-      el.tabIndex = front ? 0 : -1;
-      el.setAttribute("aria-hidden", front ? "false" : "true");
+      shade.style.opacity = B.toFixed(3);
+      el.tabIndex = i === front ? 0 : -1;
+      el.setAttribute("aria-hidden", i === front ? "false" : "true");
     });
   }
-  // eased glide to a whole card
-  let raf = 0, target = 0;
-  const ease = t => 1 - Math.pow(1 - t, 3);
-  function go(to, dur = 560){
-    cancelAnimationFrame(raf);
-    target = to;
-    const from = offset, t0 = performance.now(), d = to - from;
-    if(Math.abs(d) < .0005){ offset = to; render(); return; }
-    const step = now => {
-      const t = Math.min(1, (now - t0) / dur);
-      offset = from + d * ease(t); render();
-      if(t < 1) raf = requestAnimationFrame(step); else { offset = to; render(); }
-    };
-    raf = requestAnimationFrame(step);
-  }
-  const turn = dir => go(Math.round(target) + dir);
-  render();
-  cf.querySelectorAll(".arrow").forEach(a => a.addEventListener("click", () => turn(+a.dataset.dir)));
-  cf.addEventListener("keydown", e => { if(e.key === "ArrowRight") turn(1); if(e.key === "ArrowLeft") turn(-1); });
-
-  // one gesture moves at most one card: while you swipe, the cards follow live
-  // (up to one card either way); when you let go they settle on the nearest card
-  const pxPerCard = () => cf.clientWidth * .38;
-  let g0 = null, quiet = null;
-  function follow(base, dCards){
-    cancelAnimationFrame(raf);
-    offset = Math.max(base - 1, Math.min(base + 1, base + dCards));
+  // the glide: frame-rate independent easing of offset toward goal
+  let raf = 0, last = 0, tau = 90;
+  function frame(now){
+    const dt = Math.min(64, now - (last || now)); last = now;
+    const d = goal - offset;
+    if(Math.abs(d) < .0008){ offset = goal; render(); raf = 0; last = 0; return; }
+    offset += d * (1 - Math.exp(-dt / tau));
     render();
+    raf = requestAnimationFrame(frame);
   }
-  function settle(base, flick){
-    const d = offset - base;
-    const dir = d > .18 || flick > 0 ? 1 : d < -.18 || flick < 0 ? -1 : 0;
-    go(base + dir, 420);
-  }
-  // sideways scroll (trackpad, shift + wheel) turns it; plain up/down keeps scrolling the page
-  let wheelAcc = 0;
+  const run = (t = 90) => { tau = t; if(!raf){ last = 0; raf = requestAnimationFrame(frame); } };
+  const snap = () => { goal = Math.round(goal); run(110); };
+  readSx(); render();
+  addEventListener("resize", () => { readSx(); render(); });
+  cf.querySelectorAll(".arrow").forEach(a => a.addEventListener("click", () => { goal = Math.round(goal) + (+a.dataset.dir); run(110); }));
+  cf.addEventListener("keydown", e => {
+    if(e.key === "ArrowRight" || e.key === "ArrowLeft"){ goal = Math.round(goal) + (e.key === "ArrowRight" ? 1 : -1); run(110); }
+  });
+
+  const pxPerCard = () => Math.max(220, cf.clientWidth * .26);
+  // sideways scroll (trackpad, shift + wheel) turns it as far and fast as you scroll;
+  // plain up/down keeps scrolling the page. When the scrolling stops it settles on a card.
+  let quiet = null;
   cf.addEventListener("wheel", e => {
     const dx = e.shiftKey && !e.deltaX ? e.deltaY : e.deltaX;
     if(Math.abs(dx) <= Math.abs(e.shiftKey ? 0 : e.deltaY)) return;
     e.preventDefault();
-    if(g0 === null){ g0 = Math.round(target); wheelAcc = offset - g0; }
-    wheelAcc += dx / pxPerCard();
-    follow(g0, wheelAcc);
-    clearTimeout(quiet);
-    quiet = setTimeout(() => { const b = g0; g0 = null; settle(b, 0); }, 110);
+    const unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? cf.clientWidth : 1;
+    goal += dx * unit / pxPerCard();
+    run(60);
+    clearTimeout(quiet); quiet = setTimeout(snap, 90);
   }, {passive:false});
-  // drag or swipe
-  const drag = {on:false, x:0, moved:false, base:0, lx:0, lt:0, v:0};
+  // drag or swipe: follows the finger, and a flick carries on in proportion to its speed
+  let moved = false;
+  const drag = {on:false, x:0, start:0, lx:0, lt:0, v:0};
   cf.addEventListener("pointerdown", e => {
     if(e.button !== 0 || e.target.closest(".arrow")) return;
-    drag.on = true; drag.x = drag.lx = e.clientX; drag.lt = performance.now(); drag.v = 0; drag.moved = false;
-    drag.base = Math.round(target); drag.start = offset;
+    drag.on = true; drag.x = drag.lx = e.clientX; drag.lt = performance.now(); drag.v = 0; moved = false; drag.start = goal;
   });
   addEventListener("pointermove", e => {
     if(!drag.on) return;
     const dx = e.clientX - drag.x;
-    if(!drag.moved && Math.abs(dx) > 5) drag.moved = true;
-    if(!drag.moved) return;
-    const now = performance.now();
-    drag.v = (e.clientX - drag.lx) / Math.max(1, now - drag.lt); drag.lx = e.clientX; drag.lt = now;
-    follow(drag.base, (drag.start - drag.base) - dx / pxPerCard());
+    if(!moved && Math.abs(dx) > 5) moved = true;
+    if(!moved) return;
+    const now = performance.now(), dt = Math.max(1, now - drag.lt);
+    drag.v = drag.v*.6 + ((e.clientX - drag.lx) / dt)*.4; drag.lx = e.clientX; drag.lt = now;
+    goal = drag.start - dx / pxPerCard();
+    run(35);
   });
   addEventListener("pointerup", () => {
     if(!drag.on) return; drag.on = false;
-    if(drag.moved) settle(drag.base, Math.abs(drag.v) > .5 ? -Math.sign(drag.v) : 0);
-    setTimeout(() => drag.moved = false, 0);
+    if(moved){ goal = Math.round(goal - drag.v * 180 / pxPerCard()); run(120); }
+    setTimeout(() => moved = false, 0);
   });
   cf.addEventListener("dragstart", e => e.preventDefault());
-  addEventListener("resize", render);
 
   // ---------- Recent: newest left ----------
   const rc = $("#rc"), list = $("#rcList");
