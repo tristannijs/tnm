@@ -55,7 +55,10 @@ img{display:block;max-width:100%}
   background:
     linear-gradient(180deg,rgba(0,0,0,.55) 0,rgba(0,0,0,0) 22%),
     linear-gradient(180deg,rgba(17,17,17,0) 45%,rgba(17,17,17,.75) 82%,var(--bg) 100%)}
-.hero-doors{position:relative;z-index:2;width:100%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 4.5%;padding:0 6.5%;margin-bottom:5vh}
+.hero-doors{position:relative;z-index:2;width:100%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 5.02%;padding:0 8.6%;margin-bottom:5vh;align-items:start}
+/* the stagger from the design, measured off the mockup and scaled with the page width */
+.hero-doors .door:nth-child(2){transform:translateY(1.68vw)}
+.hero-doors .door:nth-child(3){transform:translateY(-.44vw)}
 .door{display:flex;align-items:center;justify-content:center;height:40px;border:1px solid rgba(255,255,255,.6);background:rgba(10,10,10,.55);
   font-size:17px;font-weight:700;letter-spacing:.01em;text-transform:uppercase;transition:background-color .25s,border-color .25s}
 .door:hover,.door:focus-visible{background:rgba(10,10,10,.8);border-color:#fff}
@@ -182,6 +185,7 @@ dialog::backdrop{background:rgba(0,0,0,.88)}
   .logo-link img{height:30px}
   .nav > a:not(.lang){display:none}
   .hero-doors{grid-template-columns:minmax(0,1fr);gap:12px;padding:0 18%}
+  .hero-doors .door:nth-child(n){transform:none}
   .cf-item{width:64%}
   .cf-item[data-pos="1"]{transform:translate(-50%,-50%) translateX(105%) translateZ(-600px) rotateY(-22deg)}
   .cf-item[data-pos="-1"]{transform:translate(-50%,-50%) translateX(-105%) translateZ(-600px) rotateY(22deg)}
