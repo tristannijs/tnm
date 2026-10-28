@@ -102,9 +102,9 @@ img{display:block;max-width:100%}
 
 /* ---------- Recent: newest left ---------- */
 .rc{position:relative;margin-top:clamp(28px,4.5vw,70px)}
-.rc-list{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-inline:27px;padding:60px 27px;margin:-60px 0;scrollbar-width:none;overscroll-behavior-x:contain}
+.rc-list{display:flex;gap:12px;overflow-x:auto;padding:60px 27px;margin:-60px 0;scrollbar-width:none;overscroll-behavior-x:contain}
 .rc-list::-webkit-scrollbar{display:none}
-.rc-card{position:relative;flex:none;width:clamp(230px,24.6vw,420px);aspect-ratio:16/9;border:0;padding:0;background:none;cursor:pointer;scroll-snap-align:start}
+.rc-card{position:relative;flex:none;width:clamp(230px,24.6vw,420px);aspect-ratio:16/9;border:0;padding:0;background:none;cursor:pointer}
 .rc-card .cap{margin:0 4% 6% 4%;padding-left:5px}
 .rc-card .cap b{font-size:clamp(12px,1.15vw,19px)}
 .rc-card .cap span{font-size:clamp(9px,.8vw,13px);margin-top:2px}
@@ -113,7 +113,6 @@ img{display:block;max-width:100%}
 .rc-card{transition:transform .6s cubic-bezier(.22,.7,.2,1)}
 .rc.peek .rc-card{will-change:transform}
 .rc-card.lifted{opacity:0}
-.rc.peek .rc-list{scroll-snap-type:none}
 .pv-shade{position:fixed;inset:0;z-index:55;background:#000;opacity:0;pointer-events:none;transition:opacity .5s ease}
 .pv-shade.on{opacity:.4}
 .pv{position:absolute;z-index:60;cursor:pointer;color:#fff;font-family:var(--f);transform-origin:0 0;will-change:transform;
@@ -124,9 +123,10 @@ img{display:block;max-width:100%}
 .pv.open .pv-media{box-shadow:0 26px 70px rgba(0,0,0,.65)}
 .pv-media iframe,.pv-media video{position:absolute;inset:0;z-index:2;width:100%;height:100%;border:0;object-fit:cover;pointer-events:none;opacity:0;transition:opacity .6s ease}
 .pv-media iframe.on,.pv-media video.on{opacity:1}
-.pv .cap{margin:0 4% 6% 4%;padding-left:5px;transition:opacity .25s}
-.pv .cap b{font-size:clamp(12px,1.15vw,19px)}
-.pv .cap span{font-size:clamp(9px,.8vw,13px);margin-top:2px}
+/* the caption is drawn --k times larger, so once scaled down to the card it matches the card exactly */
+.pv .cap{margin:0 4% 6% 4%;padding-left:calc(5px * var(--k,1));border-left-width:calc(2px * var(--k,1));transition:opacity .25s}
+.pv .cap b{font-size:calc(clamp(12px,1.15vw,19px) * var(--k,1))}
+.pv .cap span{font-size:calc(clamp(9px,.8vw,13px) * var(--k,1));margin-top:calc(2px * var(--k,1))}
 .pv.open .cap{opacity:0}
 /* the details sit under the clip at full size the whole time and only fade, so nothing re-lays out */
 .pv-info{background:#000;border-top:2px solid var(--c);padding:.85em 1.4em .95em;opacity:0;transition:opacity .12s ease;box-shadow:0 26px 70px rgba(0,0,0,.65)}
@@ -242,7 +242,7 @@ dialog::backdrop{background:rgba(0,0,0,.88)}
   .rc-card{width:min(66vw,320px)}
   .rc-card .cap b{font-size:13px}
   .rc-card .cap span{font-size:10px}
-  .rc-list{padding:60px var(--gut);scroll-padding-inline:var(--gut)}
+  .rc-list{padding:60px var(--gut)}
   .tl{grid-template-columns:108px minmax(0,1fr)}
   .fade.l{left:108px;width:40px} .fade.r{width:40px}
   .sep{left:calc(108px + var(--gap))}

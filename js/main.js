@@ -200,12 +200,12 @@
   addEventListener("pointermove", e => {
     if(!rcDrag.on) return;
     const dx = e.clientX - rcDrag.x;
-    if(!rcDrag.moved && Math.abs(dx) > 5){ rcDrag.moved = true; list.style.scrollSnapType = "none"; }
+    if(!rcDrag.moved && Math.abs(dx) > 5){ rcDrag.moved = true; }
     if(rcDrag.moved) list.scrollLeft = rcDrag.s - dx;
   });
   addEventListener("pointerup", () => {
     if(!rcDrag.on) return; rcDrag.on = false;
-    list.style.scrollSnapType = ""; setTimeout(() => rcDrag.moved = false, 0);
+    setTimeout(() => rcDrag.moved = false, 0);
   });
   list.addEventListener("dragstart", e => e.preventDefault());
   rcState();
@@ -268,7 +268,8 @@
     // which the graphics card animates without the page having to re-lay out every frame
     el.style.left = L + "px"; el.style.top = (T + scrollY) + "px"; el.style.width = W + "px";
     el.style.fontSize = (Math.max(W, 300) / 375 * 16) + "px";
-    const shrunk = () => { const q = card.getBoundingClientRect(); return `translate(${(q.left - L).toFixed(2)}px,${(q.top - T).toFixed(2)}px) scale(${(q.width / W).toFixed(4)})`; };
+    el.style.setProperty("--k", (W / r.width).toFixed(4));
+    const shrunk = () => { const q = card.getBoundingClientRect(), dx = peekLeft - list.scrollLeft; return `translate(${(q.left - L - dx).toFixed(2)}px,${(q.top - T).toFixed(2)}px) scale(${(q.width / W).toFixed(4)})`; };
     el.style.transform = shrunk();
     document.body.appendChild(el);
     pv = {el, card, p, shrunk}; peekLeft = list.scrollLeft;
@@ -282,6 +283,12 @@
     const me = pv;
     setTimeout(() => { if(pv === me) startClip(p, media); }, 600);
     el.addEventListener("mouseleave", () => closePeek());
+    // sideways scrolling over the open preview scrolls the row underneath it
+    el.addEventListener("wheel", e => {
+      const dx = e.shiftKey && !e.deltaX ? e.deltaY : e.deltaX;
+      if(Math.abs(dx) <= Math.abs(e.shiftKey ? 0 : e.deltaY)) return;
+      e.preventDefault(); list.scrollLeft += dx;
+    }, {passive:false});
     el.addEventListener("click", () => { const q = pv && pv.p; closePeek(true); if(q) openPlayer(q); });
   }
   function startClip(p, media){
@@ -303,32 +310,22 @@
       media.appendChild(f);
     }
   }
-  // the other cards turn towards the open one and slide in against its sides. The vanishing
-  // point sits in the middle of the open video (like Uitgelicht), so cards further out tilt more.
-  const PERSP = 1100, TURN = 32, LIFT = 1.12, GAP = 4;
+  // the other cards turn in perspective (each around its own centre, nothing stretched)
+  // and slide in against the sides of the open one
+  const PERSP = 700, TURN = 28, GAP = 6;
   function fan(card, E){
-    const cards = [...list.children], i0 = cards.indexOf(card), cw = card.offsetWidth, ox = (E.left + E.right) / 2;
-    const tuck = cw * .06, finals = [];
+    const cards = [...list.children], i0 = cards.indexOf(card), tuck = card.offsetWidth * .05, finals = [];
     cards.forEach(c => { c.style.transition = "none"; c.style.transform = ""; });
     for(const side of [1, -1]){
       let edge = side > 0 ? E.right - tuck : E.left + tuck;
       for(let i = i0 + side; i >= 0 && i < cards.length; i += side){
         const c = cards[i], r = c.getBoundingClientRect();
-        const cx = r.left + r.width/2, cy = r.top + r.height/2, ty = E.mid - cy;
-        const T = tx => { const lx = ox - cx - tx, ly = E.mid - cy - ty;
-          return `translate(${tx.toFixed(1)}px,${ty.toFixed(1)}px) translate(${lx.toFixed(1)}px,${ly.toFixed(1)}px) perspective(${PERSP}px) translate(${(-lx).toFixed(1)}px,${(-ly).toFixed(1)}px) rotateY(${side > 0 ? -TURN : TURN}deg) scale(${LIFT})`; };
-        // measure the turned card, then slide it so its near edge meets the previous one
-        let tx = 0;
-        for(let pass = 0; pass < 2; pass++){
-          c.style.transform = T(tx);
-          const q = c.getBoundingClientRect(), near = side > 0 ? q.left : q.right;
-          tx += edge - near;
-        }
-        c.style.transform = T(tx);
-        const q = c.getBoundingClientRect();
-        edge = side > 0 ? q.right + GAP : q.left - GAP;
+        const ty = E.mid - (r.top + r.height/2);
+        const T = tx => `translate(${tx.toFixed(1)}px,${ty.toFixed(1)}px) perspective(${PERSP}px) rotateY(${side > 0 ? -TURN : TURN}deg)`;
+        c.style.transform = T(0);
+        const q = c.getBoundingClientRect(), tx = edge - (side > 0 ? q.left : q.right);
+        edge = side > 0 ? q.right + tx + GAP : q.left + tx - GAP;
         finals.push([c, T(tx)]);
-        if(side > 0 ? q.left > innerWidth + 50 : q.right < -50) break;
       }
     }
     // start flat, then let them glide into place
@@ -343,12 +340,14 @@
     const {el, card, shrunk} = pv; pv = null;
     shade.classList.remove("on"); rc.classList.remove("peek");
     [...list.children].forEach(c => c.style.transform = "");
-    const done = () => { el.remove(); card.classList.remove("lifted"); };
+    let gone = false;
+    const done = () => { if(gone) return; gone = true; el.remove(); card.classList.remove("lifted"); };
     if(now){ done(); return; }
     const m = el.querySelector("iframe,video"); if(m) m.remove();
     el.classList.remove("open");
     el.style.transform = shrunk();
-    setTimeout(done, 480);
+    el.addEventListener("transitionend", e => { if(e.target === el && e.propertyName === "transform") done(); });
+    setTimeout(done, 520);
   }
   addEventListener("message", e => {
     if(!/youtube/.test(e.origin) || !pv) return;
@@ -370,8 +369,14 @@
     });
     list.addEventListener("mouseout", e => { const c = e.target.closest(".rc-card"); if(c && !c.contains(e.relatedTarget)) clearTimeout(peekTimer); });
     list.addEventListener("pointerdown", () => clearTimeout(peekTimer));
-    // close when you scroll the row yourself (turning the cards can nudge it by a few pixels; that doesn't count)
-    list.addEventListener("scroll", () => { clearTimeout(peekTimer); if(pv && Math.abs(list.scrollLeft - peekLeft) > 24) closePeek(); }, {passive:true});
+    // scrolling the row: an open preview travels with its card (it closes once it slides out from
+    // under the pointer); otherwise the 1 s wait restarts for whichever card ends up under the pointer
+    list.addEventListener("scroll", () => {
+      clearTimeout(peekTimer);
+      if(pv){ pv.el.style.translate = `${(peekLeft - list.scrollLeft).toFixed(1)}px 0`; return; }
+      const c = list.querySelector(".rc-card:hover");
+      if(c) peekTimer = setTimeout(() => { if(!rcDrag.on && c.matches(":hover")) openPeek(c); }, PEEK_MS);
+    }, {passive:true});
     addEventListener("resize", () => closePeek(true));
     addEventListener("keydown", e => { if(e.key === "Escape") closePeek(); });
   }
