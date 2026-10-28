@@ -227,7 +227,8 @@
     audio:`<svg viewBox="0 0 30 24" aria-hidden="true"><path d="M2 8.5h5L13 3v18l-6-5.5H2z" fill="currentColor"/><path d="M17 8.2a5.3 5.3 0 0 1 0 7.6M20.3 5a9.8 9.8 0 0 1 0 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`,
     subs:`<svg viewBox="0 0 26 24" aria-hidden="true"><path d="M2 2h22v15H9l-5 5v-5H2z" fill="currentColor"/><path d="M6.5 7.5h13M6.5 11.5h13" stroke="#000" stroke-width="1.8"/></svg>`
   };
-  const canPeek = matchMedia("(hover: hover) and (pointer: fine)").matches && !matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // any device with a mouse or trackpad (touch-only screens tap straight to the player)
+  const canPeek = matchMedia("(any-hover: hover)").matches;
   const shade = document.createElement("div"); shade.className = "pv-shade"; document.body.appendChild(shade);
   let pv = null, peekTimer = 0, fanRaf = 0, peekLeft = 0;
   const PEEK_MS = 1500, GROW = 1.55;
