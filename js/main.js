@@ -175,7 +175,7 @@
   const end = p => D(p.t1 || p.t0);
   [...P].sort((a,b) => end(b) - end(a) || D(b.t0) - D(a.t0)).forEach(p => {
     const b = document.createElement("button");
-    b.type = "button"; b.className = "rc-card"; b.style.setProperty("--c", COLOR(p.cat));
+    b.type = "button"; b.className = "rc-card"; b.dataset.id = p.id; b.style.setProperty("--c", COLOR(p.cat));
     b.setAttribute("aria-label", `${flat(p.label)}, ${p.sub}, ${p.date}`);
     b.append(face(p), cap(p));
     b.addEventListener("click", () => { if(!rcDrag.moved) openPlayer(p); });
@@ -209,6 +209,164 @@
   });
   list.addEventListener("dragstart", e => e.preventDefault());
   rcState();
+
+  // ---------- Recent: rest on a card for 1.5 s and it opens up and plays ----------
+  // The card grows into a playing preview with its details underneath; the page dims
+  // and the other cards turn in 3D and slide in against it, like Uitgelicht.
+  const VTYPE = {event:"Aftermovie", trouw:"Trouwfilm", promo:"Promotievideo"};
+  const pvType = p => p.type || VTYPE[p.cat] || p.sub;
+  const pvTitle = p => {
+    if(p.title) return p.title;
+    const t = flat(p.label);
+    // videography: add the subtitle unless it only repeats the type ("Wejo × Bocco: Pop-up opening")
+    return VTYPE[p.cat] && p.sub && p.sub.toLowerCase() !== pvType(p).toLowerCase() ? `${t}: ${p.sub}` : t;
+  };
+  const mmss = s => { s = Math.round(s); return Math.floor(s/60) + ":" + String(s%60).padStart(2,"0"); };
+  const ICON = {
+    clock:`<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="currentColor"/><path d="M12 5.5V12l4.2 2.6" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round"/></svg>`,
+    audio:`<svg viewBox="0 0 30 24" aria-hidden="true"><path d="M2 8.5h5L13 3v18l-6-5.5H2z" fill="currentColor"/><path d="M17 8.2a5.3 5.3 0 0 1 0 7.6M20.3 5a9.8 9.8 0 0 1 0 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`,
+    subs:`<svg viewBox="0 0 26 24" aria-hidden="true"><path d="M2 2h22v15H9l-5 5v-5H2z" fill="currentColor"/><path d="M6.5 7.5h13M6.5 11.5h13" stroke="#000" stroke-width="1.8"/></svg>`
+  };
+  const canPeek = matchMedia("(hover: hover) and (pointer: fine)").matches && !matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const shade = document.createElement("div"); shade.className = "pv-shade"; document.body.appendChild(shade);
+  let pv = null, peekTimer = 0, fanRaf = 0, peekLeft = 0;
+  const PEEK_MS = 1500, GROW = 1.55;
+
+  function rowHTML(p){
+    const hd = p.hd ?? p._hd, dur = p.dur || (p._dur ? mmss(p._dur) : "");
+    const bits = [];
+    if(hd) bits.push(`<span class="hd">HD</span>`);
+    if(dur) bits.push(`<span>${ICON.clock}${esc(dur)}</span>`);
+    if(p.lang) bits.push(`<span>${ICON.audio}${esc(p.lang)}</span>`);
+    if(p.subs) bits.push(`<span>${ICON.subs}${esc(p.subs)}</span>`);
+    return bits.join("");
+  }
+  function refreshRow(p){
+    if(!pv || pv.p !== p) return;
+    const r = pv.el.querySelector(".pv-r"); r.innerHTML = rowHTML(p); r.hidden = !r.innerHTML;
+  }
+
+  function openPeek(card){
+    if(pv) closePeek(true);
+    const p = BY[card.dataset.id]; if(!p) return;
+    const r = card.getBoundingClientRect();
+    // where the preview ends up: grown around the card's centre, kept inside the window
+    const W = Math.min(r.width * GROW, innerWidth - 32), H = W * 9/16;
+    const L = Math.max(16, Math.min(innerWidth - 16 - W, r.left + r.width/2 - W/2));
+    const T = r.top + r.height/2 - H/2;
+    const el = document.createElement("div");
+    el.className = "pv"; el.style.setProperty("--c", COLOR(p.cat));
+    el.setAttribute("role", "button"); el.setAttribute("aria-label", `${pvTitle(p)} afspelen`);
+    el.innerHTML = `<div class="pv-media"></div>
+      <div class="pv-info"><div class="pv-t">${esc(pvTitle(p))}</div>
+        <div class="pv-m">${esc(pvType(p))}<span class="dot">•</span>${esc(p.date)}</div>
+        <div class="pv-r"></div></div>`;
+    const media = el.querySelector(".pv-media");
+    media.append(face(p), cap(p));
+    const place = (x, y, w) => { el.style.left = x + "px"; el.style.top = (y + scrollY) + "px"; el.style.width = w + "px"; el.style.fontSize = (Math.max(W, 300) / 375 * 16) + "px"; };
+    place(r.left, r.top, r.width);
+    document.body.appendChild(el);
+    pv = {el, card, p}; peekLeft = list.scrollLeft;
+    refreshRow(p);
+    card.classList.add("lifted");
+    // the clip itself, muted (browsers only autoplay muted video)
+    if(p.vids){
+      const v = document.createElement("video");
+      Object.assign(v, {src:p.vids[0].src, muted:true, loop:true, autoplay:true, playsInline:true});
+      v.addEventListener("loadedmetadata", () => { p._dur = v.duration; if(p.hd == null) p._hd = v.videoHeight >= 720; refreshRow(p); });
+      v.addEventListener("playing", () => v.classList.add("on"));
+      media.appendChild(v);
+    } else if(p.yt){
+      const f = document.createElement("iframe");
+      f.src = `https://www.youtube-nocookie.com/embed/${p.yt}?autoplay=1&mute=1&controls=0&rel=0&playsinline=1&loop=1&playlist=${p.yt}&modestbranding=1&iv_load_policy=3&disablekb=1&enablejsapi=1&origin=${encodeURIComponent(location.origin)}`;
+      f.allow = "autoplay; encrypted-media"; f.tabIndex = -1; f.title = pvTitle(p);
+      // ask the player for its duration and quality levels (used when data.js doesn't give them)
+      f.addEventListener("load", () => {
+        try{ f.contentWindow.postMessage(JSON.stringify({event:"listening", id:p.id, channel:"widget"}), "*"); }catch(e){}
+      });
+      media.appendChild(f);
+    }
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      el.classList.add("open"); shade.classList.add("on"); rc.classList.add("peek");
+      place(L, T, W);
+      fan(card, {left:L, right:L + W, mid:T + H/2});
+    }));
+    el.addEventListener("mouseleave", () => closePeek());
+    el.addEventListener("click", () => { const q = pv && pv.p; closePeek(true); if(q) openPlayer(q); });
+  }
+  // the other cards turn towards the open one and slide in against its sides. The vanishing
+  // point sits in the middle of the open video (like Uitgelicht), so cards further out tilt more.
+  const PERSP = 1100, TURN = 32, LIFT = 1.12, GAP = 4;
+  function fan(card, E){
+    const cards = [...list.children], i0 = cards.indexOf(card), cw = card.offsetWidth, ox = (E.left + E.right) / 2;
+    const tuck = cw * .06, finals = [];
+    cards.forEach(c => { c.style.transition = "none"; c.style.transform = ""; });
+    for(const side of [1, -1]){
+      let edge = side > 0 ? E.right - tuck : E.left + tuck;
+      for(let i = i0 + side; i >= 0 && i < cards.length; i += side){
+        const c = cards[i], r = c.getBoundingClientRect();
+        const cx = r.left + r.width/2, cy = r.top + r.height/2, ty = E.mid - cy;
+        const T = tx => { const lx = ox - cx - tx, ly = E.mid - cy - ty;
+          return `translate(${tx.toFixed(1)}px,${ty.toFixed(1)}px) translate(${lx.toFixed(1)}px,${ly.toFixed(1)}px) perspective(${PERSP}px) translate(${(-lx).toFixed(1)}px,${(-ly).toFixed(1)}px) rotateY(${side > 0 ? TURN : -TURN}deg) scale(${LIFT})`; };
+        // measure the turned card, then slide it so its near edge meets the previous one
+        let tx = 0;
+        for(let pass = 0; pass < 2; pass++){
+          c.style.transform = T(tx);
+          const q = c.getBoundingClientRect(), near = side > 0 ? q.left : q.right;
+          tx += edge - near;
+        }
+        c.style.transform = T(tx);
+        const q = c.getBoundingClientRect();
+        edge = side > 0 ? q.right + GAP : q.left - GAP;
+        finals.push([c, T(tx)]);
+        if(side > 0 ? q.left > innerWidth + 50 : q.right < -50) break;
+      }
+    }
+    // start flat, then let them glide into place
+    cards.forEach(c => c.style.transform = "");
+    void list.offsetWidth;
+    cards.forEach(c => c.style.transition = "");
+    fanRaf = requestAnimationFrame(() => { if(pv) finals.forEach(([c, t]) => c.style.transform = t); });
+  }
+  function closePeek(now){
+    clearTimeout(peekTimer); cancelAnimationFrame(fanRaf);
+    if(!pv) return;
+    const {el, card} = pv; pv = null;
+    shade.classList.remove("on"); rc.classList.remove("peek");
+    [...list.children].forEach(c => c.style.transform = "");
+    const done = () => { el.remove(); card.classList.remove("lifted"); };
+    if(now){ done(); return; }
+    const r = card.getBoundingClientRect();
+    el.classList.remove("open");
+    const m = el.querySelector("iframe,video"); if(m) m.classList.remove("on");
+    el.style.left = r.left + "px"; el.style.top = (r.top + scrollY) + "px"; el.style.width = r.width + "px";
+    setTimeout(done, 560);
+  }
+  addEventListener("message", e => {
+    if(!/youtube/.test(e.origin) || !pv) return;
+    let d; try{ d = typeof e.data === "string" ? JSON.parse(e.data) : e.data; }catch(err){ return; }
+    if(!d || d.event !== "infoDelivery" || !d.info) return;
+    const p = pv.p; let ch = false;
+    // only show the player once it is really playing; until then the cover stays
+    if(d.info.playerState === 1){ const f = pv.el.querySelector("iframe"); if(f) f.classList.add("on"); }
+    if(d.info.duration && !p._dur){ p._dur = d.info.duration; ch = true; }
+    const q = d.info.availableQualityLevels;
+    if(Array.isArray(q) && q.length && p.hd == null && p._hd == null){ p._hd = q.some(l => /hd|highres/.test(l)); ch = true; }
+    if(ch) refreshRow(p);
+  });
+  if(canPeek){
+    list.addEventListener("mouseover", e => {
+      const c = e.target.closest(".rc-card"); if(!c || c.contains(e.relatedTarget) || rcDrag.on) return;
+      clearTimeout(peekTimer);
+      peekTimer = setTimeout(() => { if(!rcDrag.on && c.matches(":hover")) openPeek(c); }, PEEK_MS);
+    });
+    list.addEventListener("mouseout", e => { const c = e.target.closest(".rc-card"); if(c && !c.contains(e.relatedTarget)) clearTimeout(peekTimer); });
+    list.addEventListener("pointerdown", () => clearTimeout(peekTimer));
+    // close when you scroll the row yourself (turning the cards can nudge it by a few pixels; that doesn't count)
+    list.addEventListener("scroll", () => { clearTimeout(peekTimer); if(pv && Math.abs(list.scrollLeft - peekLeft) > 24) closePeek(); }, {passive:true});
+    addEventListener("resize", () => closePeek(true));
+    addEventListener("keydown", e => { if(e.key === "Escape") closePeek(); });
+  }
 
   // ---------- Tijdlijn ----------
   const MN = ["jan","feb","mrt","apr","mei","jun","jul","aug","sep","okt","nov","dec"];

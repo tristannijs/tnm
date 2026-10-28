@@ -1,6 +1,12 @@
 // All projects. `label` and `sub` are the two lines shown on the cards.
 // `frames` are stills shown in the timeline when its tracks are expanded.
 // t0 / t1 are start and end dates (ISO); they drive "Recent" order and the timeline.
+// Details shown in the Recent hover preview (all optional):
+//   dur:"0:57"   running time   (left out: read from the video itself)
+//   hd:true      shows the HD badge (left out: worked out from the video when possible)
+//   lang:"NL"    spoken language (left out: not shown)
+//   subs:"EN"    subtitle language (left out: not shown)
+//   title / type override the preview's title line and type
 window.PROJECTS = [
   // ----- videografie -----
   {id:"dokfeesten-2026", cat:"event", label:"Dokfeesten 2026", sub:"Aftermovie", date:"29 augustus 2026", t0:"2026-08-29", yt:"JdYwGTit_-c", cover:"assets/covers/dokfeesten.jpg", frames:["assets/frames/JdYwGTit_-c-1.jpg","assets/frames/JdYwGTit_-c-2.jpg","assets/frames/JdYwGTit_-c-3.jpg","assets/frames/JdYwGTit_-c-4.jpg","assets/frames/JdYwGTit_-c-5.jpg","assets/frames/JdYwGTit_-c-6.jpg","assets/frames/JdYwGTit_-c-7.jpg","assets/frames/JdYwGTit_-c-8.jpg"]},

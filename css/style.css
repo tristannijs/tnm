@@ -102,13 +102,39 @@ img{display:block;max-width:100%}
 
 /* ---------- Recent: newest left ---------- */
 .rc{position:relative;margin-top:clamp(28px,4.5vw,70px)}
-.rc-list{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-inline:27px;padding:0 27px;scrollbar-width:none;overscroll-behavior-x:contain}
+.rc-list{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-inline:27px;padding:60px 27px;margin:-60px 0;scrollbar-width:none;overscroll-behavior-x:contain}
 .rc-list::-webkit-scrollbar{display:none}
 .rc-card{position:relative;flex:none;width:clamp(230px,24.6vw,420px);aspect-ratio:16/9;border:0;padding:0;background:none;cursor:pointer;scroll-snap-align:start}
 .rc-card .cap{margin:0 4% 6% 4%;padding-left:5px}
 .rc-card .cap b{font-size:clamp(12px,1.15vw,19px)}
 .rc-card .cap span{font-size:clamp(9px,.8vw,13px);margin-top:2px}
 .rc-card:hover img{filter:brightness(1.08)}
+/* hover preview: the card opens up into a playing clip with its details */
+.rc-card{transition:transform .6s cubic-bezier(.22,.7,.2,1)}
+.rc-card.lifted{opacity:0}
+.rc.peek .rc-list{scroll-snap-type:none}
+.pv-shade{position:fixed;inset:0;z-index:55;background:#000;opacity:0;pointer-events:none;transition:opacity .5s ease}
+.pv-shade.on{opacity:.4}
+.pv{position:absolute;z-index:60;background:#000;cursor:pointer;color:#fff;font-family:var(--f);
+  transition:left .55s cubic-bezier(.22,.7,.2,1),top .55s cubic-bezier(.22,.7,.2,1),width .55s cubic-bezier(.22,.7,.2,1),box-shadow .55s;box-shadow:0 0 0 rgba(0,0,0,0)}
+.pv.open{box-shadow:0 26px 70px rgba(0,0,0,.65)}
+.pv-media{position:relative;aspect-ratio:16/9;overflow:hidden;background:#1c1c1c}
+.pv-media iframe,.pv-media video{position:absolute;inset:0;z-index:2;width:100%;height:100%;border:0;object-fit:cover;pointer-events:none;opacity:0;transition:opacity .6s ease}
+.pv-media iframe.on,.pv-media video.on{opacity:1}
+.pv .cap{margin:0 4% 6% 4%;padding-left:5px;transition:opacity .25s}
+.pv .cap b{font-size:clamp(12px,1.15vw,19px)}
+.pv .cap span{font-size:clamp(9px,.8vw,13px);margin-top:2px}
+.pv.open .cap{opacity:0}
+.pv-info{overflow:hidden;max-height:0;opacity:0;padding:0 1.4em;border-top:0 solid var(--c);
+  transition:max-height .45s ease .2s,opacity .35s ease .3s,padding .45s ease .2s,border-top-width .2s ease .2s}
+.pv.open .pv-info{max-height:12em;opacity:1;padding:.85em 1.4em .95em;border-top-width:2px}
+.pv-t{font-size:1.19em;font-weight:800;text-transform:uppercase;line-height:1.15;letter-spacing:.005em}
+.pv-m{margin-top:.4em;font-size:.82em;text-transform:uppercase;letter-spacing:.02em}
+.pv-m .dot{margin:0 .6em}
+.pv-r{display:flex;align-items:center;flex-wrap:wrap;gap:.35em 1.3em;margin-top:.7em;font-size:.86em}
+.pv-r span{display:inline-flex;align-items:center;gap:.4em;line-height:1}
+.pv-r svg{height:1.3em;width:auto;display:block}
+.pv-r .hd{background:#fff;color:#000;font-weight:800;padding:.18em .32em .14em;font-size:.95em}
 .rc::before,.rc::after{content:"";position:absolute;top:0;bottom:0;width:14%;z-index:4;pointer-events:none;transition:opacity .3s}
 .rc::before{left:0;background:linear-gradient(90deg,var(--bg) 0,rgba(17,17,17,.8) 30%,rgba(17,17,17,0) 100%);opacity:0}
 .rc::after{right:0;background:linear-gradient(270deg,var(--bg) 0,rgba(17,17,17,.8) 30%,rgba(17,17,17,0) 100%)}
@@ -213,7 +239,7 @@ dialog::backdrop{background:rgba(0,0,0,.88)}
   .rc-card{width:min(66vw,320px)}
   .rc-card .cap b{font-size:13px}
   .rc-card .cap span{font-size:10px}
-  .rc-list{padding:0 var(--gut);scroll-padding-inline:var(--gut)}
+  .rc-list{padding:60px var(--gut);scroll-padding-inline:var(--gut)}
   .tl{grid-template-columns:108px minmax(0,1fr)}
   .fade.l{left:108px;width:40px} .fade.r{width:40px}
   .sep{left:calc(108px + var(--gap))}
