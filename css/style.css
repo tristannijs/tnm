@@ -111,16 +111,18 @@ img{display:block;max-width:100%}
 .rc-card:hover img{filter:brightness(1.08)}
 /* hover preview: the card opens up into a playing clip with its details */
 .rc-card{transition:transform .6s cubic-bezier(.22,.7,.2,1)}
-.rc.peek .rc-card{will-change:transform}
+.rc-card{will-change:transform}
 .rc-card.lifted{opacity:0}
-.pv-shade{position:fixed;inset:0;z-index:55;background:#000;opacity:0;pointer-events:none;transition:opacity .5s ease}
+.pv-shade{position:fixed;inset:0;z-index:55;background:#000;opacity:0;pointer-events:none;transition:opacity .5s ease;will-change:opacity}
 .pv-shade.on{opacity:.4}
 .pv{position:absolute;z-index:60;cursor:pointer;color:#fff;font-family:var(--f);transform-origin:0 0;will-change:transform;
   transition:transform .55s cubic-bezier(.22,.7,.2,1)}
 .pv.open{transition-duration:.55s}
 .pv:not(.open){transition-duration:.45s}
-.pv-media{position:relative;aspect-ratio:16/9;overflow:hidden;background:#1c1c1c;transition:box-shadow .55s}
-.pv.open .pv-media{box-shadow:0 26px 70px rgba(0,0,0,.65)}
+/* the drop shadow is drawn once and only faded, instead of being recalculated every frame */
+.pv-media{position:relative;aspect-ratio:16/9;overflow:hidden;background:#1c1c1c}
+.pv::before{content:"";position:absolute;inset:0;z-index:-1;box-shadow:0 26px 70px rgba(0,0,0,.65);opacity:0;transition:opacity .4s ease}
+.pv.open::before{opacity:1}
 .pv-media iframe,.pv-media video{position:absolute;inset:0;z-index:2;width:100%;height:100%;border:0;object-fit:cover;pointer-events:none;opacity:0;transition:opacity .6s ease}
 .pv-media iframe.on,.pv-media video.on{opacity:1}
 /* the caption is drawn --k times larger, so once scaled down to the card it matches the card exactly */
@@ -129,7 +131,7 @@ img{display:block;max-width:100%}
 .pv .cap span{font-size:calc(clamp(9px,.8vw,13px) * var(--k,1));margin-top:calc(2px * var(--k,1))}
 .pv.open .cap{opacity:0}
 /* the details sit under the clip at full size the whole time and only fade, so nothing re-lays out */
-.pv-info{background:#000;border-top:2px solid var(--c);padding:.85em 1.4em .95em;opacity:0;transition:opacity .12s ease;box-shadow:0 26px 70px rgba(0,0,0,.65)}
+.pv-info{background:#000;border-top:2px solid var(--c);padding:.85em 1.4em .95em;opacity:0;transition:opacity .12s ease}
 .pv.open .pv-info{opacity:1;transition:opacity .3s ease .4s}
 .pv-t{font-size:1.19em;font-weight:800;text-transform:uppercase;line-height:1.15;letter-spacing:.005em}
 .pv-m{margin-top:.4em;font-size:.82em;text-transform:uppercase;letter-spacing:.02em}

@@ -230,7 +230,7 @@
   // any device with a mouse or trackpad (touch-only screens tap straight to the player)
   const canPeek = matchMedia("(any-hover: hover)").matches;
   const shade = document.createElement("div"); shade.className = "pv-shade"; document.body.appendChild(shade);
-  let pv = null, peekTimer = 0, fanRaf = 0, peekLeft = 0;
+  let pv = null, peekTimer = 0, peekLeft = 0;
   const PEEK_MS = 1000, GROW = 1.55;
 
   function rowHTML(p){
@@ -247,10 +247,15 @@
     const r = pv.el.querySelector(".pv-r"); r.innerHTML = rowHTML(p); r.hidden = !r.innerHTML;
   }
 
+  // where a card sits in the row, ignoring any turn it is still animating out of
+  function homeRect(c){
+    const rr = rc.getBoundingClientRect();
+    return {left: rr.left + c.offsetLeft - list.scrollLeft, top: rr.top + c.offsetTop, width: c.offsetWidth, height: c.offsetHeight};
+  }
   function openPeek(card){
     if(pv) closePeek(true);
     const p = BY[card.dataset.id]; if(!p) return;
-    const r = card.getBoundingClientRect();
+    const r = homeRect(card);
     // where the preview ends up: grown around the card's centre, kept inside the window
     const W = Math.min(r.width * GROW, innerWidth - 32), H = W * 9/16;
     const L = Math.max(16, Math.min(innerWidth - 16 - W, r.left + r.width/2 - W/2));
@@ -263,33 +268,45 @@
         <div class="pv-m">${esc(pvType(p))}<span class="dot">•</span>${esc(p.date)}</div>
         <div class="pv-r"></div></div>`;
     const media = el.querySelector(".pv-media");
-    media.append(face(p), cap(p));
+    // reuse the card's own, already decoded picture so the first frame is never empty
+    const own = card.querySelector(".face img"), f = face(p), fi = f.querySelector("img");
+    if(own && fi){ fi.src = own.currentSrc || own.src; fi.loading = "eager"; }
+    media.append(f, cap(p));
     // the preview is laid out once at its final size; growing is a pure scale from the card,
     // which the graphics card animates without the page having to re-lay out every frame
     el.style.left = L + "px"; el.style.top = (T + scrollY) + "px"; el.style.width = W + "px";
     el.style.fontSize = (Math.max(W, 300) / 375 * 16) + "px";
     el.style.setProperty("--k", (W / r.width).toFixed(4));
-    const shrunk = () => { const q = card.getBoundingClientRect(), dx = peekLeft - list.scrollLeft; return `translate(${(q.left - L - dx).toFixed(2)}px,${(q.top - T).toFixed(2)}px) scale(${(q.width / W).toFixed(4)})`; };
+    peekLeft = list.scrollLeft;
+    const shrunk = () => { const q = homeRect(card), dx = peekLeft - list.scrollLeft; return `translate(${(q.left - L - dx).toFixed(2)}px,${(q.top - T).toFixed(2)}px) scale(${(q.width / W).toFixed(4)})`; };
     el.style.transform = shrunk();
+    el.style.visibility = "hidden";
     document.body.appendChild(el);
-    pv = {el, card, p, shrunk}; peekLeft = list.scrollLeft;
+    const me = pv = {el, card, p, shrunk};
     refreshRow(p);
-    card.classList.add("lifted");
-    void el.offsetWidth;
-    el.classList.add("open"); el.style.transform = "none";
-    shade.classList.add("on"); rc.classList.add("peek");
-    fan(card, {left:L, right:L + W, mid:T + H/2});
-    // the clip itself starts once the preview has opened, so loading it doesn't stutter the motion
-    const me = pv;
-    setTimeout(() => { if(pv === me) startClip(p, media); }, 600);
-    el.addEventListener("mouseleave", () => closePeek());
+    el.addEventListener("mouseleave", () => { if(pv === me) closePeek(); });
     // sideways scrolling over the open preview scrolls the row underneath it
     el.addEventListener("wheel", e => {
       const dx = e.shiftKey && !e.deltaX ? e.deltaY : e.deltaX;
       if(Math.abs(dx) <= Math.abs(e.shiftKey ? 0 : e.deltaY)) return;
       e.preventDefault(); list.scrollLeft += dx;
     }, {passive:false});
-    el.addEventListener("click", () => { const q = pv && pv.p; closePeek(true); if(q) openPlayer(q); });
+    el.addEventListener("click", () => { if(pv !== me) return; closePeek(true); openPlayer(p); });
+    // start the moment the picture is ready to draw (a cached one is ready within a frame)
+    const ready = fi && fi.decode ? fi.decode().catch(() => {}) : Promise.resolve();
+    Promise.race([ready, new Promise(res => setTimeout(res, 150))]).then(() => {
+      if(pv !== me) return;
+      el.style.visibility = "";
+      card.classList.add("lifted");
+      requestAnimationFrame(() => {
+        if(pv !== me) return;
+        el.classList.add("open"); el.style.transform = "none";
+        shade.classList.add("on"); rc.classList.add("peek");
+        fan(card, {left:L + (peekLeft - list.scrollLeft), right:L + W + (peekLeft - list.scrollLeft), mid:T + H/2});
+        // the clip itself starts once the preview has opened, so loading it doesn't stutter the motion
+        setTimeout(() => { if(pv === me) startClip(p, media); }, 600);
+      });
+    });
   }
   function startClip(p, media){
     // muted, because browsers only autoplay muted video
@@ -311,38 +328,34 @@
     }
   }
   // the other cards turn in perspective (each around its own centre, nothing stretched)
-  // and slide in against the sides of the open one
+  // and slide in against the sides of the open one. Their turned outline is worked out with
+  // the perspective formula instead of being measured, so nothing has to be laid out mid-motion.
   const PERSP = 700, TURN = 28, GAP = 6;
   function fan(card, E){
-    const cards = [...list.children], i0 = cards.indexOf(card), tuck = card.offsetWidth * .05, finals = [];
-    cards.forEach(c => { c.style.transition = "none"; c.style.transform = ""; });
+    const cards = [...list.children], i0 = cards.indexOf(card), w = card.offsetWidth, h = w/2, tuck = w * .05;
+    const th = TURN * Math.PI / 180, hc = h * Math.cos(th), hs = h * Math.sin(th);
+    const nearX = hc * PERSP / (PERSP + hs), farX = hc * PERSP / (PERSP - hs);   // edge facing the preview / outer edge
+    const rr = rc.getBoundingClientRect(), sl = list.scrollLeft;
     for(const side of [1, -1]){
       let edge = side > 0 ? E.right - tuck : E.left + tuck;
       for(let i = i0 + side; i >= 0 && i < cards.length; i += side){
-        const c = cards[i], r = c.getBoundingClientRect();
-        const ty = E.mid - (r.top + r.height/2);
-        const T = tx => `translate(${tx.toFixed(1)}px,${ty.toFixed(1)}px) perspective(${PERSP}px) rotateY(${side > 0 ? -TURN : TURN}deg)`;
-        c.style.transform = T(0);
-        const q = c.getBoundingClientRect(), tx = edge - (side > 0 ? q.left : q.right);
-        edge = side > 0 ? q.right + tx + GAP : q.left + tx - GAP;
-        finals.push([c, T(tx)]);
+        const c = cards[i];
+        const cx0 = rr.left + c.offsetLeft - sl + c.offsetWidth/2, cy0 = rr.top + c.offsetTop + c.offsetHeight/2;
+        const cx = side > 0 ? edge + nearX : edge - nearX;
+        edge = side > 0 ? cx + farX + GAP : cx - farX - GAP;
+        c.style.transform = `translate(${(cx - cx0).toFixed(1)}px,${(E.mid - cy0).toFixed(1)}px) perspective(${PERSP}px) rotateY(${side > 0 ? -TURN : TURN}deg)`;
       }
     }
-    // start flat, then let them glide into place
-    cards.forEach(c => c.style.transform = "");
-    void list.offsetWidth;
-    cards.forEach(c => c.style.transition = "");
-    fanRaf = requestAnimationFrame(() => { if(pv) finals.forEach(([c, t]) => c.style.transform = t); });
   }
   function closePeek(now){
-    clearTimeout(peekTimer); cancelAnimationFrame(fanRaf);
+    clearTimeout(peekTimer);
     if(!pv) return;
     const {el, card, shrunk} = pv; pv = null;
     shade.classList.remove("on"); rc.classList.remove("peek");
     [...list.children].forEach(c => c.style.transform = "");
     let gone = false;
     const done = () => { if(gone) return; gone = true; el.remove(); card.classList.remove("lifted"); };
-    if(now){ done(); return; }
+    if(now || el.style.visibility === "hidden"){ done(); return; }
     const m = el.querySelector("iframe,video"); if(m) m.remove();
     el.classList.remove("open");
     el.style.transform = shrunk();
