@@ -47,14 +47,17 @@
 
   // ---------- hero: a layer per background; hovering a door swaps to its layer ----------
   const layers = [...document.querySelectorAll(".hero-bg .layer")];
+  // each layer shows its still right away; a layer with a video plays that on top of it.
+  // Videos of layers you don't see yet only start downloading once the page itself has loaded,
+  // so they never slow down the first view but are ready by the time you hover a button.
   layers.forEach(l => {
+    if(l.dataset.img){ const i = new Image(); i.src = l.dataset.img; i.alt = ""; l.appendChild(i); }
     if(l.dataset.video){
-      const v = document.createElement("video");
-      Object.assign(v, {src:l.dataset.video, muted:true, loop:true, playsInline:true, autoplay:l.classList.contains("on"), preload:"auto"});
-      if(l.dataset.img) v.poster = l.dataset.img;
+      const on = l.classList.contains("on"), v = document.createElement("video");
+      v.muted = true; v.setAttribute("muted", ""); v.loop = true; v.playsInline = true; v.setAttribute("playsinline", "");
+      v.preload = on ? "auto" : "none"; v.autoplay = on; v.src = l.dataset.video;
       l.appendChild(v);
-    } else if(l.dataset.img){
-      const i = new Image(); i.src = l.dataset.img; i.alt = ""; l.appendChild(i);
+      if(!on) addEventListener("load", () => { v.preload = "auto"; v.load(); }, {once:true});
     }
   });
   function showLayer(key){
