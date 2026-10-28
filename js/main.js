@@ -210,7 +210,7 @@
   list.addEventListener("dragstart", e => e.preventDefault());
   rcState();
 
-  // ---------- Recent: rest on a card for 1.5 s and it opens up and plays ----------
+  // ---------- Recent: rest on a card for 1 s and it opens up and plays ----------
   // The card grows into a playing preview with its details underneath; the page dims
   // and the other cards turn in 3D and slide in against it, like Uitgelicht.
   const VTYPE = {event:"Aftermovie", trouw:"Trouwfilm", promo:"Promotievideo"};
@@ -231,7 +231,7 @@
   const canPeek = matchMedia("(any-hover: hover)").matches;
   const shade = document.createElement("div"); shade.className = "pv-shade"; document.body.appendChild(shade);
   let pv = null, peekTimer = 0, fanRaf = 0, peekLeft = 0;
-  const PEEK_MS = 1500, GROW = 1.55;
+  const PEEK_MS = 1000, GROW = 1.55;
 
   function rowHTML(p){
     const hd = p.hd ?? p._hd, dur = p.dur || (p._dur ? mmss(p._dur) : "");
@@ -264,13 +264,28 @@
         <div class="pv-r"></div></div>`;
     const media = el.querySelector(".pv-media");
     media.append(face(p), cap(p));
-    const place = (x, y, w) => { el.style.left = x + "px"; el.style.top = (y + scrollY) + "px"; el.style.width = w + "px"; el.style.fontSize = (Math.max(W, 300) / 375 * 16) + "px"; };
-    place(r.left, r.top, r.width);
+    // the preview is laid out once at its final size; growing is a pure scale from the card,
+    // which the graphics card animates without the page having to re-lay out every frame
+    el.style.left = L + "px"; el.style.top = (T + scrollY) + "px"; el.style.width = W + "px";
+    el.style.fontSize = (Math.max(W, 300) / 375 * 16) + "px";
+    const shrunk = () => { const q = card.getBoundingClientRect(); return `translate(${(q.left - L).toFixed(2)}px,${(q.top - T).toFixed(2)}px) scale(${(q.width / W).toFixed(4)})`; };
+    el.style.transform = shrunk();
     document.body.appendChild(el);
-    pv = {el, card, p}; peekLeft = list.scrollLeft;
+    pv = {el, card, p, shrunk}; peekLeft = list.scrollLeft;
     refreshRow(p);
     card.classList.add("lifted");
-    // the clip itself, muted (browsers only autoplay muted video)
+    void el.offsetWidth;
+    el.classList.add("open"); el.style.transform = "none";
+    shade.classList.add("on"); rc.classList.add("peek");
+    fan(card, {left:L, right:L + W, mid:T + H/2});
+    // the clip itself starts once the preview has opened, so loading it doesn't stutter the motion
+    const me = pv;
+    setTimeout(() => { if(pv === me) startClip(p, media); }, 600);
+    el.addEventListener("mouseleave", () => closePeek());
+    el.addEventListener("click", () => { const q = pv && pv.p; closePeek(true); if(q) openPlayer(q); });
+  }
+  function startClip(p, media){
+    // muted, because browsers only autoplay muted video
     if(p.vids){
       const v = document.createElement("video");
       Object.assign(v, {src:p.vids[0].src, muted:true, loop:true, autoplay:true, playsInline:true});
@@ -281,19 +296,12 @@
       const f = document.createElement("iframe");
       f.src = `https://www.youtube-nocookie.com/embed/${p.yt}?autoplay=1&mute=1&controls=0&rel=0&playsinline=1&loop=1&playlist=${p.yt}&modestbranding=1&iv_load_policy=3&disablekb=1&enablejsapi=1&origin=${encodeURIComponent(location.origin)}`;
       f.allow = "autoplay; encrypted-media"; f.tabIndex = -1; f.title = pvTitle(p);
-      // ask the player for its duration and quality levels (used when data.js doesn't give them)
+      // ask the player for its state, duration and quality levels
       f.addEventListener("load", () => {
         try{ f.contentWindow.postMessage(JSON.stringify({event:"listening", id:p.id, channel:"widget"}), "*"); }catch(e){}
       });
       media.appendChild(f);
     }
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      el.classList.add("open"); shade.classList.add("on"); rc.classList.add("peek");
-      place(L, T, W);
-      fan(card, {left:L, right:L + W, mid:T + H/2});
-    }));
-    el.addEventListener("mouseleave", () => closePeek());
-    el.addEventListener("click", () => { const q = pv && pv.p; closePeek(true); if(q) openPlayer(q); });
   }
   // the other cards turn towards the open one and slide in against its sides. The vanishing
   // point sits in the middle of the open video (like Uitgelicht), so cards further out tilt more.
@@ -308,7 +316,7 @@
         const c = cards[i], r = c.getBoundingClientRect();
         const cx = r.left + r.width/2, cy = r.top + r.height/2, ty = E.mid - cy;
         const T = tx => { const lx = ox - cx - tx, ly = E.mid - cy - ty;
-          return `translate(${tx.toFixed(1)}px,${ty.toFixed(1)}px) translate(${lx.toFixed(1)}px,${ly.toFixed(1)}px) perspective(${PERSP}px) translate(${(-lx).toFixed(1)}px,${(-ly).toFixed(1)}px) rotateY(${side > 0 ? TURN : -TURN}deg) scale(${LIFT})`; };
+          return `translate(${tx.toFixed(1)}px,${ty.toFixed(1)}px) translate(${lx.toFixed(1)}px,${ly.toFixed(1)}px) perspective(${PERSP}px) translate(${(-lx).toFixed(1)}px,${(-ly).toFixed(1)}px) rotateY(${side > 0 ? -TURN : TURN}deg) scale(${LIFT})`; };
         // measure the turned card, then slide it so its near edge meets the previous one
         let tx = 0;
         for(let pass = 0; pass < 2; pass++){
@@ -332,16 +340,15 @@
   function closePeek(now){
     clearTimeout(peekTimer); cancelAnimationFrame(fanRaf);
     if(!pv) return;
-    const {el, card} = pv; pv = null;
+    const {el, card, shrunk} = pv; pv = null;
     shade.classList.remove("on"); rc.classList.remove("peek");
     [...list.children].forEach(c => c.style.transform = "");
     const done = () => { el.remove(); card.classList.remove("lifted"); };
     if(now){ done(); return; }
-    const r = card.getBoundingClientRect();
+    const m = el.querySelector("iframe,video"); if(m) m.remove();
     el.classList.remove("open");
-    const m = el.querySelector("iframe,video"); if(m) m.classList.remove("on");
-    el.style.left = r.left + "px"; el.style.top = (r.top + scrollY) + "px"; el.style.width = r.width + "px";
-    setTimeout(done, 560);
+    el.style.transform = shrunk();
+    setTimeout(done, 480);
   }
   addEventListener("message", e => {
     if(!/youtube/.test(e.origin) || !pv) return;
