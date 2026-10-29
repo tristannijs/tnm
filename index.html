@@ -41,12 +41,12 @@
 
 <main id="top">
 
-  <!-- HERO: each layer is one background. Drop a video in later with data-video="path.mp4";
-       until then the image is the placeholder. -->
+  <!-- HERO: each layer is one background: a still (data-img), a loop (data-video), or a category's
+       clips in random order (data-clips, listed in assets/clips/clips.js by tools/clips.py). -->
   <section class="hero" id="hero">
     <div class="hero-bg" aria-hidden="true">
       <div class="layer on" data-key="home"        data-img="assets/hero/home.jpg"        data-video="assets/hero/home.mp4" data-video-av1="assets/hero/home-av1.mp4"></div>
-      <div class="layer"    data-key="ritcs"       data-img="assets/hero/ritcs.jpg"       data-video="assets/hero/ritcs.mp4" data-video-av1="assets/hero/ritcs-av1.mp4"></div>
+      <div class="layer"    data-key="ritcs"       data-clips="ritcs"></div>
       <div class="layer"    data-key="videografie" data-img="assets/hero/videografie.jpg" data-video="assets/hero/videografie.mp4" data-video-av1="assets/hero/videografie-av1.mp4"></div>
       <div class="layer"    data-key="overig"      data-img="assets/hero/overig.jpg"      data-video=""></div>
     </div>
@@ -104,6 +104,7 @@
 </dialog>
 
 <script src="js/i18n.js?v=20261029120933"></script>
+<script src="assets/clips/clips.js?v=0"></script>
 <script src="js/data.js?v=20261029120933"></script>
 <script src="js/main.js?v=20261029120933"></script>
 </body>

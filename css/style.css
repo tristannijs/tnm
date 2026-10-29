@@ -58,6 +58,7 @@ img{display:block;max-width:100%}
 .layer{position:absolute;inset:0;opacity:0;transition:opacity .6s ease;background:#1a1a1a}
 .layer.on{opacity:1}
 .layer img,.layer video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.layer video.clip{visibility:hidden}.layer video.clip.cur{visibility:visible}
 .hero-shade{position:absolute;inset:0;pointer-events:none;
   background:
     linear-gradient(180deg,rgba(0,0,0,.55) 0,rgba(0,0,0,0) 22%),

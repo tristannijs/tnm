@@ -76,30 +76,104 @@
   // A layer can offer an AV1 file (data-video-av1) next to the H.264 one (data-video): AV1 looks
   // better at half the size, but is only used where the browser says it can play it smoothly.
   const AV1 = 'video/mp4; codecs="av01.0.08M.10"';
-  async function pickVideo(l){
-    const av1 = l.dataset.videoAv1;
-    if(av1 && navigator.mediaCapabilities){
-      try{
-        const r = await navigator.mediaCapabilities.decodingInfo({type:"file", video:{contentType:AV1, width:1920, height:1080, bitrate:3700000, framerate:25}});
-        if(r.supported && r.smooth) return av1;
-      }catch(e){}
+  const av1ok = (async () => {
+    if(!navigator.mediaCapabilities) return false;
+    try{
+      const r = await navigator.mediaCapabilities.decodingInfo({type:"file", video:{contentType:AV1, width:1920, height:1080, bitrate:3700000, framerate:25}});
+      return !!(r.supported && r.smooth);
+    }catch(e){ return false; }
+  })();
+  async function pickVideo(l){ return l.dataset.videoAv1 && await av1ok ? l.dataset.videoAv1 : l.dataset.video; }
+  const hoverable = matchMedia("(any-hover: hover)").matches;
+  const afterLoad = fn => document.readyState === "complete" ? fn() : addEventListener("load", fn, {once:true});
+
+  // A layer with data-clips="ritcs" plays that category's short clips from assets/clips/clips.js in a random
+  // order, cut hard one after the other. Two <video>s take turns: one plays, the other has the next clip ready.
+  // Each clip says where its point of interest is (and, for clips with a cut or a move, how that changes over
+  // time), so a screen narrower than 16:9 crops around it instead of around the middle.
+  function clipLayer(l){
+    const list = (window.CLIPS || {})[l.dataset.clips] || [];
+    if(!list.length) return null;
+    const vids = [0, 1].map(() => {
+      const v = document.createElement("video");
+      v.muted = true; v.setAttribute("muted", ""); v.playsInline = true; v.setAttribute("playsinline", "");
+      v.preload = "none"; v.className = "clip";
+      l.appendChild(v); return v;
+    });
+    let bag = [], last = null, cur = 0, playing = false, raf = 0, useAv1 = false;
+    av1ok.then(ok => useAv1 = ok);
+    // random order: every clip once before any repeats, never two clips of the same project in a row
+    function next(){
+      if(!bag.length){ bag = list.slice(); for(let i = bag.length - 1; i > 0; i--){ const j = Math.random() * (i + 1) | 0; [bag[i], bag[j]] = [bag[j], bag[i]]; } }
+      let k = bag.findIndex(c => !last || c.project !== last.project || list.length < 2);
+      if(k < 0) k = 0;
+      return last = bag.splice(k, 1)[0];
     }
-    return l.dataset.video;
+    function load(v, c){ v.clip = c; v.src = useAv1 ? c.av1 : c.src; v.poster = c.poster; v.preload = "auto"; v.load(); }
+    // where the point of interest is at time t: straight lines between key points; a cut is two key points
+    // 0.04 s apart, so it jumps
+    function at(c, t){
+      const f = c.focus;
+      if(!f) return [c.x, c.y];
+      let i = 0; while(i < f.length - 1 && f[i + 1][0] <= t) i++;
+      if(i === f.length - 1) return [f[i][1], f[i][2]];
+      const [t0, x0, y0] = f[i], [t1, x1, y1] = f[i + 1], k = (t - t0) / (t1 - t0);
+      return [x0 + (x1 - x0) * k, y0 + (y1 - y0) * k];
+    }
+    // object-position for a point: the crop window centred on it as far as the frame allows
+    function place(v){
+      const c = v.clip; if(!c) return;
+      const W = l.clientWidth, H = l.clientHeight, va = (v.videoWidth / v.videoHeight) || 16 / 9, ca = W / H;
+      const [x, y] = at(c, v.currentTime || 0);
+      const pos = (p, vis) => vis >= 1 ? 50 : Math.min(100, Math.max(0, (p - vis / 2) / (1 - vis) * 100));
+      v.style.objectPosition = `${pos(x, ca / va).toFixed(2)}% ${pos(y, va / ca).toFixed(2)}%`;
+    }
+    function tick(){ place(vids[cur]); raf = playing && vids[cur].clip && vids[cur].clip.focus ? requestAnimationFrame(tick) : 0; }
+    function track(){ cancelAnimationFrame(raf); tick(); }
+    function show(i){
+      vids.forEach((v, k) => v.classList.toggle("cur", k === i));
+    }
+    vids.forEach((v, i) => v.addEventListener("ended", () => {
+      if(i !== cur) return;
+      const n = vids[1 - cur];
+      cur = 1 - cur;
+      place(n);
+      // cut as soon as the next clip has a frame; until then the last frame of this one stays
+      const go = () => { show(cur); track(); load(v, next()); };
+      if(playing){ n.play().catch(() => {}); }
+      if(n.readyState >= 2) go(); else n.addEventListener("loadeddata", go, {once:true});
+    }));
+    vids.forEach(v => v.addEventListener("loadedmetadata", () => place(v)));
+    addEventListener("resize", () => vids.forEach(place));
+    let started = false;
+    async function start(){
+      if(started) return; started = true;
+      useAv1 = await av1ok;
+      load(vids[0], next()); load(vids[1], next());
+      show(0);
+    }
+    // the first clips are fetched once the page has loaded, and only where hovering exists (not on phones)
+    if(hoverable) afterLoad(start);
+    return {
+      play(){ start().then(() => { playing = true; vids[cur].play().catch(() => {}); track(); }); },
+      pause(){ playing = false; vids[cur].pause(); cancelAnimationFrame(raf); }
+    };
   }
+
   layers.forEach(l => {
     if(l.dataset.img){ const i = new Image(); i.src = l.dataset.img; i.alt = ""; l.appendChild(i); }
+    if(l.dataset.clips){ l.player = clipLayer(l); return; }
     if(l.dataset.video){
       const on = l.classList.contains("on"), v = document.createElement("video");
       v.muted = true; v.setAttribute("muted", ""); v.loop = true; v.playsInline = true; v.setAttribute("playsinline", "");
       v.preload = on ? "auto" : "none"; v.autoplay = on;
       l.appendChild(v);
+      l.player = { play: () => v.play().catch(() => {}), pause: () => v.pause() };
       pickVideo(l).then(src => {
         v.src = src;
         if(l.classList.contains("on")) v.play().catch(() => {});
         // the hover-only layers are fetched ahead only where hovering exists (not on phones)
-        else if(!matchMedia("(any-hover: hover)").matches) return;
-        else if(document.readyState === "complete"){ v.preload = "auto"; v.load(); }
-        else addEventListener("load", () => { v.preload = "auto"; v.load(); }, {once:true});
+        else if(hoverable) afterLoad(() => { v.preload = "auto"; v.load(); });
       });
     }
   });
@@ -107,8 +181,7 @@
     layers.forEach(l => {
       const on = l.dataset.key === key;
       l.classList.toggle("on", on);
-      const v = l.querySelector("video");
-      if(v){ if(on){ v.play().catch(()=>{}); } else v.pause(); }
+      if(l.player){ if(on) l.player.play(); else l.player.pause(); }
     });
   }
   const doors = $("#doors");
