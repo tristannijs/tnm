@@ -8,6 +8,8 @@
   const COLOR = c => "var(--c-"+(["fictie","docu","iao"].includes(c)?"ritcs":c)+")";
   const yt = (id,q) => `https://i.ytimg.com/vi/${id}/${q}.jpg`;
   const flat = s => s.replace(/\s*\n\s*/g, " ");
+  const L = window.I18N, t = (k, v) => L.t(k, v);
+  const sub = p => L.sub(p.sub), when = p => L.date(p);
 
   // image for a card: own cover, else YouTube's (maxres, falling back to hq)
   function coverImg(p){
@@ -22,9 +24,10 @@
     if(p.cover || p.yt) f.appendChild(coverImg(p));
     return f;
   }
+  const capHTML = p => `<b>${p.label.split("\n").map(esc).join("<br>")}</b><span>${esc(sub(p))}</span>`;
   function cap(p){
-    const c = document.createElement("div"); c.className = "cap";
-    c.innerHTML = `<b>${p.label.split("\n").map(esc).join("<br>")}</b><span>${esc(p.sub)}</span>`;
+    const c = document.createElement("div"); c.className = "cap"; c.dataset.pid = p.id;
+    c.innerHTML = capHTML(p);
     return c;
   }
 
@@ -37,13 +40,33 @@
   function setMenu(open){
     drawer.hidden = !open;
     menuBtn.setAttribute("aria-expanded", open);
-    menuBtn.setAttribute("aria-label", open ? "Menu sluiten" : "Menu openen");
+    menuBtn.setAttribute("aria-label", t(open ? "menu.close" : "menu.open"));
   }
   menuBtn.addEventListener("click", e => { e.stopPropagation(); setMenu(drawer.hidden); });
   drawer.addEventListener("click", e => { if(e.target.closest("a")) setMenu(false); });
   document.addEventListener("click", e => { if(!drawer.hidden && !e.target.closest("#drawer")) setMenu(false); });
   document.addEventListener("keydown", e => { if(e.key === "Escape") setMenu(false); });
-  $(".lang").addEventListener("click", e => e.preventDefault());
+
+  // ---------- language: NL / EN / FR ----------
+  const langBtn = $("#langBtn"), langMenu = $("#langMenu");
+  function setLangMenu(open){ langMenu.hidden = !open; langBtn.setAttribute("aria-expanded", open); }
+  function showLang(){
+    langBtn.textContent = L.lang.toUpperCase();
+    langBtn.setAttribute("aria-label", `${t("lang.label")}: ${L.lang.toUpperCase()}`);
+    langMenu.querySelectorAll("[data-lang]").forEach(b => b.setAttribute("aria-current", b.dataset.lang === L.lang ? "true" : "false"));
+  }
+  langBtn.addEventListener("click", e => { e.stopPropagation(); setLangMenu(langMenu.hidden); });
+  langMenu.addEventListener("click", e => { const b = e.target.closest("[data-lang]"); if(!b) return; setLangMenu(false); L.set(b.dataset.lang); });
+  document.addEventListener("click", e => { if(!langMenu.hidden && !e.target.closest(".lang-wrap")) setLangMenu(false); });
+  document.addEventListener("keydown", e => { if(e.key === "Escape") setLangMenu(false); });
+  L.apply(); showLang();
+  L.onChange(() => {
+    showLang(); setMenu(!drawer.hidden);
+    document.querySelectorAll(".cap[data-pid]").forEach(c => { const p = BY[c.dataset.pid]; if(p) c.innerHTML = capHTML(p); });
+    cfItems.forEach(({el}, i) => el.setAttribute("aria-label", `${flat(feat[i].label)}, ${sub(feat[i])}`));
+    list.querySelectorAll(".rc-card").forEach(b => { const p = BY[b.dataset.id]; b.setAttribute("aria-label", `${flat(p.label)}, ${sub(p)}, ${when(p)}`); });
+    buildTimeline();
+  });
 
   // ---------- hero: a layer per background; hovering a door swaps to its layer ----------
   const layers = [...document.querySelectorAll(".hero-bg .layer")];
@@ -106,7 +129,7 @@
   const cfItems = feat.map((p,i) => {
     const b = document.createElement("button");
     b.type = "button"; b.className = "cf-item"; b.style.setProperty("--c", COLOR(p.cat));
-    b.setAttribute("aria-label", `${flat(p.label)}, ${p.sub}`);
+    b.setAttribute("aria-label", `${flat(p.label)}, ${sub(p)}`); b.dataset.id = p.id;
     const shade = document.createElement("span"); shade.className = "shade";
     b.append(face(p), cap(p), shade);
     b.addEventListener("click", () => {
@@ -121,6 +144,8 @@
   const readSx = () => { sx = parseFloat(getComputedStyle(cf).getPropertyValue("--sx")) || 118; };
   function render(){
     const front = centerIdx();
+    // turning the carousel closes a preview that is open on it
+    if(pv && pv.ctx === cfCtx && Math.abs(offset - pv.off) > .01) closePeek();
     cfItems.forEach(({el, shade}, i) => {
       const p = n > 1 ? wrap(i - offset) : 0, a = Math.abs(p), sg = Math.sign(p);
       let X, Z, R, B, O;
@@ -140,7 +165,7 @@
   function frame(now){
     const dt = Math.min(64, now - (last || now)); last = now;
     const d = goal - offset;
-    if(Math.abs(d) < .0008){ offset = goal; render(); raf = 0; last = 0; return; }
+    if(Math.abs(d) < .0008){ offset = goal; render(); raf = 0; last = 0; cfSettled(); return; }
     offset += d * (1 - Math.exp(-dt / tau));
     render();
     raf = requestAnimationFrame(frame);
@@ -197,7 +222,7 @@
   [...P].sort((a,b) => end(b) - end(a) || D(b.t0) - D(a.t0)).forEach(p => {
     const b = document.createElement("button");
     b.type = "button"; b.className = "rc-card"; b.dataset.id = p.id; b.style.setProperty("--c", COLOR(p.cat));
-    b.setAttribute("aria-label", `${flat(p.label)}, ${p.sub}, ${p.date}`);
+    b.setAttribute("aria-label", `${flat(p.label)}, ${sub(p)}, ${when(p)}`);
     b.append(face(p), cap(p));
     b.addEventListener("click", () => { if(!rcDrag.moved) openPlayer(p); });
     list.appendChild(b);
@@ -234,13 +259,13 @@
   // ---------- Recent: rest on a card for 1 s and it opens up and plays ----------
   // The card grows into a playing preview with its details underneath; the page dims
   // and the other cards turn in 3D and slide in against it, like Uitgelicht.
-  const VTYPE = {event:"Aftermovie", trouw:"Trouwfilm", promo:"Promotievideo"};
-  const pvType = p => p.type || VTYPE[p.cat] || p.sub;
+  const VIDEO = {event:1, trouw:1, promo:1};
+  const pvType = p => p.type || (VIDEO[p.cat] ? t("type." + p.cat) : sub(p));
   const pvTitle = p => {
     if(p.title) return p.title;
-    const t = flat(p.label);
+    const n = flat(p.label);
     // videography: add the subtitle unless it only repeats the type ("Wejo × Bocco: Pop-up opening")
-    return VTYPE[p.cat] && p.sub && p.sub.toLowerCase() !== pvType(p).toLowerCase() ? `${t}: ${p.sub}` : t;
+    return VIDEO[p.cat] && p.sub && sub(p).toLowerCase() !== pvType(p).toLowerCase() ? `${n}: ${sub(p)}` : n;
   };
   const mmss = s => { s = Math.round(s); return Math.floor(s/60) + ":" + String(s%60).padStart(2,"0"); };
   const ICON = {
@@ -250,9 +275,30 @@
   };
   // any device with a mouse or trackpad (touch-only screens tap straight to the player)
   const canPeek = matchMedia("(any-hover: hover)").matches;
+  var cfSettled = () => {};
   const shade = document.createElement("div"); shade.className = "pv-shade"; document.body.appendChild(shade);
-  let pv = null, peekTimer = 0, peekLeft = 0;
+  // var, not let: the carousel above already checks `pv` while it draws its first frame
+  var pv = null, peekTimer = 0, peekLeft = 0;
   const PEEK_MS = 1000, GROW = 1.55;
+  // where a preview comes from: the Recent row (grows a lot, the other cards fan out) or
+  // the front card of Uitgelicht (grows a little, nothing else moves)
+  const rcCtx = {
+    grow: GROW, cls: "pv-rc",
+    home: c => homeRect(c),
+    shift: () => peekLeft - list.scrollLeft,
+    begin(){ peekLeft = list.scrollLeft; },
+    open(card, E){ rc.classList.add("peek"); fan(card, E); },
+    close(){ rc.classList.remove("peek"); [...list.children].forEach(c => c.style.transform = ""); },
+    wheel(dx){ list.scrollLeft += dx; }
+  };
+  const cfCtx = {
+    grow: 1.12, cls: "pv-cf",
+    home: c => c.getBoundingClientRect(),
+    shift: () => 0,
+    begin(){}, open(){}, close(){},
+    // sideways scrolling keeps turning the carousel; the preview closes as soon as it moves
+    wheel(dx){ goal += dx / pxPerCard(); run(60); clearTimeout(quiet); quiet = setTimeout(snap, 90); }
+  };
 
   function rowHTML(p){
     const hd = p.hd ?? p._hd, dur = p.dur || (p._dur ? mmss(p._dur) : "");
@@ -273,20 +319,20 @@
     const rr = rc.getBoundingClientRect();
     return {left: rr.left + c.offsetLeft - list.scrollLeft, top: rr.top + c.offsetTop, width: c.offsetWidth, height: c.offsetHeight};
   }
-  function openPeek(card){
+  function openPeek(card, ctx = rcCtx){
     if(pv) closePeek(true);
     const p = BY[card.dataset.id]; if(!p) return;
-    const r = homeRect(card);
+    const r = ctx.home(card);
     // where the preview ends up: grown around the card's centre, kept inside the window
-    const W = Math.min(r.width * GROW, innerWidth - 32), H = W * 9/16;
+    const W = Math.min(r.width * ctx.grow, innerWidth - 32), H = W * 9/16;
     const L = Math.max(16, Math.min(innerWidth - 16 - W, r.left + r.width/2 - W/2));
     const T = r.top + r.height/2 - H/2;
     const el = document.createElement("div");
-    el.className = "pv"; el.style.setProperty("--c", COLOR(p.cat));
-    el.setAttribute("role", "button"); el.setAttribute("aria-label", `${pvTitle(p)} afspelen`);
+    el.className = "pv " + ctx.cls; el.style.setProperty("--c", COLOR(p.cat));
+    el.setAttribute("role", "button"); el.setAttribute("aria-label", t("play", {t:pvTitle(p)}));
     el.innerHTML = `<div class="pv-media"></div>
       <div class="pv-info"><div class="pv-t">${esc(pvTitle(p))}</div>
-        <div class="pv-m">${esc(pvType(p))}<span class="dot">•</span>${esc(p.date)}</div>
+        <div class="pv-m">${esc(pvType(p))}<span class="dot">•</span>${esc(when(p))}</div>
         <div class="pv-r"></div></div>`;
     const media = el.querySelector(".pv-media");
     // reuse the card's own, already decoded picture so the first frame is never empty
@@ -296,21 +342,23 @@
     // the preview is laid out once at its final size; growing is a pure scale from the card,
     // which the graphics card animates without the page having to re-lay out every frame
     el.style.left = L + "px"; el.style.top = (T + scrollY) + "px"; el.style.width = W + "px";
-    el.style.fontSize = (Math.max(W, 300) / 375 * 16) + "px";
+    el.style.fontSize = Math.min(24, Math.max(W, 300) / 375 * 16) + "px";
     el.style.setProperty("--k", (W / r.width).toFixed(4));
-    peekLeft = list.scrollLeft;
-    const shrunk = () => { const q = homeRect(card), dx = peekLeft - list.scrollLeft; return `translate(${(q.left - L - dx).toFixed(2)}px,${(q.top - T).toFixed(2)}px) scale(${(q.width / W).toFixed(4)})`; };
+    ctx.begin();
+    const shrunk = () => { const q = ctx.home(card), dx = ctx.shift(); return `translate(${(q.left - L - dx).toFixed(2)}px,${(q.top - T).toFixed(2)}px) scale(${(q.width / W).toFixed(4)})`; };
     el.style.transform = shrunk();
     el.style.visibility = "hidden";
     document.body.appendChild(el);
-    const me = pv = {el, card, p, shrunk};
+    const me = pv = {el, card, p, shrunk, ctx, off: offset};
     refreshRow(p);
     el.addEventListener("mouseleave", () => { if(pv === me) closePeek(); });
     // sideways scrolling over the open preview scrolls the row underneath it
     el.addEventListener("wheel", e => {
       const dx = e.shiftKey && !e.deltaX ? e.deltaY : e.deltaX;
       if(Math.abs(dx) <= Math.abs(e.shiftKey ? 0 : e.deltaY)) return;
-      e.preventDefault(); list.scrollLeft += dx;
+      e.preventDefault();
+      const unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? innerWidth : 1;
+      ctx.wheel(dx * unit);
     }, {passive:false});
     el.addEventListener("click", () => { if(pv !== me) return; closePeek(true); openPlayer(p); });
     // start the moment the picture is ready to draw (a cached one is ready within a frame)
@@ -322,8 +370,8 @@
       requestAnimationFrame(() => {
         if(pv !== me) return;
         el.classList.add("open"); el.style.transform = "none";
-        shade.classList.add("on"); rc.classList.add("peek");
-        fan(card, {left:L + (peekLeft - list.scrollLeft), right:L + W + (peekLeft - list.scrollLeft), mid:T + H/2});
+        shade.classList.add("on");
+        ctx.open(card, {left:L + ctx.shift(), right:L + W + ctx.shift(), mid:T + H/2});
         // the clip itself starts once the preview has opened, so loading it doesn't stutter the motion
         setTimeout(() => { if(pv === me) startClip(p, media); }, 600);
       });
@@ -371,9 +419,8 @@
   function closePeek(now){
     clearTimeout(peekTimer);
     if(!pv) return;
-    const {el, card, shrunk} = pv; pv = null;
-    shade.classList.remove("on"); rc.classList.remove("peek");
-    [...list.children].forEach(c => c.style.transform = "");
+    const {el, card, shrunk, ctx} = pv; pv = null;
+    shade.classList.remove("on"); ctx.close();
     let gone = false;
     const done = () => { if(gone) return; gone = true; el.remove(); card.classList.remove("lifted"); };
     if(now || el.style.visibility === "hidden"){ done(); return; }
@@ -413,10 +460,22 @@
     }, {passive:true});
     addEventListener("resize", () => closePeek(true));
     addEventListener("keydown", e => { if(e.key === "Escape") closePeek(); });
+
+    // Uitgelicht: rest 1 s on the front card while the carousel stands still
+    const cfFront = c => +c.tabIndex === 0 && Math.abs(goal - offset) < .01 && Math.abs(goal - Math.round(goal)) < .01;
+    const cfArm = c => { clearTimeout(peekTimer); peekTimer = setTimeout(() => { if(!drag.on && c.matches(":hover") && cfFront(c)) openPeek(c, cfCtx); }, PEEK_MS); };
+    track.addEventListener("mouseover", e => {
+      const c = e.target.closest(".cf-item"); if(!c || c.contains(e.relatedTarget) || drag.on || !cfFront(c)) return;
+      cfArm(c);
+    });
+    track.addEventListener("mouseout", e => { const c = e.target.closest(".cf-item"); if(c && !c.contains(e.relatedTarget)) clearTimeout(peekTimer); });
+    cf.addEventListener("pointerdown", () => clearTimeout(peekTimer));
+    cf.addEventListener("wheel", () => clearTimeout(peekTimer), {passive:true});
+    // when a turn ends with the new front card under the pointer, the wait starts for that one
+    cfSettled = () => { if(pv) return; const c = track.querySelector(".cf-item:hover"); if(c && cfFront(c)) cfArm(c); };
   }
 
   // ---------- Tijdlijn ----------
-  const MN = ["jan","feb","mrt","apr","mei","jun","jul","aug","sep","okt","nov","dec"];
   const iso = t => new Date(t).toISOString().slice(0,10);
   const TODAY = Date.now();
   const tlName = p => p.name || flat(p.label);
@@ -429,9 +488,9 @@
     let cur = null;
     return {
       show(p, cx, cy){
-        if(cur !== p.id){
-          cur = p.id; el.style.setProperty("--c", COLOR(p.cat));
-          b.textContent = flat(p.label); s.textContent = p.sub + " · " + p.date;
+        if(cur !== p.id + L.lang){
+          cur = p.id + L.lang; el.style.setProperty("--c", COLOR(p.cat));
+          b.textContent = flat(p.label); s.textContent = sub(p) + " · " + when(p);
           im.innerHTML = ""; if(p.cover || p.yt) im.appendChild(coverImg(p));
         }
         el.classList.add("on");
@@ -462,13 +521,13 @@
     // ----- build: group headers, tracks, clips -----
     const items = [], rows = [], seps = [];
     o.groups.forEach(g => {
-      const gh = document.createElement("div"); gh.className = "grp"; gh.textContent = g.label; heads.appendChild(gh);
+      const gh = document.createElement("div"); gh.className = "grp"; gh.textContent = t(g.label); heads.appendChild(gh);
       const gr = document.createElement("div"); gr.className = "grp-row"; trks.appendChild(gr);
       const line = document.createElement("div"); line.className = "sep"; tl.appendChild(line);
       seps.push({row:gr, el:line});
       g.tracks.forEach(tr => {
         const h = document.createElement("div"); h.className = "head"; h.style.setProperty("--c", COLOR(tr.cat));
-        h.innerHTML = `<span class="sw"></span><span class="nm-l">${tr.name}</span><span class="nm-s">${tr.short || tr.name}</span>`; heads.appendChild(h);
+        h.innerHTML = `<span class="sw"></span><span class="nm-l">${esc(t(tr.name))}</span><span class="nm-s">${esc(t(tr.short || tr.name))}</span>`; heads.appendChild(h);
         const row = document.createElement("div"); row.className = "trk"; row.dataset.cat = tr.cat;
         // projects that overlap in time get their own lane inside the track
         const its = P.filter(p => p.cat === tr.cat).map(p => { const a = D(p.t0); return {p, a, b:Math.max(p.t1 ? D(p.t1) : a, a + o.minDays*DAY)}; }).sort((m,k) => m.a - k.a);
@@ -477,7 +536,7 @@
         its.forEach(it => {
           items.push(it); const p = it.p;
           const c = document.createElement("button"); c.type = "button"; c.className = "clip"; c.dataset.id = p.id; c.style.setProperty("--c", COLOR(p.cat));
-          c.style.left = x(it.a); c.style.width = w(it.b - it.a); c.setAttribute("aria-label", `${flat(p.label)}, ${p.date}`);
+          c.style.left = x(it.a); c.style.width = w(it.b - it.a); c.setAttribute("aria-label", `${flat(p.label)}, ${when(p)}`);
           c.innerHTML = `<span class="film"></span><span class="nm"><span>${esc(tlName(p))}</span></span>`;
           it.el = c; row.appendChild(c);
         });
@@ -488,7 +547,7 @@
     const clips = items.map(it => it.el);
     const d0 = new Date(start); let yy = d0.getUTCFullYear(), mm = d0.getUTCMonth();
     for(;;){ const t = Date.UTC(yy,mm,1,12); if(t > stop) break;
-      if(t >= start - DAY){ const el = document.createElement("div"); el.className = "tick"+(mm===0?" y":""); el.dataset.m = mm; el.style.left = x(Math.max(t,start)); el.textContent = mm===0 ? yy : MN[mm]; ruler.appendChild(el); }
+      if(t >= start - DAY){ const el = document.createElement("div"); el.className = "tick"+(mm===0?" y":""); el.dataset.m = mm; el.style.left = x(Math.max(t,start)); el.textContent = mm===0 ? yy : L.monthShort(mm); ruler.appendChild(el); }
       mm++; if(mm > 11){ mm = 0; yy++; } }
     const ticks = [...ruler.querySelectorAll(".tick")];
     const months = span / (30.44*DAY);
@@ -641,13 +700,19 @@
     setZoom(1); layoutV(); park(); showRecent();
   }
 
-  timeline($("#tijdlijn"), $("#tl"), {
-    start:"2024-09-01", end:iso(TODAY + 40*DAY), now:iso(TODAY), minDays:18,
-    groups:[
-      {label:"Videografie", tracks:[{cat:"event",name:"Aftermovies"},{cat:"trouw",name:"Trouwfilms"},{cat:"promo",name:"Promotievideo's",short:"Promo"}]},
-      {label:"RITCS", tracks:[{cat:"fictie",name:"Fictie"},{cat:"docu",name:"Documentaire",short:"Docu"},{cat:"iao",name:"IAO"}]}
-    ]
-  });
+  // built again when the language changes; the zoom buttons are swapped for fresh copies
+  // so the old timeline's click handlers go with it
+  function buildTimeline(){
+    const z = $("#tijdlijn .zoom"); z.replaceWith(z.cloneNode(true));
+    timeline($("#tijdlijn"), $("#tl"), {
+      start:"2024-09-01", end:iso(TODAY + 40*DAY), now:iso(TODAY), minDays:18,
+      groups:[
+        {label:"tl.video", tracks:[{cat:"event",name:"tl.event"},{cat:"trouw",name:"tl.trouw",short:"tl.trouw.s"},{cat:"promo",name:"tl.promo",short:"tl.promo.s"}]},
+        {label:"tl.ritcs", tracks:[{cat:"fictie",name:"tl.fictie"},{cat:"docu",name:"tl.docu",short:"tl.docu.s"},{cat:"iao",name:"tl.iao"}]}
+      ]
+    });
+  }
+  buildTimeline();
 
   // ---------- player ----------
   const dlg = $("#player");
@@ -660,11 +725,11 @@
   }
   function openPlayer(p){
     $("#plTitle").textContent = flat(p.label);
-    $("#plMeta").textContent = p.sub + " · " + p.date;
+    $("#plMeta").textContent = sub(p) + " · " + when(p);
     const parts = $("#plParts"); parts.innerHTML = "";
     if(p.vids && p.vids.length > 1) p.vids.forEach((v,k) => {
       const b = document.createElement("button"); b.type = "button"; b.className = "pthumb";
-      b.setAttribute("aria-label", `Video ${k+1} van ${p.vids.length}`); b.innerHTML = `<img src="${v.poster}" alt="">`;
+      b.setAttribute("aria-label", t("videoOf", {k:k+1, n:p.vids.length})); b.innerHTML = `<img src="${v.poster}" alt="">`;
       b.onclick = () => show(p,k); parts.appendChild(b);
     });
     show(p,0); dlg.showModal();

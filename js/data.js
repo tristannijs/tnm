@@ -33,4 +33,4 @@ window.PROJECTS = [
 
 // "Uitgelicht": the projects that turn on the carousel, in order. The first starts in the middle,
 // the second on the right, the last on the left; any others wait behind the middle one.
-window.FEATURED = ["ten-anker", "nieuw-gent", "fairtrade", "icds-7"];
+window.FEATURED = ["nieuw-gent", "ten-anker", "fairtrade", "icds-7"];

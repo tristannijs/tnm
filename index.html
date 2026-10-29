@@ -9,17 +9,24 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700;800;900&family=Roboto:wght@400;500&display=swap">
-<link rel="stylesheet" href="css/style.css?v=20261029102934">
+<link rel="stylesheet" href="css/style.css?v=20261029105841">
 </head>
 <body>
 
 <header class="bar" id="bar">
-  <a class="logo-link" href="#top" aria-label="Tristan Nijs Media, naar boven"><img src="assets/logo.png" alt="Tristan Nijs Media" width="1320" height="245"></a>
-  <nav class="nav" aria-label="Hoofdmenu">
-    <a href="#videografie">Videografie</a>
-    <a href="#ritcs">RITCS</a>
-    <a href="#overig">Overig</a>
-    <a href="#" class="lang" aria-label="Taal: Nederlands">NL</a>
+  <a class="logo-link" href="#top" data-i18n-aria="nav.top" aria-label="Tristan Nijs Media, naar boven"><img src="assets/logo.png" alt="Tristan Nijs Media" width="1320" height="245"></a>
+  <nav class="nav" data-i18n-aria="nav.main" aria-label="Hoofdmenu">
+    <a href="#videografie" data-i18n="nav.video">Videografie</a>
+    <a href="#ritcs" data-i18n="nav.ritcs">RITCS</a>
+    <a href="#overig" data-i18n="nav.other">Overig</a>
+    <div class="lang-wrap">
+      <button class="lang" id="langBtn" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="langMenu">NL</button>
+      <div class="lang-menu" id="langMenu" hidden>
+        <button type="button" data-lang="nl" lang="nl">NL</button>
+        <button type="button" data-lang="en" lang="en">EN</button>
+        <button type="button" data-lang="fr" lang="fr">FR</button>
+      </div>
+    </div>
     <button class="menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="drawer" aria-label="Menu openen">
       <span class="bars" aria-hidden="true"><i></i><i></i><i></i></span>
     </button>
@@ -27,9 +34,9 @@
 </header>
 
 <nav class="drawer" id="drawer" hidden aria-label="Menu">
-  <a href="#videografie">Videografie</a>
-  <a href="#ritcs">RITCS</a>
-  <a href="#overig">Overig</a>
+  <a href="#videografie" data-i18n="nav.video">Videografie</a>
+  <a href="#ritcs" data-i18n="nav.ritcs">RITCS</a>
+  <a href="#overig" data-i18n="nav.other">Overig</a>
 </nav>
 
 <main id="top">
@@ -45,38 +52,38 @@
     </div>
     <div class="hero-shade" aria-hidden="true"></div>
     <div class="hero-doors" id="doors">
-      <a class="door" href="#ritcs" data-bg="ritcs">RITCS</a>
-      <a class="door" href="#videografie" data-bg="videografie">Videografie</a>
-      <a class="door" href="#overig" data-bg="overig">Overig</a>
+      <a class="door" href="#videografie" data-bg="videografie" data-i18n="nav.video">Videografie</a>
+      <a class="door" href="#ritcs" data-bg="ritcs" data-i18n="nav.ritcs">RITCS</a>
+      <a class="door" href="#overig" data-bg="overig" data-i18n="nav.other">Overig</a>
     </div>
-    <a class="hero-down" href="#uitgelicht" aria-label="Naar beneden">
+    <a class="hero-down" href="#uitgelicht" data-i18n-aria="hero.down" aria-label="Naar beneden">
       <svg viewBox="0 0 40 20" aria-hidden="true"><path d="M1 1l19 17L39 1" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
     </a>
   </section>
 
   <section class="sec" id="uitgelicht">
-    <h2 class="sh">Uitgelicht</h2>
-    <div class="cf" id="cf" tabindex="0" aria-roledescription="carrousel" aria-label="Uitgelichte projecten">
+    <h2 class="sh" data-i18n="sec.featured">Uitgelicht</h2>
+    <div class="cf" id="cf" tabindex="0" aria-roledescription="carrousel" data-i18n-aria="cf.label" aria-label="Uitgelichte projecten">
       <div class="cf-track" id="cfTrack"></div>
-      <button class="arrow prev" type="button" data-dir="-1" aria-label="Vorige"><svg viewBox="0 0 20 40" aria-hidden="true"><path d="M19 1L1 20l18 19" fill="none" stroke="currentColor" stroke-width="1.2"/></svg></button>
-      <button class="arrow next" type="button" data-dir="1" aria-label="Volgende"><svg viewBox="0 0 20 40" aria-hidden="true"><path d="M1 1l18 19L1 39" fill="none" stroke="currentColor" stroke-width="1.2"/></svg></button>
+      <button class="arrow prev" type="button" data-dir="-1" data-i18n-aria="prev" aria-label="Vorige"><svg viewBox="0 0 20 40" aria-hidden="true"><path d="M19 1L1 20l18 19" fill="none" stroke="currentColor" stroke-width="1.2"/></svg></button>
+      <button class="arrow next" type="button" data-dir="1" data-i18n-aria="next" aria-label="Volgende"><svg viewBox="0 0 20 40" aria-hidden="true"><path d="M1 1l18 19L1 39" fill="none" stroke="currentColor" stroke-width="1.2"/></svg></button>
     </div>
   </section>
 
   <section class="sec" id="recent">
-    <h2 class="sh">Recent</h2>
+    <h2 class="sh" data-i18n="sec.recent">Recent</h2>
     <div class="rc" id="rc">
       <div class="rc-list" id="rcList"></div>
-      <button class="arrow prev" type="button" data-dir="-1" aria-label="Vorige" hidden><svg viewBox="0 0 20 40" aria-hidden="true"><path d="M19 1L1 20l18 19" fill="none" stroke="currentColor" stroke-width="1.2"/></svg></button>
-      <button class="arrow next" type="button" data-dir="1" aria-label="Volgende"><svg viewBox="0 0 20 40" aria-hidden="true"><path d="M1 1l18 19L1 39" fill="none" stroke="currentColor" stroke-width="1.2"/></svg></button>
+      <button class="arrow prev" type="button" data-dir="-1" data-i18n-aria="prev" aria-label="Vorige" hidden><svg viewBox="0 0 20 40" aria-hidden="true"><path d="M19 1L1 20l18 19" fill="none" stroke="currentColor" stroke-width="1.2"/></svg></button>
+      <button class="arrow next" type="button" data-dir="1" data-i18n-aria="next" aria-label="Volgende"><svg viewBox="0 0 20 40" aria-hidden="true"><path d="M1 1l18 19L1 39" fill="none" stroke="currentColor" stroke-width="1.2"/></svg></button>
     </div>
   </section>
 
   <section class="tl-sec" id="tijdlijn">
     <div class="tl-head">
-      <h2 class="sh">Tijdlijn</h2>
-      <div class="zoom" role="group" aria-label="Zoom">
-        <button type="button" class="zb" data-z="out" aria-label="Uitzoomen">−</button><span class="zl">100%</span><button type="button" class="zb" data-z="in" aria-label="Inzoomen">+</button><button type="button" class="zb fit" data-z="fit">Passend</button>
+      <h2 class="sh" data-i18n="sec.timeline">Tijdlijn</h2>
+      <div class="zoom" role="group" data-i18n-aria="tl.zoom" aria-label="Zoom">
+        <button type="button" class="zb" data-z="out" data-i18n-aria="tl.zoomOut" aria-label="Uitzoomen">−</button><span class="zl">100%</span><button type="button" class="zb" data-z="in" data-i18n-aria="tl.zoomIn" aria-label="Inzoomen">+</button><button type="button" class="zb fit" data-z="fit" data-i18n="tl.fit">Passend</button>
       </div>
     </div>
     <div id="tl"></div>
@@ -91,12 +98,13 @@
     <div class="pl-actions">
       <div class="pl-parts" id="plParts"></div>
       <a class="btn" id="plLink" href="#" target="_blank" rel="noopener">YouTube ↗</a>
-      <button class="btn" id="plClose" type="button">Sluiten</button>
+      <button class="btn" id="plClose" type="button" data-i18n="close">Sluiten</button>
     </div>
   </div>
 </dialog>
 
-<script src="js/data.js?v=20261029102934"></script>
-<script src="js/main.js?v=20261029102934"></script>
+<script src="js/i18n.js?v=20261029105841"></script>
+<script src="js/data.js?v=20261029105841"></script>
+<script src="js/main.js?v=20261029105841"></script>
 </body>
 </html>

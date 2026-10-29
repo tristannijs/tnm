@@ -36,6 +36,12 @@ img{display:block;max-width:100%}
 .nav a{opacity:.95}
 .nav a:hover{opacity:1;text-decoration:underline;text-underline-offset:5px;text-decoration-thickness:1px}
 .nav .lang{font-weight:500;font-size:15px}
+.lang-wrap{position:relative}
+.lang{background:none;border:0;padding:4px 0;cursor:pointer;font:inherit;font-weight:500;font-size:15px;opacity:.95}
+.lang:hover{opacity:1;text-decoration:underline;text-underline-offset:5px;text-decoration-thickness:1px}
+.lang-menu{position:absolute;top:calc(100% + 10px);right:-12px;background:var(--bar);padding:6px 0;display:flex;flex-direction:column;min-width:58px}
+.lang-menu button{background:none;border:0;padding:6px 12px;font:inherit;font-size:15px;font-weight:500;color:var(--muted);cursor:pointer;text-align:right}
+.lang-menu button:hover,.lang-menu button[aria-current="true"]{color:var(--fg)}
 .menu-btn{background:none;border:0;padding:6px 0 6px 6px;cursor:pointer;display:grid;place-items:center}
 .menu-btn .bars{display:flex;flex-direction:column;gap:5px}
 .menu-btn .bars i{display:block;width:20px;height:1.6px;background:currentColor;transition:transform .2s,opacity .2s}
@@ -56,14 +62,12 @@ img{display:block;max-width:100%}
   background:
     linear-gradient(180deg,rgba(0,0,0,.55) 0,rgba(0,0,0,0) 22%),
     linear-gradient(180deg,rgba(17,17,17,0) 45%,rgba(17,17,17,.75) 82%,var(--bg) 100%)}
-.hero-doors{position:relative;z-index:2;width:100%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 5.02%;padding:0 8.6%;margin-bottom:5vh;align-items:start}
-/* the stagger from the design, measured off the mockup and scaled with the page width */
-.hero-doors .door:nth-child(2){transform:translateY(1.68vw)}
-.hero-doors .door:nth-child(3){transform:translateY(-.44vw)}
-.door{display:flex;align-items:center;justify-content:center;height:40px;border:1px solid rgba(255,255,255,.6);background:rgba(10,10,10,.55);
+/* one centred row, measured off Tristan's design at 1440 px: 219 px buttons, 23 px apart, 42 px tall */
+.hero-doors{position:relative;z-index:2;width:100%;display:grid;grid-template-columns:repeat(3,max(15.2vw,180px));justify-content:center;gap:0 1.6vw;margin-bottom:6.1vh}
+.door{display:flex;align-items:center;justify-content:center;height:42px;border:1px solid rgba(255,255,255,.6);background:rgba(10,10,10,.55);
   font-size:17px;font-weight:700;letter-spacing:.01em;text-transform:uppercase;transition:background-color .25s,border-color .25s}
 .door:hover,.door:focus-visible{background:rgba(10,10,10,.8);border-color:#fff}
-.hero-down{position:relative;z-index:2;color:var(--fg-2);margin-bottom:4vh;display:block;padding:6px}
+.hero-down{position:relative;z-index:2;color:var(--fg-2);margin-bottom:2.3vh;display:block;padding:6px}
 .hero-down svg{width:40px;height:20px;display:block}
 .hero-down:hover{color:var(--fg)}
 
@@ -87,7 +91,7 @@ img{display:block;max-width:100%}
 .cap span{font-weight:400}
 
 /* ---------- Uitgelicht: three cards on a turntable ---------- */
-.cf{--sx:118;position:relative;height:clamp(240px,37vw,640px);perspective:1500px;overflow:hidden;outline:none;touch-action:pan-y;user-select:none}
+.cf{--sx:118;position:relative;height:clamp(240px,37vw,640px);perspective:1500px;overflow:hidden;overflow-x:clip;overflow-y:visible;outline:none;touch-action:pan-y;user-select:none}
 .cf-track{position:absolute;inset:0;transform-style:preserve-3d}
 .cf-item{position:absolute;left:50%;top:50%;width:45.6%;aspect-ratio:16/9;border:0;padding:0;background:none;cursor:pointer;
   will-change:transform,opacity;backface-visibility:hidden;isolation:isolate}
@@ -105,7 +109,7 @@ img{display:block;max-width:100%}
 .cf-item .cap b{font-size:clamp(14px,1.95vw,34px)}
 .cf-item .cap span{font-size:clamp(11px,1.4vw,24px);margin-top:3px}
 /* the black fade at both sides */
-.cf::before,.cf::after{content:"";position:absolute;top:0;bottom:0;width:20%;z-index:4;pointer-events:none}
+.cf::before,.cf::after{content:"";position:absolute;top:0;bottom:-80px;width:20%;z-index:4;pointer-events:none}
 .cf::before{left:0;background:linear-gradient(90deg,var(--bg) 0,rgba(17,17,17,.85) 35%,rgba(17,17,17,0) 100%)}
 .cf::after{right:0;background:linear-gradient(270deg,var(--bg) 0,rgba(17,17,17,.85) 35%,rgba(17,17,17,0) 100%)}
 
@@ -122,6 +126,7 @@ img{display:block;max-width:100%}
 .rc-card{transition:transform .6s cubic-bezier(.22,.7,.2,1)}
 .rc-card{will-change:transform}
 .rc-card.lifted{opacity:0}
+.cf-item.lifted{visibility:hidden!important}
 .pv-shade{position:fixed;inset:0;z-index:55;background:#000;opacity:0;pointer-events:none;transition:opacity .5s ease;will-change:opacity}
 .pv-shade.on{opacity:.4}
 .pv{position:absolute;z-index:60;cursor:pointer;color:#fff;font-family:var(--f);transform-origin:0 0;will-change:transform;
@@ -139,6 +144,9 @@ img{display:block;max-width:100%}
 .pv .cap b{font-size:calc(clamp(12px,1.15vw,19px) * var(--k,1))}
 .pv .cap span{font-size:calc(clamp(9px,.8vw,13px) * var(--k,1));margin-top:calc(2px * var(--k,1))}
 .pv.open .cap{opacity:0}
+.pv-cf .cap{margin:0 3.5% 6.5% 3.5%;padding-left:calc(8px * var(--k,1))}
+.pv-cf .cap b{font-size:calc(clamp(14px,1.95vw,34px) * var(--k,1))}
+.pv-cf .cap span{font-size:calc(clamp(11px,1.4vw,24px) * var(--k,1));margin-top:calc(3px * var(--k,1))}
 /* the details sit under the clip at full size the whole time and only fade, so nothing re-lays out */
 .pv-info{background:#000;border-top:2px solid var(--c);padding:.85em 1.4em .95em;opacity:0;transition:opacity .12s ease}
 .pv.open .pv-info{opacity:1;transition:opacity .3s ease .4s}
@@ -244,7 +252,6 @@ dialog::backdrop{background:rgba(0,0,0,.88)}
   .logo-link img{height:30px}
   .nav > a:not(.lang){display:none}
   .hero-doors{grid-template-columns:minmax(0,1fr);gap:12px;padding:0 18%}
-  .hero-doors .door:nth-child(n){transform:none}
   .cf-item{width:64%}
   .cf{--sx:105}
   .cf{height:clamp(220px,52vw,460px)}
