@@ -50,14 +50,32 @@
   // each layer shows its still right away; a layer with a video plays that on top of it.
   // Videos of layers you don't see yet only start downloading once the page itself has loaded,
   // so they never slow down the first view but are ready by the time you hover a button.
+  // A layer can offer an AV1 file (data-video-av1) next to the H.264 one (data-video): AV1 looks
+  // better at half the size, but is only used where the browser says it can play it smoothly.
+  const AV1 = 'video/mp4; codecs="av01.0.08M.10"';
+  async function pickVideo(l){
+    const av1 = l.dataset.videoAv1;
+    if(av1 && navigator.mediaCapabilities){
+      try{
+        const r = await navigator.mediaCapabilities.decodingInfo({type:"file", video:{contentType:AV1, width:1920, height:1080, bitrate:3700000, framerate:25}});
+        if(r.supported && r.smooth) return av1;
+      }catch(e){}
+    }
+    return l.dataset.video;
+  }
   layers.forEach(l => {
     if(l.dataset.img){ const i = new Image(); i.src = l.dataset.img; i.alt = ""; l.appendChild(i); }
     if(l.dataset.video){
       const on = l.classList.contains("on"), v = document.createElement("video");
       v.muted = true; v.setAttribute("muted", ""); v.loop = true; v.playsInline = true; v.setAttribute("playsinline", "");
-      v.preload = on ? "auto" : "none"; v.autoplay = on; v.src = l.dataset.video;
+      v.preload = on ? "auto" : "none"; v.autoplay = on;
       l.appendChild(v);
-      if(!on) addEventListener("load", () => { v.preload = "auto"; v.load(); }, {once:true});
+      pickVideo(l).then(src => {
+        v.src = src;
+        if(l.classList.contains("on")) v.play().catch(() => {});
+        else if(document.readyState === "complete"){ v.preload = "auto"; v.load(); }
+        else addEventListener("load", () => { v.preload = "auto"; v.load(); }, {once:true});
+      });
     }
   });
   function showLayer(key){
