@@ -96,6 +96,8 @@
       pickVideo(l).then(src => {
         v.src = src;
         if(l.classList.contains("on")) v.play().catch(() => {});
+        // the hover-only layers are fetched ahead only where hovering exists (not on phones)
+        else if(!matchMedia("(any-hover: hover)").matches) return;
         else if(document.readyState === "complete"){ v.preload = "auto"; v.load(); }
         else addEventListener("load", () => { v.preload = "auto"; v.load(); }, {once:true});
       });
