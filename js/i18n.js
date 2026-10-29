@@ -45,15 +45,25 @@
     "Pop-up opening": {en:"Pop-up opening", fr:"Ouverture pop-up"}
   };
   const LANGS = ["nl","en","fr"], LOCALE = {nl:"nl-BE", en:"en-GB", fr:"fr-BE"};
+  // project titles from data.js: course names and "Film van" are translated, names of films stay
+  const LABEL = {
+    en: [[/^Atelier Docu:/, "Documentary Studio:"], [/^Workshop Docu:/, "Documentary Workshop:"],
+         [/^Atelier Fictie:/, "Fiction Studio:"], [/^Atelier Fictie (\d)/, "Fiction Studio $1"], [/\bFilm van\b/, "Film by"]],
+    fr: [[/^Atelier Docu:/, "Atelier documentaire :"], [/^Workshop Docu:/, "Workshop documentaire :"],
+         [/^Atelier Fictie:/, "Atelier fiction :"], [/^Atelier Fictie (\d)/, "Atelier fiction $1"], [/\bFilm van\b/, "Film de"]]
+  };
+  const DESC = {
+    nl: "Tristan Nijs is monteur en videograaf uit Gent: aftermovies, trouwfilms en promo's, en student montage aan het RITCS.",
+    en: "Tristan Nijs is an editor and videographer from Ghent: aftermovies, wedding films and promo videos, and an editing student at RITCS.",
+    fr: "Tristan Nijs est monteur et vidéaste à Gand : aftermovies, films de mariage et vidéos promo, et étudiant en montage au RITCS."
+  };
 
   function pick(){
     let q = null; try{ q = new URLSearchParams(location.search).get("lang"); }catch(e){}
     if(LANGS.includes(q)) return q;
     try{ const s = localStorage.getItem("tnm-lang"); if(LANGS.includes(s)) return s; }catch(e){}
-    for(const l of (navigator.languages || [navigator.language || ""])){
-      const b = String(l).slice(0,2).toLowerCase(); if(LANGS.includes(b)) return b;
-    }
-    return "en";
+    // Dutch unless the visitor picked another language
+    return "nl";
   }
   let lang = pick();
   const hooks = [];
@@ -70,6 +80,7 @@
       return s;
     },
     sub(s){ const e = SUB[s]; return lang === "nl" || !e ? s : (e[lang] ?? s); },
+    label(s){ return lang === "nl" ? s : (LABEL[lang] || []).reduce((a, [re, to]) => a.replace(re, to), s); },
     // short month for the timeline ruler
     monthShort(m){
       if(lang === "nl") return ["jan","feb","mrt","apr","mei","jun","jul","aug","sep","okt","nov","dec"][m];
@@ -98,6 +109,7 @@
     // static texts in the page
     apply(){
       document.documentElement.lang = lang;
+      const md = document.querySelector('meta[name="description"]'); if(md) md.setAttribute("content", DESC[lang]);
       document.querySelectorAll("[data-i18n]").forEach(el => el.textContent = I.t(el.dataset.i18n));
       document.querySelectorAll("[data-i18n-aria]").forEach(el => el.setAttribute("aria-label", I.t(el.dataset.i18nAria)));
     }

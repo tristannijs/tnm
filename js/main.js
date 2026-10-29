@@ -9,7 +9,7 @@
   const yt = (id,q) => `https://i.ytimg.com/vi/${id}/${q}.jpg`;
   const flat = s => s.replace(/\s*\n\s*/g, " ");
   const L = window.I18N, t = (k, v) => L.t(k, v);
-  const sub = p => L.sub(p.sub), when = p => L.date(p);
+  const sub = p => L.sub(p.sub), when = p => L.date(p), lab = p => L.label(p.label);
 
   // image for a card: own cover, else YouTube's (maxres, falling back to hq)
   function coverImg(p){
@@ -24,7 +24,7 @@
     if(p.cover || p.yt) f.appendChild(coverImg(p));
     return f;
   }
-  const capHTML = p => `<b>${p.label.split("\n").map(esc).join("<br>")}</b><span>${esc(sub(p))}</span>`;
+  const capHTML = p => `<b>${lab(p).split("\n").map(esc).join("<br>")}</b><span>${esc(sub(p))}</span>`;
   function cap(p){
     const c = document.createElement("div"); c.className = "cap"; c.dataset.pid = p.id;
     c.innerHTML = capHTML(p);
@@ -63,8 +63,8 @@
   L.onChange(() => {
     showLang(); setMenu(!drawer.hidden);
     document.querySelectorAll(".cap[data-pid]").forEach(c => { const p = BY[c.dataset.pid]; if(p) c.innerHTML = capHTML(p); });
-    cfItems.forEach(({el}, i) => el.setAttribute("aria-label", `${flat(feat[i].label)}, ${sub(feat[i])}`));
-    list.querySelectorAll(".rc-card").forEach(b => { const p = BY[b.dataset.id]; b.setAttribute("aria-label", `${flat(p.label)}, ${sub(p)}, ${when(p)}`); });
+    cfItems.forEach(({el}, i) => el.setAttribute("aria-label", `${flat(lab(feat[i]))}, ${sub(feat[i])}`));
+    list.querySelectorAll(".rc-card").forEach(b => { const p = BY[b.dataset.id]; b.setAttribute("aria-label", `${flat(lab(p))}, ${sub(p)}, ${when(p)}`); });
     buildTimeline();
   });
 
@@ -131,7 +131,7 @@
   const cfItems = feat.map((p,i) => {
     const b = document.createElement("button");
     b.type = "button"; b.className = "cf-item"; b.style.setProperty("--c", COLOR(p.cat));
-    b.setAttribute("aria-label", `${flat(p.label)}, ${sub(p)}`); b.dataset.id = p.id;
+    b.setAttribute("aria-label", `${flat(lab(p))}, ${sub(p)}`); b.dataset.id = p.id;
     const shade = document.createElement("span"); shade.className = "shade";
     b.append(face(p), cap(p), shade);
     b.addEventListener("click", () => {
@@ -224,7 +224,7 @@
   [...P].sort((a,b) => end(b) - end(a) || D(b.t0) - D(a.t0)).forEach(p => {
     const b = document.createElement("button");
     b.type = "button"; b.className = "rc-card"; b.dataset.id = p.id; b.style.setProperty("--c", COLOR(p.cat));
-    b.setAttribute("aria-label", `${flat(p.label)}, ${sub(p)}, ${when(p)}`);
+    b.setAttribute("aria-label", `${flat(lab(p))}, ${sub(p)}, ${when(p)}`);
     b.append(face(p), cap(p));
     b.addEventListener("click", () => { if(!rcDrag.moved) openPlayer(p); });
     list.appendChild(b);
@@ -265,7 +265,7 @@
   const pvType = p => p.type || (VIDEO[p.cat] ? t("type." + p.cat) : sub(p));
   const pvTitle = p => {
     if(p.title) return p.title;
-    const n = flat(p.label);
+    const n = flat(lab(p));
     // videography: add the subtitle unless it only repeats the type ("Wejo × Bocco: Pop-up opening")
     return VIDEO[p.cat] && p.sub && sub(p).toLowerCase() !== pvType(p).toLowerCase() ? `${n}: ${sub(p)}` : n;
   };
@@ -480,7 +480,7 @@
   // ---------- Tijdlijn ----------
   const iso = t => new Date(t).toISOString().slice(0,10);
   const TODAY = Date.now();
-  const tlName = p => p.name || flat(p.label);
+  const tlName = p => p.name ? L.label(p.name) : flat(lab(p));
 
   const hoverThumb = (() => {
     const el = document.createElement("div"); el.className = "hthumb"; el.setAttribute("aria-hidden","true");
@@ -492,7 +492,7 @@
       show(p, cx, cy){
         if(cur !== p.id + L.lang){
           cur = p.id + L.lang; el.style.setProperty("--c", COLOR(p.cat));
-          b.textContent = flat(p.label); s.textContent = sub(p) + " · " + when(p);
+          b.textContent = flat(lab(p)); s.textContent = sub(p) + " · " + when(p);
           im.innerHTML = ""; if(p.cover || p.yt) im.appendChild(coverImg(p));
         }
         el.classList.add("on");
@@ -538,7 +538,7 @@
         its.forEach(it => {
           items.push(it); const p = it.p;
           const c = document.createElement("button"); c.type = "button"; c.className = "clip"; c.dataset.id = p.id; c.style.setProperty("--c", COLOR(p.cat));
-          c.style.left = x(it.a); c.style.width = w(it.b - it.a); c.setAttribute("aria-label", `${flat(p.label)}, ${when(p)}`);
+          c.style.left = x(it.a); c.style.width = w(it.b - it.a); c.setAttribute("aria-label", `${flat(lab(p))}, ${when(p)}`);
           c.innerHTML = `<span class="film"></span><span class="nm"><span>${esc(tlName(p))}</span></span>`;
           it.el = c; row.appendChild(c);
         });
@@ -722,11 +722,11 @@
   function show(p,k){
     const scr = $("#plScreen"), link = $("#plLink");
     if(p.vids){ const v = p.vids[k]; scr.innerHTML = `<video src="${v.src}" poster="${v.poster}" controls autoplay playsinline></video>`; link.hidden = true; }
-    else { scr.innerHTML = ytFrame(p.yt, flat(p.label)); link.hidden = false; link.href = "https://www.youtube.com/watch?v=" + p.yt; }
+    else { scr.innerHTML = ytFrame(p.yt, flat(lab(p))); link.hidden = false; link.href = "https://www.youtube.com/watch?v=" + p.yt; }
     $("#plParts").querySelectorAll("button").forEach((b,i) => b.setAttribute("aria-pressed", i === k));
   }
   function openPlayer(p){
-    $("#plTitle").textContent = flat(p.label);
+    $("#plTitle").textContent = flat(lab(p));
     $("#plMeta").textContent = sub(p) + " · " + when(p);
     const parts = $("#plParts"); parts.innerHTML = "";
     if(p.vids && p.vids.length > 1) p.vids.forEach((v,k) => {
