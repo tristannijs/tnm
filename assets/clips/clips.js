@@ -6,16 +6,16 @@ window.CLIPS = {
    "av1": "assets/clips/ritcs/Maxence_1-av1.mp4",
    "poster": "assets/clips/ritcs/Maxence_1.jpg",
    "project": "maxence",
-   "dur": 2.28,
-   "x": 0.483,
-   "y": 0.278
+   "dur": 2.2,
+   "x": 0.484,
+   "y": 0.276
   },
   {
    "src": "assets/clips/ritcs/elevator_1.mp4",
    "av1": "assets/clips/ritcs/elevator_1-av1.mp4",
    "poster": "assets/clips/ritcs/elevator_1.jpg",
    "project": "elevator",
-   "dur": 1.15,
+   "dur": 1.08,
    "x": 0.396,
    "y": 0.462,
    "focus": [
@@ -26,8 +26,8 @@ window.CLIPS = {
     ],
     [
      1.0,
-     0.458,
-     0.482
+     0.457,
+     0.483
     ]
    ]
   },
@@ -36,7 +36,7 @@ window.CLIPS = {
    "av1": "assets/clips/ritcs/elevator_2-av1.mp4",
    "poster": "assets/clips/ritcs/elevator_2.jpg",
    "project": "elevator",
-   "dur": 2.2,
+   "dur": 2.12,
    "x": 0.55,
    "y": 0.613,
    "focus": [
@@ -48,7 +48,7 @@ window.CLIPS = {
     [
      1.8,
      0.597,
-     0.546
+     0.547
     ]
    ]
   },
@@ -57,38 +57,48 @@ window.CLIPS = {
    "av1": "assets/clips/ritcs/filippenzen_1-av1.mp4",
    "poster": "assets/clips/ritcs/filippenzen_1.jpg",
    "project": "filippenzen",
-   "dur": 1.79,
-   "x": 0.588,
-   "y": 0.559
+   "dur": 1.72,
+   "x": 0.589,
+   "y": 0.56
   },
   {
    "src": "assets/clips/ritcs/filippenzen_2.mp4",
    "av1": "assets/clips/ritcs/filippenzen_2-av1.mp4",
    "poster": "assets/clips/ritcs/filippenzen_2.jpg",
    "project": "filippenzen",
-   "dur": 3.84,
+   "dur": 3.76,
    "x": 0.511,
-   "y": 0.186,
+   "y": 0.185,
    "focus": [
     [
      0,
      0.511,
-     0.186
+     0.185
+    ],
+    [
+     1.0,
+     0.471,
+     0.264
+    ],
+    [
+     1.4,
+     0.91,
+     0.099
     ],
     [
      1.8,
-     0.713,
-     0.125
+     0.83,
+     0.088
     ],
     [
      2.2,
      0.598,
-     0.137
+     0.139
     ],
     [
      3.4,
      0.528,
-     0.185
+     0.186
     ]
    ]
   },
@@ -97,19 +107,19 @@ window.CLIPS = {
    "av1": "assets/clips/ritcs/filippenzen_3-av1.mp4",
    "poster": "assets/clips/ritcs/filippenzen_3.jpg",
    "project": "filippenzen",
-   "dur": 2.88,
+   "dur": 2.8,
    "x": 0.505,
-   "y": 0.311,
+   "y": 0.313,
    "focus": [
     [
      0,
      0.505,
-     0.311
+     0.313
     ],
     [
      2.6,
      0.742,
-     0.455
+     0.454
     ]
    ]
   },
@@ -118,24 +128,24 @@ window.CLIPS = {
    "av1": "assets/clips/ritcs/jonathan_1-av1.mp4",
    "poster": "assets/clips/ritcs/jonathan_1.jpg",
    "project": "jonathan",
-   "dur": 2.55,
-   "x": 0.231,
+   "dur": 2.56,
+   "x": 0.23,
    "y": 0.201,
    "focus": [
     [
      0,
-     0.231,
+     0.23,
      0.201
     ],
     [
-     1.31,
-     0.518,
-     0.161
+     1.4,
+     0.507,
+     0.146
     ],
     [
-     2.46,
-     0.564,
-     0.063
+     2.2,
+     0.548,
+     0.083
     ]
    ]
   },
@@ -144,8 +154,8 @@ window.CLIPS = {
    "av1": "assets/clips/ritcs/koffer_1-av1.mp4",
    "poster": "assets/clips/ritcs/koffer_1.jpg",
    "project": "koffer",
-   "dur": 2.99,
-   "x": 0.498,
+   "dur": 2.92,
+   "x": 0.497,
    "y": 0.456
   },
   {
@@ -153,19 +163,19 @@ window.CLIPS = {
    "av1": "assets/clips/ritcs/koffer_2-av1.mp4",
    "poster": "assets/clips/ritcs/koffer_2.jpg",
    "project": "koffer",
-   "dur": 5.4,
+   "dur": 5.32,
    "x": 0.503,
-   "y": 0.391,
+   "y": 0.392,
    "focus": [
     [
      0,
      0.503,
-     0.391
+     0.392
     ],
     [
      5.0,
      0.478,
-     0.46
+     0.461
     ]
    ]
   },
@@ -174,49 +184,49 @@ window.CLIPS = {
    "av1": "assets/clips/ritcs/nelson_1-av1.mp4",
    "poster": "assets/clips/ritcs/nelson_1.jpg",
    "project": "nelson",
-   "dur": 6.12,
-   "x": 0.694,
+   "dur": 6.04,
+   "x": 0.692,
    "y": 0.146,
    "focus": [
     [
      0,
-     0.694,
+     0.692,
      0.146
     ],
     [
      0.6,
-     0.479,
+     0.48,
      0.146
     ],
     [
      1.0,
-     0.432,
-     0.528
+     0.514,
+     0.149
     ],
     [
      1.36,
-     0.677,
+     0.702,
      0.147
     ],
     [
      1.8,
-     0.647,
+     0.654,
      0.147
     ],
     [
      1.96,
-     0.472,
-     0.397
+     0.475,
+     0.405
     ],
     [
      4.72,
      0.512,
-     0.328
+     0.327
     ],
     [
      5.8,
      0.435,
-     0.387
+     0.382
     ]
    ]
   },
@@ -225,24 +235,24 @@ window.CLIPS = {
    "av1": "assets/clips/ritcs/nieuwGent_1-av1.mp4",
    "poster": "assets/clips/ritcs/nieuwGent_1.jpg",
    "project": "nieuwgent",
-   "dur": 3.63,
-   "x": 0.735,
-   "y": 0.54,
+   "dur": 3.56,
+   "x": 0.736,
+   "y": 0.542,
    "focus": [
     [
      0,
-     0.735,
-     0.54
+     0.736,
+     0.542
     ],
     [
      1.04,
-     0.451,
+     0.452,
      0.443
     ],
     [
      3.4,
      0.587,
-     0.446
+     0.445
     ]
    ]
   },
@@ -251,24 +261,24 @@ window.CLIPS = {
    "av1": "assets/clips/ritcs/nieuwGent_2-av1.mp4",
    "poster": "assets/clips/ritcs/nieuwGent_2.jpg",
    "project": "nieuwgent",
-   "dur": 2.79,
-   "x": 0.49,
-   "y": 0.545,
+   "dur": 2.76,
+   "x": 0.489,
+   "y": 0.544,
    "focus": [
     [
      0,
-     0.49,
-     0.545
+     0.489,
+     0.544
     ],
     [
-     0.51,
-     0.243,
+     0.48,
+     0.268,
      0.329
     ],
     [
-     2.87,
-     0.392,
-     0.392
+     2.6,
+     0.391,
+     0.386
     ]
    ]
   },
@@ -277,19 +287,19 @@ window.CLIPS = {
    "av1": "assets/clips/ritcs/nieuwGent_3-av1.mp4",
    "poster": "assets/clips/ritcs/nieuwGent_3.jpg",
    "project": "nieuwgent",
-   "dur": 4.35,
-   "x": 0.521,
-   "y": 0.499,
+   "dur": 4.28,
+   "x": 0.525,
+   "y": 0.498,
    "focus": [
     [
      0,
-     0.521,
-     0.499
+     0.525,
+     0.498
     ],
     [
      1.48,
-     0.553,
-     0.603
+     0.555,
+     0.604
     ]
    ]
   },
@@ -298,19 +308,19 @@ window.CLIPS = {
    "av1": "assets/clips/ritcs/nieuwGent_4-av1.mp4",
    "poster": "assets/clips/ritcs/nieuwGent_4.jpg",
    "project": "nieuwgent",
-   "dur": 3.03,
-   "x": 0.481,
-   "y": 0.502,
+   "dur": 2.96,
+   "x": 0.483,
+   "y": 0.51,
    "focus": [
     [
      0,
-     0.481,
-     0.502
+     0.483,
+     0.51
     ],
     [
      1.4,
-     0.441,
-     0.421
+     0.442,
+     0.42
     ]
    ]
   },
@@ -319,7 +329,7 @@ window.CLIPS = {
    "av1": "assets/clips/ritcs/nieuwGent_5-av1.mp4",
    "poster": "assets/clips/ritcs/nieuwGent_5.jpg",
    "project": "nieuwgent",
-   "dur": 1.64,
+   "dur": 1.56,
    "x": 0.616,
    "y": 0.249
   },
@@ -328,33 +338,33 @@ window.CLIPS = {
    "av1": "assets/clips/ritcs/tenAnker_1-av1.mp4",
    "poster": "assets/clips/ritcs/tenAnker_1.jpg",
    "project": "tenanker",
-   "dur": 2.43,
-   "x": 0.445,
-   "y": 0.197
+   "dur": 2.36,
+   "x": 0.447,
+   "y": 0.196
   },
   {
    "src": "assets/clips/ritcs/tenAnker_2.mp4",
    "av1": "assets/clips/ritcs/tenAnker_2-av1.mp4",
    "poster": "assets/clips/ritcs/tenAnker_2.jpg",
    "project": "tenanker",
-   "dur": 2.35,
-   "x": 0.532,
+   "dur": 2.28,
+   "x": 0.526,
    "y": 0.516,
    "focus": [
     [
      0,
-     0.532,
+     0.526,
      0.516
     ],
     [
      0.96,
-     0.514,
-     0.4
+     0.515,
+     0.401
     ],
     [
      2.2,
      0.46,
-     0.433
+     0.432
     ]
    ]
   },
@@ -363,7 +373,7 @@ window.CLIPS = {
    "av1": "assets/clips/ritcs/tenAnker_3-av1.mp4",
    "poster": "assets/clips/ritcs/tenAnker_3.jpg",
    "project": "tenanker",
-   "dur": 3.16,
+   "dur": 3.08,
    "x": 0.457,
    "y": 0.436,
    "focus": [

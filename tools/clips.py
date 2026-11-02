@@ -110,7 +110,7 @@ def scan(path):
         if prev is not None and cv2.compareHist(prev, hist, cv2.HISTCMP_BHATTACHARYYA) > .45 and (not cuts or i / fps - cuts[-1] > .4):
             cuts.append(i / fps); shot += 1
             samples.append((i / fps, shot, cv2.resize(f, (640, int(640 * f.shape[0] / f.shape[1])))))
-        elif i % every == every // 2:
+        elif i % every == every // 2 and (not cuts or i / fps - cuts[-1] > STEP / 2):   # not right on top of a cut frame
             samples.append((i / fps, shot, cv2.resize(f, (640, int(640 * f.shape[0] / f.shape[1])))))
         prev, i = hist, i + 1
     cap.release()
