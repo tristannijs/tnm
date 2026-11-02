@@ -90,7 +90,9 @@
   // Each clip says where its point of interest is (and, for clips with a cut or a move, how that changes over
   // time), so a screen narrower than 16:9 crops around it instead of around the middle.
   function clipLayer(l){
-    const list = (window.CLIPS || {})[l.dataset.clips] || [];
+    const C = window.CLIPS || {};
+    // data-clips="all": every category's clips in one pool (the background when no button is hovered)
+    const list = l.dataset.clips === "all" ? Object.values(C).flat() : C[l.dataset.clips] || [];
     if(!list.length) return null;
     const vids = [0, 1].map(() => {
       const v = document.createElement("video");
@@ -150,12 +152,15 @@
       load(vids[0], next()); load(vids[1], next());
       show(0);
     }
-    // the first clips are fetched once the page has loaded, and only where hovering exists (not on phones)
-    if(hoverable) afterLoad(start);
-    return {
+    const p = {
       play(){ start().then(() => { playing = true; vids[cur].play().catch(() => {}); track(); }); },
       pause(){ playing = false; vids[cur].pause(); cancelAnimationFrame(raf); }
     };
+    // the layer you see first plays straight away, on every device; the hover layers fetch their first clips
+    // once the page has loaded, and only where hovering exists (not on phones)
+    if(l.classList.contains("on")) p.play();
+    else if(hoverable) afterLoad(start);
+    return p;
   }
 
   layers.forEach(l => {

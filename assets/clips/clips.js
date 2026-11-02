@@ -53,6 +53,27 @@ window.CLIPS = {
    ]
   },
   {
+   "src": "assets/clips/ritcs/elevator_3.mp4",
+   "av1": "assets/clips/ritcs/elevator_3-av1.mp4",
+   "poster": "assets/clips/ritcs/elevator_3.jpg",
+   "project": "elevator",
+   "dur": 4.04,
+   "x": 0.563,
+   "y": 0.49,
+   "focus": [
+    [
+     0,
+     0.563,
+     0.49
+    ],
+    [
+     3.8,
+     0.594,
+     0.516
+    ]
+   ]
+  },
+  {
    "src": "assets/clips/ritcs/filippenzen_1.mp4",
    "av1": "assets/clips/ritcs/filippenzen_1-av1.mp4",
    "poster": "assets/clips/ritcs/filippenzen_1.jpg",
@@ -176,6 +197,47 @@ window.CLIPS = {
      5.0,
      0.478,
      0.461
+    ]
+   ]
+  },
+  {
+   "src": "assets/clips/ritcs/koffer_3.mp4",
+   "av1": "assets/clips/ritcs/koffer_3-av1.mp4",
+   "poster": "assets/clips/ritcs/koffer_3.jpg",
+   "project": "koffer",
+   "dur": 6.4,
+   "x": 0.756,
+   "y": 0.402,
+   "focus": [
+    [
+     0,
+     0.756,
+     0.402
+    ],
+    [
+     0.6,
+     0.815,
+     0.388
+    ],
+    [
+     1.0,
+     0.184,
+     0.384
+    ],
+    [
+     4.6,
+     0.791,
+     0.33
+    ],
+    [
+     5.0,
+     0.163,
+     0.222
+    ],
+    [
+     6.2,
+     0.264,
+     0.088
     ]
    ]
   },
@@ -334,6 +396,15 @@ window.CLIPS = {
    "y": 0.249
   },
   {
+   "src": "assets/clips/ritcs/nieuwGent_6.mp4",
+   "av1": "assets/clips/ritcs/nieuwGent_6-av1.mp4",
+   "poster": "assets/clips/ritcs/nieuwGent_6.jpg",
+   "project": "nieuwgent",
+   "dur": 4.36,
+   "x": 0.663,
+   "y": 0.476
+  },
+  {
    "src": "assets/clips/ritcs/tenAnker_1.mp4",
    "av1": "assets/clips/ritcs/tenAnker_1-av1.mp4",
    "poster": "assets/clips/ritcs/tenAnker_1.jpg",
@@ -391,6 +462,548 @@ window.CLIPS = {
      1.64,
      0.252,
      0.241
+    ]
+   ]
+  },
+  {
+   "src": "assets/clips/ritcs/tenAnker_4.mp4",
+   "av1": "assets/clips/ritcs/tenAnker_4-av1.mp4",
+   "poster": "assets/clips/ritcs/tenAnker_4.jpg",
+   "project": "tenanker",
+   "dur": 7.6,
+   "x": 0.223,
+   "y": 0.317,
+   "focus": [
+    [
+     0,
+     0.223,
+     0.317
+    ],
+    [
+     1.8,
+     0.319,
+     0.359
+    ],
+    [
+     2.08,
+     0.523,
+     0.433
+    ],
+    [
+     4.2,
+     0.57,
+     0.383
+    ],
+    [
+     4.4,
+     0.351,
+     0.43
+    ],
+    [
+     6.2,
+     0.305,
+     0.402
+    ],
+    [
+     6.4,
+     0.147,
+     0.26
+    ]
+   ]
+  },
+  {
+   "src": "assets/clips/ritcs/tenAnker_5.mp4",
+   "av1": "assets/clips/ritcs/tenAnker_5-av1.mp4",
+   "poster": "assets/clips/ritcs/tenAnker_5.jpg",
+   "project": "tenanker",
+   "dur": 2.8,
+   "x": 0.185,
+   "y": 0.379,
+   "focus": [
+    [
+     0,
+     0.185,
+     0.379
+    ],
+    [
+     0.6,
+     0.507,
+     0.418
+    ],
+    [
+     2.2,
+     0.415,
+     0.444
+    ],
+    [
+     2.6,
+     0.62,
+     0.149
+    ]
+   ]
+  },
+  {
+   "src": "assets/clips/ritcs/tenAnker_6.mp4",
+   "av1": "assets/clips/ritcs/tenAnker_6-av1.mp4",
+   "poster": "assets/clips/ritcs/tenAnker_6.jpg",
+   "project": "tenanker",
+   "dur": 5.32,
+   "x": 0.785,
+   "y": 0.521,
+   "focus": [
+    [
+     0,
+     0.785,
+     0.521
+    ],
+    [
+     2.4,
+     0.76,
+     0.269
+    ],
+    [
+     5.0,
+     0.796,
+     0.409
+    ]
+   ]
+  }
+ ],
+ "videografie": [
+  {
+   "src": "assets/clips/videografie/banana_1.mp4",
+   "av1": "assets/clips/videografie/banana_1-av1.mp4",
+   "poster": "assets/clips/videografie/banana_1.jpg",
+   "project": "banana",
+   "dur": 3.2,
+   "x": 0.447,
+   "y": 0.199,
+   "focus": [
+    [
+     0,
+     0.447,
+     0.199
+    ],
+    [
+     0.6,
+     0.542,
+     0.22
+    ],
+    [
+     0.84,
+     0.476,
+     0.128
+    ],
+    [
+     1.32,
+     0.27,
+     0.195
+    ],
+    [
+     1.8,
+     0.706,
+     0.378
+    ],
+    [
+     2.2,
+     0.507,
+     0.36
+    ],
+    [
+     3.0,
+     0.543,
+     0.316
+    ]
+   ]
+  },
+  {
+   "src": "assets/clips/videografie/chess_1.mp4",
+   "av1": "assets/clips/videografie/chess_1-av1.mp4",
+   "poster": "assets/clips/videografie/chess_1.jpg",
+   "project": "chess",
+   "dur": 3.36,
+   "x": 0.366,
+   "y": 0.315,
+   "focus": [
+    [
+     0,
+     0.366,
+     0.315
+    ],
+    [
+     3.0,
+     0.306,
+     0.136
+    ]
+   ]
+  },
+  {
+   "src": "assets/clips/videografie/dochoFall_1.mp4",
+   "av1": "assets/clips/videografie/dochoFall_1-av1.mp4",
+   "poster": "assets/clips/videografie/dochoFall_1.jpg",
+   "project": "dochofall",
+   "dur": 3.04,
+   "x": 0.444,
+   "y": 0.419,
+   "focus": [
+    [
+     0,
+     0.444,
+     0.419
+    ],
+    [
+     1.0,
+     0.517,
+     0.331
+    ],
+    [
+     2.6,
+     0.218,
+     0.223
+    ],
+    [
+     3.0,
+     0.688,
+     0.647
+    ]
+   ]
+  },
+  {
+   "src": "assets/clips/videografie/dochoFall_2.mp4",
+   "av1": "assets/clips/videografie/dochoFall_2-av1.mp4",
+   "poster": "assets/clips/videografie/dochoFall_2.jpg",
+   "project": "dochofall",
+   "dur": 2.52,
+   "x": 0.494,
+   "y": 0.535,
+   "focus": [
+    [
+     0,
+     0.494,
+     0.535
+    ],
+    [
+     2.2,
+     0.53,
+     0.509
+    ]
+   ]
+  },
+  {
+   "src": "assets/clips/videografie/dochospring_1.mp4",
+   "av1": "assets/clips/videografie/dochospring_1-av1.mp4",
+   "poster": "assets/clips/videografie/dochospring_1.jpg",
+   "project": "dochospring",
+   "dur": 4.04,
+   "x": 0.503,
+   "y": 0.336,
+   "focus": [
+    [
+     0,
+     0.503,
+     0.336
+    ],
+    [
+     0.6,
+     0.539,
+     0.325
+    ],
+    [
+     0.84,
+     0.634,
+     0.601
+    ],
+    [
+     1.4,
+     0.607,
+     0.284
+    ],
+    [
+     1.72,
+     0.659,
+     0.546
+    ],
+    [
+     2.6,
+     0.459,
+     0.61
+    ],
+    [
+     2.68,
+     0.6,
+     0.2
+    ],
+    [
+     3.8,
+     0.575,
+     0.395
+    ]
+   ]
+  },
+  {
+   "src": "assets/clips/videografie/dokfeesten_1.mp4",
+   "av1": "assets/clips/videografie/dokfeesten_1-av1.mp4",
+   "poster": "assets/clips/videografie/dokfeesten_1.jpg",
+   "project": "dokfeesten",
+   "dur": 1.64,
+   "x": 0.52,
+   "y": 0.434,
+   "focus": [
+    [
+     0,
+     0.52,
+     0.434
+    ],
+    [
+     0.6,
+     0.581,
+     0.364
+    ],
+    [
+     0.88,
+     0.577,
+     0.183
+    ],
+    [
+     1.4,
+     0.667,
+     0.192
+    ]
+   ]
+  },
+  {
+   "src": "assets/clips/videografie/dokfeesten_2.mp4",
+   "av1": "assets/clips/videografie/dokfeesten_2-av1.mp4",
+   "poster": "assets/clips/videografie/dokfeesten_2.jpg",
+   "project": "dokfeesten",
+   "dur": 2.88,
+   "x": 0.692,
+   "y": 0.402,
+   "focus": [
+    [
+     0,
+     0.692,
+     0.402
+    ],
+    [
+     1.0,
+     0.726,
+     0.466
+    ],
+    [
+     1.04,
+     0.442,
+     0.315
+    ],
+    [
+     2.04,
+     0.56,
+     0.601
+    ]
+   ]
+  },
+  {
+   "src": "assets/clips/videografie/elienJens_1.mp4",
+   "av1": "assets/clips/videografie/elienJens_1-av1.mp4",
+   "poster": "assets/clips/videografie/elienJens_1.jpg",
+   "project": "elienjens",
+   "dur": 1.84,
+   "x": 0.498,
+   "y": 0.322,
+   "focus": [
+    [
+     0,
+     0.498,
+     0.322
+    ],
+    [
+     1.8,
+     0.587,
+     0.291
+    ]
+   ]
+  },
+  {
+   "src": "assets/clips/videografie/elienJens_2.mp4",
+   "av1": "assets/clips/videografie/elienJens_2-av1.mp4",
+   "poster": "assets/clips/videografie/elienJens_2.jpg",
+   "project": "elienjens",
+   "dur": 2.52,
+   "x": 0.561,
+   "y": 0.464,
+   "focus": [
+    [
+     0,
+     0.561,
+     0.464
+    ],
+    [
+     1.0,
+     0.626,
+     0.445
+    ],
+    [
+     1.24,
+     0.696,
+     0.459
+    ],
+    [
+     1.8,
+     0.66,
+     0.402
+    ],
+    [
+     2.0,
+     0.699,
+     0.388
+    ]
+   ]
+  },
+  {
+   "src": "assets/clips/videografie/icds7_1.mp4",
+   "av1": "assets/clips/videografie/icds7_1-av1.mp4",
+   "poster": "assets/clips/videografie/icds7_1.jpg",
+   "project": "icds7",
+   "dur": 4.4,
+   "x": 0.477,
+   "y": 0.375,
+   "focus": [
+    [
+     0,
+     0.477,
+     0.375
+    ],
+    [
+     1.0,
+     0.569,
+     0.333
+    ],
+    [
+     2.2,
+     0.479,
+     0.312
+    ]
+   ]
+  },
+  {
+   "src": "assets/clips/videografie/icds7_2.mp4",
+   "av1": "assets/clips/videografie/icds7_2-av1.mp4",
+   "poster": "assets/clips/videografie/icds7_2.jpg",
+   "project": "icds7",
+   "dur": 3.76,
+   "x": 0.41,
+   "y": 0.277,
+   "focus": [
+    [
+     0,
+     0.41,
+     0.277
+    ],
+    [
+     0.6,
+     0.466,
+     0.303
+    ],
+    [
+     0.92,
+     0.537,
+     0.409
+    ],
+    [
+     1.8,
+     0.677,
+     0.389
+    ],
+    [
+     2.6,
+     0.597,
+     0.308
+    ],
+    [
+     2.68,
+     0.701,
+     0.257
+    ],
+    [
+     3.16,
+     0.589,
+     0.29
+    ]
+   ]
+  },
+  {
+   "src": "assets/clips/videografie/joachimFelien_1.mp4",
+   "av1": "assets/clips/videografie/joachimFelien_1-av1.mp4",
+   "poster": "assets/clips/videografie/joachimFelien_1.jpg",
+   "project": "joachimfelien",
+   "dur": 1.72,
+   "x": 0.481,
+   "y": 0.463
+  },
+  {
+   "src": "assets/clips/videografie/strijken_1.mp4",
+   "av1": "assets/clips/videografie/strijken_1-av1.mp4",
+   "poster": "assets/clips/videografie/strijken_1.jpg",
+   "project": "strijken",
+   "dur": 2.16,
+   "x": 0.481,
+   "y": 0.374,
+   "focus": [
+    [
+     0,
+     0.481,
+     0.374
+    ],
+    [
+     1.32,
+     0.48,
+     0.507
+    ]
+   ]
+  },
+  {
+   "src": "assets/clips/videografie/wejoStaan_1.mp4",
+   "av1": "assets/clips/videografie/wejoStaan_1-av1.mp4",
+   "poster": "assets/clips/videografie/wejoStaan_1.jpg",
+   "project": "wejostaan",
+   "dur": 3.88,
+   "x": 0.493,
+   "y": 0.201,
+   "focus": [
+    [
+     0,
+     0.493,
+     0.201
+    ],
+    [
+     0.84,
+     0.372,
+     0.147
+    ],
+    [
+     1.4,
+     0.777,
+     0.141
+    ],
+    [
+     1.56,
+     0.215,
+     0.347
+    ],
+    [
+     2.2,
+     0.726,
+     0.497
+    ],
+    [
+     2.4,
+     0.634,
+     0.36
+    ],
+    [
+     3.8,
+     0.598,
+     0.313
     ]
    ]
   }

@@ -243,7 +243,8 @@ def main():
         key = re.sub(r"_(x|y)\d{1,3}(?=_|$)", "", stem)
         project = re.sub(r"_\d+$", "", key).lower()
         inp, base = os.path.join(src, name), os.path.join(OUT, cat, key)
-        if encode:
+        done = all(os.path.exists(base + e) and os.path.getmtime(base + e) >= os.path.getmtime(inp) for e in (".mp4", "-av1.mp4", ".jpg"))
+        if encode and not done:                                # clips encoded before are left as they are
             run(["ffmpeg", "-y", "-i", inp, "-map", "0:v:0", "-an", "-dn", "-c:v", "libx264", "-preset", "slow", "-crf", "23", "-tune", "film",
                  "-x264-params", "aq-mode=3", "-pix_fmt", "yuv420p", "-write_tmcd", "0", "-movflags", "+faststart", *CP, base + ".mp4"])
             run(["ffmpeg", "-y", "-i", inp, "-map", "0:v:0", "-an", "-dn", "-c:v", "libsvtav1", "-preset", "6", "-crf", "30",
