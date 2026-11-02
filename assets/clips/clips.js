@@ -8,7 +8,8 @@ window.CLIPS = {
    "project": "maxence",
    "dur": 2.2,
    "x": 0.5,
-   "y": 0.5
+   "y": 0.5,
+   "cuts": []
   },
   {
    "src": "assets/clips/ritcs/elevator_1.mp4",
@@ -17,7 +18,8 @@ window.CLIPS = {
    "project": "elevator",
    "dur": 1.08,
    "x": 0.421,
-   "y": 0.5
+   "y": 0.5,
+   "cuts": []
   },
   {
    "src": "assets/clips/ritcs/elevator_2.mp4",
@@ -26,7 +28,8 @@ window.CLIPS = {
    "project": "elevator",
    "dur": 2.12,
    "x": 0.588,
-   "y": 0.5
+   "y": 0.5,
+   "cuts": []
   },
   {
    "src": "assets/clips/ritcs/elevator_3.mp4",
@@ -35,7 +38,8 @@ window.CLIPS = {
    "project": "elevator",
    "dur": 4.04,
    "x": 0.591,
-   "y": 0.5
+   "y": 0.5,
+   "cuts": []
   },
   {
    "src": "assets/clips/ritcs/filippenzen_1.mp4",
@@ -44,7 +48,8 @@ window.CLIPS = {
    "project": "filippenzen",
    "dur": 1.72,
    "x": 0.588,
-   "y": 0.5
+   "y": 0.5,
+   "cuts": []
   },
   {
    "src": "assets/clips/ritcs/filippenzen_2.mp4",
@@ -54,6 +59,9 @@ window.CLIPS = {
    "dur": 3.76,
    "x": 0.5,
    "y": 0.189,
+   "cuts": [
+    1.2
+   ],
    "focus": [
     [
      0.0,
@@ -77,6 +85,7 @@ window.CLIPS = {
    "dur": 2.8,
    "x": 0.465,
    "y": 0.291,
+   "cuts": [],
    "focus": [
     [
      0.0,
@@ -106,6 +115,9 @@ window.CLIPS = {
    "dur": 2.56,
    "x": 0.23,
    "y": 0.198,
+   "cuts": [
+    1.08
+   ],
    "focus": [
     [
      0.0,
@@ -128,7 +140,10 @@ window.CLIPS = {
    "project": "koffer",
    "dur": 2.92,
    "x": 0.5,
-   "y": 0.5
+   "y": 0.5,
+   "cuts": [
+    1.56
+   ]
   },
   {
    "src": "assets/clips/ritcs/koffer_2.mp4",
@@ -138,6 +153,14 @@ window.CLIPS = {
    "dur": 5.32,
    "x": 0.5,
    "y": 0.5,
+   "cuts": [
+    0.8,
+    2.24,
+    2.8,
+    3.36,
+    3.92,
+    4.6
+   ],
    "focus": [
     [
      0.0,
@@ -167,6 +190,7 @@ window.CLIPS = {
    "dur": 6.4,
    "x": 0.788,
    "y": 0.5,
+   "cuts": [],
    "focus": [
     [
      0.0,
@@ -214,6 +238,12 @@ window.CLIPS = {
    "dur": 6.04,
    "x": 0.615,
    "y": 0.146,
+   "cuts": [
+    0.6,
+    1.36,
+    1.96,
+    4.72
+   ],
    "focus": [
     [
      0.0,
@@ -255,6 +285,9 @@ window.CLIPS = {
    "dur": 3.56,
    "x": 0.736,
    "y": 0.5,
+   "cuts": [
+    1.04
+   ],
    "focus": [
     [
      0.0,
@@ -284,6 +317,9 @@ window.CLIPS = {
    "dur": 2.76,
    "x": 0.5,
    "y": 0.5,
+   "cuts": [
+    0.48
+   ],
    "focus": [
     [
      0.0,
@@ -306,7 +342,10 @@ window.CLIPS = {
    "project": "nieuwgent",
    "dur": 4.28,
    "x": 0.5,
-   "y": 0.5
+   "y": 0.5,
+   "cuts": [
+    1.48
+   ]
   },
   {
    "src": "assets/clips/ritcs/nieuwGent_4.mp4",
@@ -316,6 +355,9 @@ window.CLIPS = {
    "dur": 2.96,
    "x": 0.5,
    "y": 0.5,
+   "cuts": [
+    1.4
+   ],
    "focus": [
     [
      0.0,
@@ -338,7 +380,8 @@ window.CLIPS = {
    "project": "nieuwgent",
    "dur": 1.56,
    "x": 0.617,
-   "y": 0.249
+   "y": 0.249,
+   "cuts": []
   },
   {
    "src": "assets/clips/ritcs/nieuwGent_6.mp4",
@@ -347,7 +390,8 @@ window.CLIPS = {
    "project": "nieuwgent",
    "dur": 4.36,
    "x": 0.664,
-   "y": 0.5
+   "y": 0.5,
+   "cuts": []
   },
   {
    "src": "assets/clips/ritcs/tenAnker_1.mp4",
@@ -357,6 +401,11 @@ window.CLIPS = {
    "dur": 7.6,
    "x": 0.196,
    "y": 0.311,
+   "cuts": [
+    2.08,
+    4.4,
+    6.4
+   ],
    "focus": [
     [
      0.0,
@@ -404,6 +453,7 @@ window.CLIPS = {
    "dur": 2.8,
    "x": 0.5,
    "y": 0.5,
+   "cuts": [],
    "focus": [
     [
      0.0,
@@ -427,6 +477,9 @@ window.CLIPS = {
    "dur": 5.32,
    "x": 0.786,
    "y": 0.5,
+   "cuts": [
+    2.4
+   ],
    "focus": [
     [
      0.0,
@@ -452,6 +505,11 @@ window.CLIPS = {
    "dur": 3.2,
    "x": 0.5,
    "y": 0.217,
+   "cuts": [
+    0.84,
+    1.04,
+    1.32
+   ],
    "focus": [
     [
      0.0,
@@ -493,6 +551,9 @@ window.CLIPS = {
    "dur": 4.36,
    "x": 0.552,
    "y": 0.225,
+   "cuts": [
+    2.24
+   ],
    "focus": [
     [
      0.0,
@@ -516,6 +577,11 @@ window.CLIPS = {
    "dur": 4.2,
    "x": 0.428,
    "y": 0.5,
+   "cuts": [
+    1.12,
+    2.12,
+    2.44
+   ],
    "focus": [
     [
      0.0,
@@ -550,7 +616,11 @@ window.CLIPS = {
    "project": "banana",
    "dur": 3.6,
    "x": 0.5,
-   "y": 0.303
+   "y": 0.303,
+   "cuts": [
+    1.0,
+    1.92
+   ]
   },
   {
    "src": "assets/clips/videografie/banana_5.mp4",
@@ -560,6 +630,9 @@ window.CLIPS = {
    "dur": 4.08,
    "x": 0.408,
    "y": 0.5,
+   "cuts": [
+    2.2
+   ],
    "focus": [
     [
      0.0,
@@ -583,6 +656,11 @@ window.CLIPS = {
    "dur": 4.68,
    "x": 0.5,
    "y": 0.5,
+   "cuts": [
+    0.84,
+    2.32,
+    2.84
+   ],
    "focus": [
     [
      0.0,
@@ -612,6 +690,10 @@ window.CLIPS = {
    "dur": 6.76,
    "x": 0.5,
    "y": 0.5,
+   "cuts": [
+    2.44,
+    4.44
+   ],
    "focus": [
     [
      0.0,
@@ -647,6 +729,10 @@ window.CLIPS = {
    "dur": 3.36,
    "x": 0.384,
    "y": 0.312,
+   "cuts": [
+    0.6,
+    2.52
+   ],
    "focus": [
     [
      0.0,
@@ -676,6 +762,11 @@ window.CLIPS = {
    "dur": 3.04,
    "x": 0.5,
    "y": 0.5,
+   "cuts": [
+    1.0,
+    1.36,
+    2.28
+   ],
    "focus": [
     [
      0.0,
@@ -704,7 +795,8 @@ window.CLIPS = {
    "project": "dochofall",
    "dur": 2.52,
    "x": 0.5,
-   "y": 0.5
+   "y": 0.5,
+   "cuts": []
   },
   {
    "src": "assets/clips/videografie/dochoFall_3.mp4",
@@ -714,6 +806,13 @@ window.CLIPS = {
    "dur": 4.6,
    "x": 0.347,
    "y": 0.168,
+   "cuts": [
+    1.48,
+    2.0,
+    2.28,
+    2.84,
+    3.0
+   ],
    "focus": [
     [
      0.0,
@@ -767,6 +866,12 @@ window.CLIPS = {
    "dur": 3.04,
    "x": 0.418,
    "y": 0.348,
+   "cuts": [
+    0.28,
+    0.48,
+    1.12,
+    2.12
+   ],
    "focus": [
     [
      0.0,
@@ -808,6 +913,10 @@ window.CLIPS = {
    "dur": 6.2,
    "x": 0.392,
    "y": 0.325,
+   "cuts": [
+    2.12,
+    3.8
+   ],
    "focus": [
     [
      0.0,
@@ -855,6 +964,9 @@ window.CLIPS = {
    "dur": 3.4,
    "x": 0.594,
    "y": 0.32,
+   "cuts": [
+    1.6
+   ],
    "focus": [
     [
      0.0,
@@ -878,6 +990,11 @@ window.CLIPS = {
    "dur": 4.04,
    "x": 0.5,
    "y": 0.333,
+   "cuts": [
+    0.84,
+    1.72,
+    2.68
+   ],
    "focus": [
     [
      0.0,
@@ -913,6 +1030,9 @@ window.CLIPS = {
    "dur": 1.64,
    "x": 0.561,
    "y": 0.5,
+   "cuts": [
+    0.88
+   ],
    "focus": [
     [
      0.0,
@@ -936,6 +1056,10 @@ window.CLIPS = {
    "dur": 2.88,
    "x": 0.696,
    "y": 0.5,
+   "cuts": [
+    1.04,
+    2.04
+   ],
    "focus": [
     [
      0.0,
@@ -965,6 +1089,12 @@ window.CLIPS = {
    "dur": 3.72,
    "x": 0.5,
    "y": 0.5,
+   "cuts": [
+    0.52,
+    1.04,
+    1.88,
+    2.64
+   ],
    "focus": [
     [
      0.0,
@@ -1000,6 +1130,10 @@ window.CLIPS = {
    "dur": 1.84,
    "x": 0.104,
    "y": 0.252,
+   "cuts": [
+    0.6,
+    1.04
+   ],
    "focus": [
     [
      0.0,
@@ -1023,6 +1157,9 @@ window.CLIPS = {
    "dur": 1.4,
    "x": 0.417,
    "y": 0.775,
+   "cuts": [
+    0.48
+   ],
    "focus": [
     [
      0.0,
@@ -1046,6 +1183,12 @@ window.CLIPS = {
    "dur": 2.8,
    "x": 0.5,
    "y": 0.325,
+   "cuts": [
+    0.6,
+    0.8,
+    0.96,
+    2.08
+   ],
    "focus": [
     [
      0.0,
@@ -1081,6 +1224,13 @@ window.CLIPS = {
    "dur": 3.52,
    "x": 0.5,
    "y": 0.243,
+   "cuts": [
+    0.84,
+    1.52,
+    1.72,
+    1.92,
+    3.04
+   ],
    "focus": [
     [
      0.0,
@@ -1122,6 +1272,10 @@ window.CLIPS = {
    "dur": 2.08,
    "x": 0.298,
    "y": 0.27,
+   "cuts": [
+    0.64,
+    1.08
+   ],
    "focus": [
     [
      0.0,
@@ -1156,7 +1310,8 @@ window.CLIPS = {
    "project": "elienjens",
    "dur": 1.84,
    "x": 0.556,
-   "y": 0.316
+   "y": 0.316,
+   "cuts": []
   },
   {
    "src": "assets/clips/videografie/elienJens_2.mp4",
@@ -1166,6 +1321,13 @@ window.CLIPS = {
    "dur": 2.52,
    "x": 0.558,
    "y": 0.5,
+   "cuts": [
+    0.96,
+    1.24,
+    1.48,
+    2.0,
+    2.24
+   ],
    "focus": [
     [
      0.0,
@@ -1206,7 +1368,8 @@ window.CLIPS = {
    "project": "elienjens",
    "dur": 2.68,
    "x": 0.5,
-   "y": 0.5
+   "y": 0.5,
+   "cuts": []
   },
   {
    "src": "assets/clips/videografie/elienJens_4.mp4",
@@ -1216,6 +1379,9 @@ window.CLIPS = {
    "dur": 3.08,
    "x": 0.5,
    "y": 0.5,
+   "cuts": [
+    1.48
+   ],
    "focus": [
     [
      0.0,
@@ -1244,7 +1410,8 @@ window.CLIPS = {
    "project": "icds7",
    "dur": 4.4,
    "x": 0.5,
-   "y": 0.329
+   "y": 0.329,
+   "cuts": []
   },
   {
    "src": "assets/clips/videografie/icds7_2.mp4",
@@ -1254,6 +1421,12 @@ window.CLIPS = {
    "dur": 3.76,
    "x": 0.5,
    "y": 0.303,
+   "cuts": [
+    0.92,
+    2.16,
+    2.68,
+    3.16
+   ],
    "focus": [
     [
      0.0,
@@ -1301,6 +1474,10 @@ window.CLIPS = {
    "dur": 5.28,
    "x": 0.5,
    "y": 0.241,
+   "cuts": [
+    2.44,
+    3.84
+   ],
    "focus": [
     [
      0.0,
@@ -1329,7 +1506,8 @@ window.CLIPS = {
    "project": "joachimfelien",
    "dur": 1.6,
    "x": 0.5,
-   "y": 0.5
+   "y": 0.5,
+   "cuts": []
   },
   {
    "src": "assets/clips/videografie/joachimFelien_2.mp4",
@@ -1339,6 +1517,15 @@ window.CLIPS = {
    "dur": 7.28,
    "x": 0.388,
    "y": 0.5,
+   "cuts": [
+    0.64,
+    0.92,
+    1.56,
+    1.84,
+    2.44,
+    3.04,
+    4.96
+   ],
    "focus": [
     [
      0.0,
@@ -1392,6 +1579,14 @@ window.CLIPS = {
    "dur": 8.12,
    "x": 0.211,
    "y": 0.167,
+   "cuts": [
+    1.96,
+    4.08,
+    5.08,
+    5.76,
+    6.44,
+    7.44
+   ],
    "focus": [
     [
      0.0,
@@ -1445,6 +1640,13 @@ window.CLIPS = {
    "dur": 3.36,
    "x": 0.874,
    "y": 0.66,
+   "cuts": [
+    0.36,
+    0.8,
+    1.68,
+    2.52,
+    2.88
+   ],
    "focus": [
     [
      0.0,
@@ -1492,6 +1694,18 @@ window.CLIPS = {
    "dur": 4.4,
    "x": 0.63,
    "y": 0.5,
+   "cuts": [
+    0.16,
+    0.52,
+    0.68,
+    1.0,
+    1.36,
+    1.52,
+    1.92,
+    3.6,
+    4.12,
+    4.36
+   ],
    "focus": [
     [
      0.0,
@@ -1568,7 +1782,10 @@ window.CLIPS = {
    "project": "strijken",
    "dur": 2.16,
    "x": 0.5,
-   "y": 0.5
+   "y": 0.5,
+   "cuts": [
+    1.32
+   ]
   },
   {
    "src": "assets/clips/videografie/wejoStaan_1.mp4",
@@ -1578,6 +1795,13 @@ window.CLIPS = {
    "dur": 3.88,
    "x": 0.5,
    "y": 0.201,
+   "cuts": [
+    0.84,
+    1.2,
+    1.56,
+    1.92,
+    2.4
+   ],
    "focus": [
     [
      0.0,

@@ -8,6 +8,7 @@ For every clip (e.g. nieuwGent_3.mp4) it writes to assets/clips/<category>/:
   nieuwGent_3-av1.mp4   AV1 10-bit, about half the size (used where the browser plays it smoothly)
   nieuwGent_3.jpg       first frame, shown while the clip loads
 and works out the clip's point of interest, so narrow screens crop around it instead of the middle.
+Framing set by hand in crop.html (on the site: /tnm/crop.html) is kept on later runs.
 A position in the file name wins over the automatic one: nieuwGent_3_x30.mp4 = 30% from the left
 (add _y40 for the height). Afterwards it rewrites assets/clips/clips.js (the list the site reads)
 and saves assets/clips/<category>-review.jpg: every clip with the phone crop drawn on it.
@@ -216,7 +217,7 @@ def focus(path):
         # the next shot framed the same: nothing to change
         if out and not out[-1]["glide"] and not k["glide"] and abs(out[-1]["x"] - k["x"]) < .03 and abs(out[-1]["y"] - k["y"]) < .06: continue
         out.append(k)
-    return out
+    return out, [round(c, 3) for c in cuts]
 
 def frames_at(path, ts):
     """frames at the given times (s), decoded in order, 640 px wide"""
@@ -280,7 +281,7 @@ def main():
                  "-svtav1-params", "tune=0", "-pix_fmt", "yuv420p10le", "-write_tmcd", "0", "-movflags", "+faststart", *CP, base + "-av1.mp4"])
             run(["ffmpeg", "-y", "-i", inp, "-frames:v", "1", "-vf", "scale=1280:-2", "-q:v", "4", base + ".jpg"])
         path = base + ".mp4" if os.path.exists(base + ".mp4") else inp
-        track = focus(path)
+        track, cuts = focus(path)
         for k in track:
             if mx: k["x"], k["how"] = int(mx.group(1)) / 100, "handmatig"
             if my: k["y"] = int(my.group(1)) / 100
@@ -288,10 +289,18 @@ def main():
         rel = f"assets/clips/{cat}/{key}"
         items.append({"file": key + ".mp4", "src": rel + ".mp4", "av1": rel + "-av1.mp4", "poster": rel + ".jpg",
                       "project": project, "dur": round(duration(base + ".mp4" if os.path.exists(base + ".mp4") else inp), 2),
-                      "x": x, "y": y, "how": how, "path": path,
+                      "x": x, "y": y, "how": how, "path": path, "cuts": cuts,
                       **({"focus": [[k["t"], k["x"], k["y"], k["glide"]] for k in track]} if len(track) > 1 else {}), "track": track})
         print(f"{key:16} " + "  ".join(f'{k["t"]:.2f}s x={k["x"]:.2f}{"~" if k["glide"] else ""} ({k["how"]})' for k in track), flush=True)
     data[cat] = [{k: v for k, v in it.items() if k not in ("file", "how", "path", "track")} for it in items]
+    # clips framed by hand in crop.html (marked "manual") keep their framing and cuts
+    old = {c["src"]: c for c in (json.loads(open(listing).read().split("=", 1)[1].rstrip().rstrip(";")) if os.path.exists(listing) else {}).get(cat, [])}
+    for c in data[cat]:
+        o = old.get(c["src"])
+        if o and o.get("manual"):
+            c.pop("focus", None)
+            for k in ("x", "y", "focus", "cuts", "manual"):
+                if k in o: c[k] = o[k]
     with open(listing, "w") as fh:
         fh.write("// written by tools/clips.py — the background clips per hero button, with each clip's point of interest\n")
         fh.write("window.CLIPS = " + json.dumps(data, indent=1) + ";\n")
