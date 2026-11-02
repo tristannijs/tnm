@@ -46,10 +46,13 @@
 
   // ---------- top bar ----------
   const bar = $("#bar");
-  // transparent with only language + menu while the hero words are in view; once they have scrolled
-  // away (under the bar) it turns black and the links come in
+  // black as soon as the page scrolls; Video / Film / Overig only come in once the hero words have
+  // scrolled away under the bar
   const doorsEl = $("#doors");
-  const onScroll = () => { const r = doorsEl.getBoundingClientRect(); bar.classList.toggle("solid", r.bottom < bar.offsetHeight); };
+  const onScroll = () => {
+    bar.classList.toggle("solid", scrollY > 8);
+    bar.classList.toggle("links", doorsEl.getBoundingClientRect().bottom < bar.offsetHeight);
+  };
   addEventListener("scroll", onScroll, {passive:true}); addEventListener("resize", onScroll); onScroll();
 
   const menuBtn = $("#menuBtn"), drawer = $("#drawer");

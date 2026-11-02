@@ -44,9 +44,9 @@ img{display:block;max-width:100%}
 .nav{display:flex;align-items:center;gap:14px;font-size:16px;font-weight:600;color:#9a9a9a;transition:color .35s}
 .nav .lang:hover,.nav .menu-btn:hover{color:#fff}
 .bar.solid .nav{color:#fff}
-/* the links only show once the hero words have scrolled away */
+/* the links only show once the hero words have scrolled away (class set in main.js) */
 .nav .nav-link{transition:opacity .35s,visibility .35s}
-.bar:not(.solid) .nav .nav-link{opacity:0;visibility:hidden}
+.bar:not(.links) .nav .nav-link{opacity:0;visibility:hidden}
 @media (max-width:760px){.nav-link{display:none}}
 .nav a{opacity:.95}
 .nav a:hover{opacity:1;text-decoration:underline;text-underline-offset:5px;text-decoration-thickness:1px}
