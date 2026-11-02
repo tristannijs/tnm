@@ -148,7 +148,7 @@ img{display:block;max-width:100%}
   -webkit-mask-composite:source-in;
   mask-image:linear-gradient(90deg,transparent,#000 50px,#000 calc(100% - 50px),transparent),linear-gradient(180deg,transparent,#000 32px,#000 calc(100% - 68px),transparent);
   mask-composite:intersect}
-.cf-item .cap{margin:0 6% 7.5% 6%}
+.cf-item .cap{margin:0 6% 4.8% 6%}
 .cf-item .roles{display:none;position:absolute;z-index:1;right:3.5%;bottom:6.5%;max-width:25%;text-align:right;font-style:italic;font-weight:400;
   font-size:clamp(10px,1.1vw,18px);line-height:1.25;color:#fff}
 .cap .dot{font-style:normal;margin:0 .35em}
@@ -191,15 +191,15 @@ img{display:block;max-width:100%}
 .pv .cap b{font-size:calc(clamp(12px,1.15vw,19px) * var(--k,1))}
 .pv .cap span{font-size:calc(clamp(9px,.8vw,13px) * var(--k,1));margin-top:calc(2px * var(--k,1))}
 .pv.open .cap{opacity:0}
-.pv-cf .cap{margin:0 6% 7.5% 6%}
+.pv-cf .cap{margin:0 6% 4.8% 6%}
 .pv-cf .cap b{font-size:calc(clamp(14px,2.05vw,36px) * var(--k,1));line-height:1.05}
 .pv-cf .cap span{font-size:calc(clamp(11px,1.5vw,26px) * var(--k,1));margin-top:calc(3px * var(--k,1))}
 /* the details sit under the clip at full size the whole time and only fade, so nothing re-lays out */
-.pv-info{display:flex;align-items:flex-start;justify-content:space-between;gap:1.5em;background:#000;padding:.85em 1.4em .95em;opacity:0;transition:opacity .12s ease}
+.pv-info{display:flex;align-items:baseline;justify-content:space-between;gap:1.5em;background:#000;padding:.85em 1.4em .95em;opacity:0;transition:opacity .12s ease}
 .pv.open .pv-info{opacity:1;transition:opacity .3s ease .4s}
 .pv-l{min-width:0}
 /* what Tristan did, on the right, in italics */
-.pv-role{flex:none;max-width:42%;text-align:right;font-style:italic;font-weight:400;font-size:1.02em;line-height:1.65;padding-top:.05em}
+.pv-role{flex:none;max-width:42%;text-align:right;font-style:italic;font-weight:400;font-size:.86em;line-height:1.35;color:#d9d9d9}
 .pv{cursor:default}
 /* the player takes clicks straight away, even while the cover still shows over it */
 .pv-media iframe,.pv-media video{pointer-events:auto}
@@ -304,7 +304,6 @@ dialog::backdrop{background:rgba(0,0,0,.88)}
   .bar.solid{--bar-h:60px}
   .logo-link img{height:30px}
   .nav > a:not(.lang){display:none}
-  .hero-doors{grid-template-columns:minmax(0,1fr);gap:12px;padding:0 18%}
   .cf-item{width:64%}
   .cf{--sx:105}
   .cf{height:clamp(220px,52vw,460px)}
@@ -333,6 +332,15 @@ dialog::backdrop{background:rgba(0,0,0,.88)}
 .foot-icons a[aria-label="YouTube"] svg{height:21px}
 .foot p{margin:clamp(14px,1.4vw,20px) 0 0;font-size:clamp(14px,1.2vw,17px);font-weight:400}
 @media (max-width:760px){
-  .hero-doors{gap:0 24px}
-  .sh{padding:0 22px}
+  .hero-doors{gap:0 clamp(14px,4.6vw,24px)}
+  .door{font-size:clamp(17px,5vw,20px)}
+  .cf-item{width:80%}
+  .cf{--sx:104;height:clamp(200px,60vw,440px)}
+  .cf-item .cap b{font-size:clamp(16px,4.8vw,24px)}
+  .lang{padding:12px 6px}
+  .menu-btn{padding:12px 0 12px 12px}
+  .foot-icons{gap:6px}
+  .foot-icons a{padding:11px}
+  .sh{padding:0 22px;font-size:clamp(22px,6.4vw,28px);letter-spacing:.03em}
+  .sh sup{font-size:.45em}
 }
