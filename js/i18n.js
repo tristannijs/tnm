@@ -11,6 +11,8 @@
     "menu.open":       {nl:"Menu openen",          en:"Open menu",            fr:"Ouvrir le menu"},
     "menu.close":      {nl:"Menu sluiten",         en:"Close menu",           fr:"Fermer le menu"},
     "hero.down":       {nl:"Naar beneden",         en:"Scroll down",          fr:"Défiler vers le bas"},
+    "role.one":        {nl:"Rol",                  en:"Role",                 fr:"Rôle"},
+    "role.many":       {nl:"Rollen",               en:"Roles",                fr:"Rôles"},
     "foot.mail":       {nl:"Mail",                 en:"Email",                fr:"E-mail"},
     "sec.about":       {nl:"Over",                 en:"About",                fr:"À propos"},
     "about.1": {nl:"Ik ben Tristan Nijs, videograaf en editor. Ik kom uit Gent en studeer filmmontage in Brussel aan het RITCS.",
@@ -64,7 +66,10 @@
     "Montage":  {en:"Editing",     fr:"Montage"},
     "Kleur":    {en:"Colour",      fr:"Étalonnage"},
     "Productie":{en:"Production",  fr:"Production"},
-    "Geluid":   {en:"Sound",       fr:"Son"}
+    "Geluid":   {en:"Sound",       fr:"Son"},
+    "Concept":  {en:"Concept",     fr:"Concept"},
+    "Acteur":   {en:"Actor",       fr:"Acteur"},
+    "Videograaf":{en:"Videographer", fr:"Vidéaste"}
   };
   const LANGS = ["nl","en","fr"], LOCALE = {nl:"nl-BE", en:"en-GB", fr:"fr-BE"};
   // project titles from data.js: course names and "Film van" are translated, names of films stay

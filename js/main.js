@@ -31,9 +31,11 @@
   const title = p => p.name ? L.label(p.name) : flat(lab(p));
   const capHTML = p => `<b>${esc(title(p))}</b><span>${esc(kind(p))}<i class="dot">•</i>${esc(year(p))}</span>`;
   // what Tristan did on it, bottom right of a featured card
+  const VIDCAT = {event:1, trouw:1, promo:1};
+  const rolesOf = p => (p.roles || (VIDCAT[p.cat] ? ["Videograaf"] : [])).map(L.role);
   function roles(p){
     const r = document.createElement("i"); r.className = "roles"; r.dataset.pid = p.id;
-    r.textContent = (p.roles || []).map(L.role).join(", ");
+    r.textContent = rolesOf(p).join(", ");
     return r;
   }
   function cap(p){
@@ -77,7 +79,7 @@
   L.onChange(() => {
     showLang(); setMenu(!drawer.hidden);
     document.querySelectorAll(".cap[data-pid]").forEach(c => { const p = BY[c.dataset.pid]; if(p) c.innerHTML = capHTML(p); });
-    document.querySelectorAll(".roles[data-pid]").forEach(r => { const p = BY[r.dataset.pid]; if(p) r.textContent = (p.roles || []).map(L.role).join(", "); });
+    document.querySelectorAll(".roles[data-pid]").forEach(r => { const p = BY[r.dataset.pid]; if(p) r.textContent = rolesOf(p).join(", "); });
     cfItems.forEach(({el}, i) => el.setAttribute("aria-label", `${title(feat[i])}, ${kind(feat[i])} ${year(feat[i])}`));
   });
 
@@ -407,9 +409,9 @@
     el.className = "pv " + ctx.cls; el.style.setProperty("--c", COLOR(p.cat));
     el.setAttribute("role", "button"); el.setAttribute("aria-label", t("play", {t:pvTitle(p)}));
     el.innerHTML = `<div class="pv-media"></div>
-      <div class="pv-info"><div class="pv-t">${esc(pvTitle(p))}</div>
-        <div class="pv-m">${esc(pvType(p))}<span class="dot">•</span>${esc(when(p))}</div>
-        <div class="pv-r"></div></div>`;
+      <div class="pv-info"><div class="pv-l"><div class="pv-t">${esc(RITCS[p.cat] ? title(p) : pvTitle(p))}</div>
+        <div class="pv-m">${esc(kind(p))}<span class="dot">•</span>${esc(when(p))}</div>
+        <div class="pv-r"></div></div>${rolesOf(p).length ? `<div class="pv-role"><small>${esc(t(rolesOf(p).length > 1 ? "role.many" : "role.one"))}</small>${rolesOf(p).map(r => `<span>${esc(r)}</span>`).join("")}</div>` : ""}</div>`;
     const media = el.querySelector(".pv-media");
     // reuse the card's own, already decoded picture so the first frame is never empty
     const own = card.querySelector(".face img"), f = face(p), fi = f.querySelector("img");
@@ -474,16 +476,16 @@
     if(pv && !pv.el.contains(e.target) && !pv.card.contains(e.target)) closePeek();
   }, true);
   function startClip(p, media){
-    // muted, because browsers only autoplay muted video
+    // with sound: the preview only opens on a click, and browsers allow sound after one
     if(p.vids){
       const v = document.createElement("video");
-      Object.assign(v, {src:p.vids[0].src, muted:true, loop:true, autoplay:true, playsInline:true});
+      Object.assign(v, {src:p.vids[0].src, loop:true, autoplay:true, playsInline:true});
       v.addEventListener("loadedmetadata", () => { p._dur = v.duration; if(p.hd == null) p._hd = v.videoHeight >= 720; refreshRow(p); });
       v.addEventListener("playing", () => v.classList.add("on"));
       media.appendChild(v);
     } else if(p.yt){
       const f = document.createElement("iframe");
-      f.src = `https://www.youtube-nocookie.com/embed/${p.yt}?autoplay=1&mute=1&controls=0&rel=0&playsinline=1&loop=1&playlist=${p.yt}&modestbranding=1&iv_load_policy=3&disablekb=1&enablejsapi=1&origin=${encodeURIComponent(location.origin)}`;
+      f.src = `https://www.youtube-nocookie.com/embed/${p.yt}?autoplay=1&controls=0&rel=0&playsinline=1&loop=1&playlist=${p.yt}&modestbranding=1&iv_load_policy=3&disablekb=1&enablejsapi=1&origin=${encodeURIComponent(location.origin)}`;
       f.allow = "autoplay; encrypted-media"; f.tabIndex = -1; f.title = pvTitle(p);
       // ask the player for its state, duration and quality levels
       f.addEventListener("load", () => {

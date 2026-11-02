@@ -175,7 +175,7 @@ img{display:block;max-width:100%}
 .rc-card.lifted{opacity:0}
 .cf-item.lifted{visibility:hidden!important}
 .pv-shade{position:fixed;inset:0;z-index:55;background:#000;opacity:0;pointer-events:none;transition:opacity .5s ease;will-change:opacity}
-.pv-shade.on{opacity:.4}
+.pv-shade.on{opacity:.72}
 .pv{position:absolute;z-index:60;cursor:pointer;color:#fff;font-family:var(--f);transform-origin:0 0;will-change:transform;
   transition:transform .55s cubic-bezier(.22,.7,.2,1)}
 .pv.open{transition-duration:.55s}
@@ -197,8 +197,13 @@ img{display:block;max-width:100%}
 .pv-cf .cap b{font-size:calc(clamp(15px,2.3vw,40px) * var(--k,1));line-height:1.05}
 .pv-cf .cap span{font-size:calc(clamp(11px,1.5vw,26px) * var(--k,1));margin-top:calc(3px * var(--k,1))}
 /* the details sit under the clip at full size the whole time and only fade, so nothing re-lays out */
-.pv-info{background:#000;border-top:2px solid var(--c);padding:.85em 1.4em .95em;opacity:0;transition:opacity .12s ease}
+.pv-info{display:flex;align-items:flex-start;justify-content:space-between;gap:1.5em;background:#000;border-top:2px solid var(--c);padding:.85em 1.4em .95em;opacity:0;transition:opacity .12s ease}
 .pv.open .pv-info{opacity:1;transition:opacity .3s ease .4s}
+.pv-l{min-width:0}
+/* what Tristan did, on the right: a small label, then each role on its own line */
+.pv-role{flex:none;display:flex;flex-direction:column;align-items:flex-end;text-align:right;padding-top:.1em;line-height:1.25}
+.pv-role small{font-size:.62em;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#8a8a8a;margin-bottom:.45em}
+.pv-role span{font-size:.86em;font-style:italic;font-weight:400}
 .pv-t{font-size:1.19em;font-weight:800;text-transform:uppercase;line-height:1.15;letter-spacing:.005em}
 .pv-m{margin-top:.4em;font-size:.82em;text-transform:uppercase;letter-spacing:.02em}
 .pv-m .dot{margin:0 .6em}
