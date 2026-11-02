@@ -24,7 +24,18 @@
     if(p.cover || p.yt) f.appendChild(coverImg(p));
     return f;
   }
-  const capHTML = p => `<b>${lab(p).split("\n").map(esc).join("<br>")}</b><span>${esc(sub(p))}</span>`;
+  // a card's caption: the title, then what it is and the year ("IAO • 2025", "Aftermovie • 2026")
+  const RITCS = {fictie:1, docu:1, iao:1};
+  const kind = p => p.cat === "iao" ? "IAO" : RITCS[p.cat] ? "RITCS" : t("type." + p.cat);
+  const year = p => (p.t1 || p.t0 || "").slice(0, 4);
+  const title = p => p.name ? L.label(p.name) : flat(lab(p));
+  const capHTML = p => `<b>${esc(title(p))}</b><span>${esc(kind(p))}<i class="dot">•</i>${esc(year(p))}</span>`;
+  // what Tristan did on it, bottom right of a featured card
+  function roles(p){
+    const r = document.createElement("i"); r.className = "roles"; r.dataset.pid = p.id;
+    r.textContent = (p.roles || []).map(L.role).join(", ");
+    return r;
+  }
   function cap(p){
     const c = document.createElement("div"); c.className = "cap"; c.dataset.pid = p.id;
     c.innerHTML = capHTML(p);
@@ -63,7 +74,8 @@
   L.onChange(() => {
     showLang(); setMenu(!drawer.hidden);
     document.querySelectorAll(".cap[data-pid]").forEach(c => { const p = BY[c.dataset.pid]; if(p) c.innerHTML = capHTML(p); });
-    buildTimeline();
+    document.querySelectorAll(".roles[data-pid]").forEach(r => { const p = BY[r.dataset.pid]; if(p) r.textContent = (p.roles || []).map(L.role).join(", "); });
+    cfItems.forEach(({el}, i) => el.setAttribute("aria-label", `${title(feat[i])}, ${kind(feat[i])} ${year(feat[i])}`));
   });
 
   // ---------- hero: a layer per background; hovering a door swaps to its layer ----------
@@ -226,244 +238,274 @@
   });
   doors.addEventListener("mouseleave", () => showLayer("home"));
 
-  // ---------- Tijdlijn ----------
-  const iso = t => new Date(t).toISOString().slice(0,10);
-  const TODAY = Date.now();
-  const tlName = p => p.name ? L.label(p.name) : flat(lab(p));
+  // ---------- Uitgelicht: cards on a turntable that follows your fingers ----------
+  const cf = $("#cf"), track = $("#cfTrack");
+  const feat = window.FEATURED.map(id => BY[id]).filter(Boolean);
+  const n = feat.length;
+  $("#featN").textContent = `[${n}]`;
+  // `offset` is which card is in the middle, as a continuous number (1.4 = 40% of the way
+  // from card 1 to card 2). Input moves `goal`; every frame `offset` glides toward it.
+  let offset = 0, goal = 0;
+  const wrap = d => { d = ((d % n) + n) % n; return d >= n/2 ? d - n : d; };
+  const centerIdx = () => ((Math.round(offset) % n) + n) % n;
+  const cfItems = feat.map((p,i) => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "cf-item"; b.style.setProperty("--c", COLOR(p.cat));
+    b.setAttribute("aria-label", `${title(p)}, ${kind(p)} ${year(p)}`); b.dataset.id = p.id;
+    const shade = document.createElement("span"); shade.className = "shade";
+    b.append(face(p), cap(p), roles(p), shade);
+    b.addEventListener("click", () => {
+      if(moved) return;
+      const d = wrap(i - offset);
+      if(Math.abs(d) < .5) openPlayer(p); else { goal = Math.round(goal) + Math.sign(d); run(); }
+    });
+    track.appendChild(b);
+    return {el:b, shade};
+  });
+  let sx = 118;
+  const readSx = () => { sx = parseFloat(getComputedStyle(cf).getPropertyValue("--sx")) || 118; };
+  function render(){
+    const front = centerIdx();
+    // turning the carousel closes a preview that is open on it
+    if(pv && pv.ctx === cfCtx && Math.abs(offset - pv.off) > .01) closePeek();
+    cfItems.forEach(({el, shade}, i) => {
+      const p = n > 1 ? wrap(i - offset) : 0, a = Math.abs(p), sg = Math.sign(p);
+      let X, Z, R, B, O;
+      if(a <= 1){ X = sx*p; Z = -600*a; R = -22*p; B = .4*a; O = 1; }
+      else { X = sg*(sx + (a-1)*sx*.6); Z = -600 - (a-1)*400; R = -22*sg; B = .4; O = Math.max(0, Math.min(1, (1.5 - a)/.45)); }
+      el.style.transform = `translate(-50%,-50%) translate3d(${X.toFixed(3)}%,0,${Z.toFixed(2)}px) rotateY(${R.toFixed(3)}deg)`;
+      el.style.opacity = O.toFixed(3);
+      el.style.visibility = O < .01 ? "hidden" : "";
+      el.style.pointerEvents = O < .5 ? "none" : "";
+      shade.style.opacity = B.toFixed(3);
+      el.tabIndex = i === front ? 0 : -1;
+      el.setAttribute("aria-hidden", i === front ? "false" : "true");
+    });
+  }
+  // the glide: frame-rate independent easing of offset toward goal
+  let raf = 0, last = 0, tau = 90;
+  function frame(now){
+    const dt = Math.min(64, now - (last || now)); last = now;
+    const d = goal - offset;
+    if(Math.abs(d) < .0008){ offset = goal; render(); raf = 0; last = 0; cfSettled(); return; }
+    offset += d * (1 - Math.exp(-dt / tau));
+    render();
+    raf = requestAnimationFrame(frame);
+  }
+  const run = (t = 90) => { tau = t; if(!raf){ last = 0; raf = requestAnimationFrame(frame); } };
+  const snap = () => { goal = Math.round(goal); run(110); };
+  readSx(); render();
+  addEventListener("resize", () => { readSx(); render(); });
+  cf.querySelectorAll(".arrow").forEach(a => a.addEventListener("click", () => { goal = Math.round(goal) + (+a.dataset.dir); run(110); }));
+  cf.addEventListener("keydown", e => {
+    if(e.key === "ArrowRight" || e.key === "ArrowLeft"){ goal = Math.round(goal) + (e.key === "ArrowRight" ? 1 : -1); run(110); }
+  });
 
-  const hoverThumb = (() => {
-    const el = document.createElement("div"); el.className = "hthumb"; el.setAttribute("aria-hidden","true");
-    el.innerHTML = `<div class="im"></div><div class="tx"><b></b><span></span></div>`;
+  const pxPerCard = () => Math.max(220, cf.clientWidth * .26);
+  // sideways scroll (trackpad, shift + wheel) turns it as far and fast as you scroll;
+  // plain up/down keeps scrolling the page. When the scrolling stops it settles on a card.
+  let quiet = null;
+  cf.addEventListener("wheel", e => {
+    const dx = e.shiftKey && !e.deltaX ? e.deltaY : e.deltaX;
+    if(Math.abs(dx) <= Math.abs(e.shiftKey ? 0 : e.deltaY)) return;
+    e.preventDefault();
+    const unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? cf.clientWidth : 1;
+    goal += dx * unit / pxPerCard();
+    run(60);
+    clearTimeout(quiet); quiet = setTimeout(snap, 90);
+  }, {passive:false});
+  // drag or swipe: follows the finger, and a flick carries on in proportion to its speed
+  let moved = false;
+  const drag = {on:false, x:0, start:0, lx:0, lt:0, v:0};
+  cf.addEventListener("pointerdown", e => {
+    if(e.button !== 0 || e.target.closest(".arrow")) return;
+    drag.on = true; drag.x = drag.lx = e.clientX; drag.lt = performance.now(); drag.v = 0; moved = false; drag.start = goal;
+  });
+  addEventListener("pointermove", e => {
+    if(!drag.on) return;
+    const dx = e.clientX - drag.x;
+    if(!moved && Math.abs(dx) > 5) moved = true;
+    if(!moved) return;
+    const now = performance.now(), dt = Math.max(1, now - drag.lt);
+    drag.v = drag.v*.6 + ((e.clientX - drag.lx) / dt)*.4; drag.lx = e.clientX; drag.lt = now;
+    goal = drag.start - dx / pxPerCard();
+    run(35);
+  });
+  addEventListener("pointerup", () => {
+    if(!drag.on) return; drag.on = false;
+    if(moved){ goal = Math.round(goal - drag.v * 180 / pxPerCard()); run(120); }
+    setTimeout(() => moved = false, 0);
+  });
+  cf.addEventListener("dragstart", e => e.preventDefault());
+
+
+  // ---------- Uitgelicht: rest 1 s on the front card and it opens up and plays ----------
+  // The card grows a little into a playing preview with its details underneath; the page dims.
+  const VIDEO = {event:1, trouw:1, promo:1};
+  const pvType = p => p.type || (VIDEO[p.cat] ? t("type." + p.cat) : sub(p));
+  const pvTitle = p => {
+    if(p.title) return p.title;
+    const n = flat(lab(p));
+    // videography: add the subtitle unless it only repeats the type ("Wejo × Bocco: Pop-up opening")
+    return VIDEO[p.cat] && p.sub && sub(p).toLowerCase() !== pvType(p).toLowerCase() ? `${n}: ${sub(p)}` : n;
+  };
+  const mmss = s => { s = Math.round(s); return Math.floor(s/60) + ":" + String(s%60).padStart(2,"0"); };
+  const ICON = {
+    clock:`<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="currentColor"/><path d="M12 5.5V12l4.2 2.6" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round"/></svg>`,
+    audio:`<svg viewBox="0 0 30 24" aria-hidden="true"><path d="M2 8.5h5L13 3v18l-6-5.5H2z" fill="currentColor"/><path d="M17 8.2a5.3 5.3 0 0 1 0 7.6M20.3 5a9.8 9.8 0 0 1 0 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`,
+    subs:`<svg viewBox="0 0 26 24" aria-hidden="true"><path d="M2 2h22v15H9l-5 5v-5H2z" fill="currentColor"/><path d="M6.5 7.5h13M6.5 11.5h13" stroke="#000" stroke-width="1.8"/></svg>`
+  };
+  // any device with a mouse or trackpad (touch-only screens tap straight to the player)
+  const canPeek = matchMedia("(any-hover: hover)").matches;
+  var cfSettled = () => {};
+  const shade = document.createElement("div"); shade.className = "pv-shade"; document.body.appendChild(shade);
+  // var, not let: the carousel above already checks `pv` while it draws its first frame
+  var pv = null, peekTimer = 0, peekLeft = 0;
+  const PEEK_MS = 1000, GROW = 1.55;
+  const cfCtx = {
+    grow: 1.12, cls: "pv-cf",
+    home: c => c.getBoundingClientRect(),
+    shift: () => 0,
+    begin(){}, open(){}, close(){},
+    // sideways scrolling keeps turning the carousel; the preview closes as soon as it moves
+    wheel(dx){ goal += dx / pxPerCard(); run(60); clearTimeout(quiet); quiet = setTimeout(snap, 90); }
+  };
+
+  function rowHTML(p){
+    const hd = p.hd ?? p._hd, dur = p.dur || (p._dur ? mmss(p._dur) : "");
+    const bits = [];
+    if(hd) bits.push(`<span class="hd">HD</span>`);
+    if(dur) bits.push(`<span>${ICON.clock}${esc(dur)}</span>`);
+    if(p.lang) bits.push(`<span>${ICON.audio}${esc(p.lang)}</span>`);
+    if(p.subs) bits.push(`<span>${ICON.subs}${esc(p.subs)}</span>`);
+    return bits.join("");
+  }
+  function refreshRow(p){
+    if(!pv || pv.p !== p) return;
+    const r = pv.el.querySelector(".pv-r"); r.innerHTML = rowHTML(p); r.hidden = !r.innerHTML;
+  }
+
+  function openPeek(card, ctx = cfCtx){
+    if(pv) closePeek(true);
+    const p = BY[card.dataset.id]; if(!p) return;
+    const r = ctx.home(card);
+    // where the preview ends up: grown around the card's centre, kept inside the window
+    const W = Math.min(r.width * ctx.grow, innerWidth - 32), H = W * 9/16;
+    const L = Math.max(16, Math.min(innerWidth - 16 - W, r.left + r.width/2 - W/2));
+    const T = r.top + r.height/2 - H/2;
+    const el = document.createElement("div");
+    el.className = "pv " + ctx.cls; el.style.setProperty("--c", COLOR(p.cat));
+    el.setAttribute("role", "button"); el.setAttribute("aria-label", t("play", {t:pvTitle(p)}));
+    el.innerHTML = `<div class="pv-media"></div>
+      <div class="pv-info"><div class="pv-t">${esc(pvTitle(p))}</div>
+        <div class="pv-m">${esc(pvType(p))}<span class="dot">•</span>${esc(when(p))}</div>
+        <div class="pv-r"></div></div>`;
+    const media = el.querySelector(".pv-media");
+    // reuse the card's own, already decoded picture so the first frame is never empty
+    const own = card.querySelector(".face img"), f = face(p), fi = f.querySelector("img");
+    if(own && fi){ fi.src = own.currentSrc || own.src; fi.loading = "eager"; }
+    media.append(f, cap(p));
+    // the preview is laid out once at its final size; growing is a pure scale from the card,
+    // which the graphics card animates without the page having to re-lay out every frame
+    el.style.left = L + "px"; el.style.top = (T + scrollY) + "px"; el.style.width = W + "px";
+    el.style.fontSize = Math.min(24, Math.max(W, 300) / 375 * 16) + "px";
+    el.style.setProperty("--k", (W / r.width).toFixed(4));
+    ctx.begin();
+    const shrunk = () => { const q = ctx.home(card), dx = ctx.shift(); return `translate(${(q.left - L - dx).toFixed(2)}px,${(q.top - T).toFixed(2)}px) scale(${(q.width / W).toFixed(4)})`; };
+    el.style.transform = shrunk();
+    el.style.visibility = "hidden";
     document.body.appendChild(el);
-    const im = el.querySelector(".im"), b = el.querySelector("b"), s = el.querySelector("span");
-    let cur = null;
-    return {
-      show(p, cx, cy){
-        if(cur !== p.id + L.lang){
-          cur = p.id + L.lang; el.style.setProperty("--c", COLOR(p.cat));
-          b.textContent = flat(lab(p)); s.textContent = sub(p) + " · " + when(p);
-          im.innerHTML = ""; if(p.cover || p.yt) im.appendChild(coverImg(p));
-        }
-        el.classList.add("on");
-        const W = el.offsetWidth, H = el.offsetHeight, pad = 18;
-        let left = cx + pad, top = cy + pad;
-        if(left + W > innerWidth - 8) left = cx - W - pad;
-        if(top + H > innerHeight - 8) top = cy - H - pad;
-        el.style.transform = `translate(${Math.max(8,left)}px,${Math.max(8,top)}px)`;
-      },
-      hide(){ el.classList.remove("on"); }
-    };
-  })();
-
-  function timeline(sec, host, o){
-    const start = D(o.start), stop = D(o.end), span = stop - start;
-    const x = t => ((t - start) / span * 100) + "%", w = d => (d / span * 100) + "%";
-    host.innerHTML = `<div class="tl"><div class="heads"><div class="sp"><span class="tc"></span></div></div>
-      <div class="tl-scroll"><div class="tl-in"><div class="ruler"></div><div class="trks"></div><div class="now"></div><div class="playhead"></div></div></div>
-      <div class="fade l"></div><div class="fade r"></div></div>`;
-    const tl = host.querySelector(".tl"), heads = host.querySelector(".heads"), trks = host.querySelector(".trks"), ruler = host.querySelector(".ruler"), inner = host.querySelector(".tl-in");
-    const ph = host.querySelector(".playhead"), tcEl = host.querySelector(".tc");
-    const p2 = v => String(v).padStart(2,"0");
-    const tcOf = t => { const d = new Date(t); return p2(d.getUTCDate())+":"+p2(d.getUTCMonth()+1)+":"+d.getUTCFullYear(); };
-    let phT = D(o.now);
-    const placePH = t => { ph.style.left = x(t); tcEl.textContent = tcOf(t); };
-    const park = () => placePH(phT);
-
-    // ----- build: group headers, tracks, clips -----
-    const items = [], rows = [], seps = [];
-    o.groups.forEach(g => {
-      const gh = document.createElement("div"); gh.className = "grp"; gh.textContent = t(g.label); heads.appendChild(gh);
-      const gr = document.createElement("div"); gr.className = "grp-row"; trks.appendChild(gr);
-      const line = document.createElement("div"); line.className = "sep"; tl.appendChild(line);
-      seps.push({row:gr, el:line});
-      g.tracks.forEach(tr => {
-        const h = document.createElement("div"); h.className = "head"; h.style.setProperty("--c", COLOR(tr.cat));
-        h.innerHTML = `<span class="sw"></span><span class="nm-l">${esc(t(tr.name))}</span><span class="nm-s">${esc(t(tr.short || tr.name))}</span>`; heads.appendChild(h);
-        const row = document.createElement("div"); row.className = "trk"; row.dataset.cat = tr.cat;
-        // projects that overlap in time get their own lane inside the track
-        const its = P.filter(p => p.cat === tr.cat).map(p => { const a = D(p.t0); return {p, a, b:Math.max(p.t1 ? D(p.t1) : a, a + o.minDays*DAY)}; }).sort((m,k) => m.a - k.a);
-        const laneEnd = [];
-        its.forEach(it => { let l = laneEnd.findIndex(e => e <= it.a); if(l < 0){ l = laneEnd.length; laneEnd.push(0); } laneEnd[l] = it.b; it.lane = l; });
-        its.forEach(it => {
-          items.push(it); const p = it.p;
-          const c = document.createElement("button"); c.type = "button"; c.className = "clip"; c.dataset.id = p.id; c.style.setProperty("--c", COLOR(p.cat));
-          c.style.left = x(it.a); c.style.width = w(it.b - it.a); c.setAttribute("aria-label", `${flat(lab(p))}, ${when(p)}`);
-          c.innerHTML = `<span class="film"></span><span class="nm"><span>${esc(tlName(p))}</span></span>`;
-          it.el = c; row.appendChild(c);
-        });
-        rows.push({head:h, row, its, lanes:Math.max(1, laneEnd.length)});
-        trks.appendChild(row);
-      });
-    });
-    const clips = items.map(it => it.el);
-    const d0 = new Date(start); let yy = d0.getUTCFullYear(), mm = d0.getUTCMonth();
-    for(;;){ const t = Date.UTC(yy,mm,1,12); if(t > stop) break;
-      if(t >= start - DAY){ const el = document.createElement("div"); el.className = "tick"+(mm===0?" y":""); el.dataset.m = mm; el.style.left = x(Math.max(t,start)); el.textContent = mm===0 ? yy : L.monthShort(mm); ruler.appendChild(el); }
-      mm++; if(mm > 11){ mm = 0; yy++; } }
-    const ticks = [...ruler.querySelectorAll(".tick")];
-    const months = span / (30.44*DAY);
-    host.querySelector(".now").style.left = x(D(o.now));
-
-    // ----- track height: shift + scroll makes the tracks taller, like in Resolve -----
-    const HMIN = 30, HMAX = 132, EXPAND = 46, BAR = 18;
-    let clipH = HMIN;
-    function films(){
-      items.forEach(it => {
-        const c = it.el, film = c.querySelector(".film");
-        const fh = Math.max(1, it.h - BAR - 3), tw = fh * 16/9;
-        const n = Math.max(1, Math.ceil(c.offsetWidth / tw));
-        film.style.height = fh + "px";
-        if(+film.dataset.n !== n){
-          const src = it.p.frames && it.p.frames.length ? it.p.frames : [it.p.cover].filter(Boolean);
-          film.dataset.n = n; film.innerHTML = "";
-          for(let i = 0; i < n && src.length; i++){
-            const im = new Image(); im.alt = ""; im.decoding = "async"; im.draggable = false;
-            im.src = src[Math.floor(i * src.length / n)];
-            film.appendChild(im);
-          }
-        }
-        film.querySelectorAll("img").forEach(im => im.style.width = tw + "px");
-      });
-    }
-    function layoutV(){
-      rows.forEach(r => {
-        const multi = r.lanes > 1, rowH = multi ? 10 + r.lanes*clipH : clipH + 8;
-        r.row.style.height = r.head.style.height = rowH + "px";
-        r.its.forEach(it => {
-          it.h = multi ? clipH - 4 : clipH;
-          it.el.style.top = (multi ? 7 + it.lane*clipH : 4) + "px";
-          it.el.style.height = it.h + "px";
-        });
-      });
-      const ex = clipH >= EXPAND;
-      clips.forEach(c => c.classList.toggle("x", ex));
-      if(ex) films();
-      seps.forEach(sp => sp.el.style.top = (inner.offsetTop + sp.row.offsetTop + 10) + "px");
-    }
-    function setH(h){
-      h = Math.round(Math.max(HMIN, Math.min(HMAX, h)));
-      if(h === clipH) return;
-      clipH = h; layoutV();
-    }
-    tl.addEventListener("wheel", e => {
-      if(!e.shiftKey || e.altKey || e.ctrlKey) return;
+    const me = pv = {el, card, p, shrunk, ctx, off: offset};
+    refreshRow(p);
+    el.addEventListener("mouseleave", () => { if(pv === me) closePeek(); });
+    // sideways scrolling over the open preview keeps turning the carousel underneath it
+    el.addEventListener("wheel", e => {
+      const dx = e.shiftKey && !e.deltaX ? e.deltaY : e.deltaX;
+      if(Math.abs(dx) <= Math.abs(e.shiftKey ? 0 : e.deltaY)) return;
       e.preventDefault();
-      // with shift held, browsers often report the wheel as sideways; either way, up = taller
-      const d = e.deltaY || e.deltaX;
-      setH(clipH - d * .25);
+      const unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? innerWidth : 1;
+      ctx.wheel(dx * unit);
     }, {passive:false});
-
-    // ----- hover, click -----
-    function hl(id){ clips.forEach(c => c.classList.toggle("hl", c.dataset.id === id)); }
-    inner.addEventListener("mousemove", e => {
-      const r = inner.getBoundingClientRect(), f = Math.max(0, Math.min(1, (e.clientX - r.left)/r.width)), t = start + f*span;
-      ph.style.left = (f*100) + "%"; tcEl.textContent = tcOf(t);
-      const row = e.target.closest(".trk"), rr = row && rows.find(q => q.row === row);
-      let lane = null;
-      if(rr && rr.lanes > 1) lane = Math.max(0, Math.floor((e.clientY - row.getBoundingClientRect().top - 7)/clipH));
-      const vis = items.filter(it => (!row || row.dataset.cat === it.p.cat) && (lane == null || it.lane === lane));
-      let hit = vis.filter(it => t >= it.a && t <= it.b).sort((a,b) => (a.b-a.a) - (b.b-b.a))[0];
-      if(!hit && row){ let best = null, bd = 25*DAY; vis.forEach(it => { const dd = Math.abs((it.a+it.b)/2 - t); if(dd < bd){ bd = dd; best = it; } }); hit = best; }
-      hl(hit ? hit.p.id : null);
-      const over = e.target.closest(".clip");
-      if(over && !drag.moved) hoverThumb.show(BY[over.dataset.id], e.clientX, e.clientY); else hoverThumb.hide();
-    });
-    inner.addEventListener("mouseleave", () => { hl(null); hoverThumb.hide(); park(); });
-    inner.addEventListener("click", e => {
-      if(drag.suppress){ drag.suppress = false; return; }
-      const c = e.target.closest(".clip");
-      if(c){ hoverThumb.hide(); phT = items.find(i => i.p.id === c.dataset.id).a; openPlayer(BY[c.dataset.id]); return; }
-      // clicking empty space parks the playhead there, like in an editor
-      const r = inner.getBoundingClientRect(); phT = start + Math.max(0, Math.min(1, (e.clientX - r.left)/r.width))*span;
-    });
-    inner.addEventListener("focusin", e => { const c = e.target.closest(".clip"); if(c) hl(c.dataset.id); });
-
-    // ----- zoom + pan -----
-    const sc = host.querySelector(".tl-scroll"), zoomEl = sec.querySelector(".zoom"), zl = zoomEl.querySelector(".zl");
-    const ZMIN = 1, ZMAX = 8; let zoom = 1;
-    const baseW = () => Math.max(760, sc.clientWidth);
-    function labelTicks(){
-      const pxm = inner.offsetWidth / months;
-      const stp = [1,2,3,6].find(s => pxm*s >= 46) || 12;
-      ticks.forEach(t => { const m = +t.dataset.m; t.style.visibility = (m === 0 || m % stp === 0) ? "visible" : "hidden"; });
-      const minor = pxm/4.35 >= 9 ? pxm/4.35 : pxm/2;
-      ruler.style.backgroundSize = Math.max(4, minor) + "px 5px";
-      clips.forEach(c => c.classList.toggle("narrow", c.offsetWidth < 56));
-      if(clipH >= EXPAND) films();
-    }
-    function setZoom(z, ax){
-      z = Math.max(ZMIN, Math.min(ZMAX, z));
-      if(ax == null) ax = sc.clientWidth/2;
-      const f = (sc.scrollLeft + ax) / inner.offsetWidth;
-      zoom = z; inner.style.width = (baseW()*z) + "px";
-      sc.scrollLeft = f*inner.offsetWidth - ax;
-      zl.textContent = Math.round(z*100) + "%";
-      zoomEl.querySelector('[data-z="out"]').disabled = z <= ZMIN;
-      zoomEl.querySelector('[data-z="in"]').disabled = z >= ZMAX;
-      labelTicks();
-    }
-    zoomEl.addEventListener("click", e => {
-      const b = e.target.closest(".zb"); if(!b) return; userMoved = true;
-      if(b.dataset.z === "in") setZoom(zoom*1.5); else if(b.dataset.z === "out") setZoom(zoom/1.5); else { setZoom(1); setH(HMIN); }
-    });
-    sc.addEventListener("wheel", e => {
-      if(!(e.altKey || e.ctrlKey)) return;
-      e.preventDefault(); userMoved = true;
-      const r = sc.getBoundingClientRect(), d = e.deltaY || e.deltaX;
-      setZoom(zoom*Math.exp(-d*(e.ctrlKey ? .01 : .004)), e.clientX - r.left);
-    }, {passive:false});
-    // touch: slide along the ruler to scrub
-    let scrubbing = false;
-    const scrubTo = cx => {
-      const r = inner.getBoundingClientRect(), t = start + Math.max(0, Math.min(1, (cx - r.left)/r.width))*span;
-      phT = t; placePH(t);
-      const hit = items.filter(it => t >= it.a && t <= it.b).sort((a,b) => (a.b-a.a) - (b.b-b.a))[0];
-      hl(hit ? hit.p.id : null);
-    };
-    ruler.addEventListener("touchstart", e => { if(e.touches.length !== 1) return; scrubbing = true; scrubTo(e.touches[0].clientX); }, {passive:true});
-    ruler.addEventListener("touchmove", e => { if(!scrubbing || e.touches.length !== 1) return; e.preventDefault(); scrubTo(e.touches[0].clientX); }, {passive:false});
-    ruler.addEventListener("touchend", () => { scrubbing = false; });
-    // pinch: sideways zooms time, upright spreads the tracks
-    let pinch = null;
-    const spread = t => ({x:Math.abs(t[0].clientX - t[1].clientX), y:Math.abs(t[0].clientY - t[1].clientY)});
-    sc.addEventListener("touchstart", e => { if(e.touches.length === 2) pinch = {s:spread(e.touches), z:zoom, h:clipH}; }, {passive:true});
-    sc.addEventListener("touchmove", e => {
-      if(!pinch || e.touches.length !== 2) return; e.preventDefault(); userMoved = true;
-      const s = spread(e.touches), r = sc.getBoundingClientRect(), mid = (e.touches[0].clientX + e.touches[1].clientX)/2 - r.left;
-      if(pinch.s.x >= pinch.s.y) setZoom(pinch.z * Math.max(1,s.x)/Math.max(1,pinch.s.x), mid);
-      else setH(pinch.h + (s.y - pinch.s.y) * .6);
-    }, {passive:false});
-    sc.addEventListener("touchend", e => { if(e.touches.length < 2) pinch = null; });
-    // drag to pan
-    const drag = {on:false, moved:false, suppress:false, x:0, s:0};
-    inner.addEventListener("mousedown", e => { if(e.button !== 0) return; drag.on = true; drag.moved = false; drag.x = e.clientX; drag.s = sc.scrollLeft; });
-    addEventListener("mousemove", e => {
-      if(!drag.on) return;
-      const dx = e.clientX - drag.x;
-      if(!drag.moved && Math.abs(dx) > 4){ drag.moved = true; userMoved = true; inner.classList.add("dragging"); hoverThumb.hide(); }
-      if(drag.moved) sc.scrollLeft = drag.s - dx;
-    });
-    addEventListener("mouseup", () => { if(!drag.on) return; drag.on = false; if(drag.moved){ drag.suppress = true; setTimeout(() => drag.suppress = false, 0); } drag.moved = false; inner.classList.remove("dragging"); });
-    // open on the most recent part when the timeline is wider than its box
-    let userMoved = false;
-    const showRecent = () => { sc.scrollLeft = Math.max(0, (phT - start)/span*inner.offsetWidth - sc.clientWidth*.85); };
-    new ResizeObserver(() => { setZoom(zoom); layoutV(); if(!userMoved && sc.clientWidth > 0) showRecent(); }).observe(sc);
-    setZoom(1); layoutV(); park(); showRecent();
-  }
-
-  // built again when the language changes; the zoom buttons are swapped for fresh copies
-  // so the old timeline's click handlers go with it
-  function buildTimeline(){
-    const z = $("#tijdlijn .zoom"); z.replaceWith(z.cloneNode(true));
-    timeline($("#tijdlijn"), $("#tl"), {
-      start:"2024-09-01", end:iso(TODAY + 40*DAY), now:iso(TODAY), minDays:18,
-      groups:[
-        {label:"tl.video", tracks:[{cat:"event",name:"tl.event"},{cat:"trouw",name:"tl.trouw",short:"tl.trouw.s"},{cat:"promo",name:"tl.promo",short:"tl.promo.s"}]},
-        {label:"tl.ritcs", tracks:[{cat:"fictie",name:"tl.fictie"},{cat:"docu",name:"tl.docu",short:"tl.docu.s"},{cat:"iao",name:"tl.iao"}]}
-      ]
+    el.addEventListener("click", () => { if(pv !== me) return; closePeek(true); openPlayer(p); });
+    // start the moment the picture is ready to draw (a cached one is ready within a frame)
+    const ready = fi && fi.decode ? fi.decode().catch(() => {}) : Promise.resolve();
+    Promise.race([ready, new Promise(res => setTimeout(res, 150))]).then(() => {
+      if(pv !== me) return;
+      el.style.visibility = "";
+      card.classList.add("lifted");
+      requestAnimationFrame(() => {
+        if(pv !== me) return;
+        el.classList.add("open"); el.style.transform = "none";
+        shade.classList.add("on");
+        ctx.open(card, {left:L + ctx.shift(), right:L + W + ctx.shift(), mid:T + H/2});
+        // the clip itself starts once the preview has opened, so loading it doesn't stutter the motion
+        setTimeout(() => { if(pv === me) startClip(p, media); }, 600);
+      });
     });
   }
-  buildTimeline();
+  function startClip(p, media){
+    // muted, because browsers only autoplay muted video
+    if(p.vids){
+      const v = document.createElement("video");
+      Object.assign(v, {src:p.vids[0].src, muted:true, loop:true, autoplay:true, playsInline:true});
+      v.addEventListener("loadedmetadata", () => { p._dur = v.duration; if(p.hd == null) p._hd = v.videoHeight >= 720; refreshRow(p); });
+      v.addEventListener("playing", () => v.classList.add("on"));
+      media.appendChild(v);
+    } else if(p.yt){
+      const f = document.createElement("iframe");
+      f.src = `https://www.youtube-nocookie.com/embed/${p.yt}?autoplay=1&mute=1&controls=0&rel=0&playsinline=1&loop=1&playlist=${p.yt}&modestbranding=1&iv_load_policy=3&disablekb=1&enablejsapi=1&origin=${encodeURIComponent(location.origin)}`;
+      f.allow = "autoplay; encrypted-media"; f.tabIndex = -1; f.title = pvTitle(p);
+      // ask the player for its state, duration and quality levels
+      f.addEventListener("load", () => {
+        try{ f.contentWindow.postMessage(JSON.stringify({event:"listening", id:p.id, channel:"widget"}), "*"); }catch(e){}
+      });
+      media.appendChild(f);
+    }
+  }
+  function closePeek(now){
+    clearTimeout(peekTimer);
+    if(!pv) return;
+    const {el, card, shrunk, ctx} = pv; pv = null;
+    shade.classList.remove("on"); ctx.close();
+    let gone = false;
+    const done = () => { if(gone) return; gone = true; el.remove(); card.classList.remove("lifted"); };
+    if(now || el.style.visibility === "hidden"){ done(); return; }
+    const m = el.querySelector("iframe,video"); if(m) m.remove();
+    el.classList.remove("open");
+    el.style.transform = shrunk();
+    el.addEventListener("transitionend", e => { if(e.target === el && e.propertyName === "transform") done(); });
+    setTimeout(done, 520);
+  }
+  addEventListener("message", e => {
+    if(!/youtube/.test(e.origin) || !pv) return;
+    let d; try{ d = typeof e.data === "string" ? JSON.parse(e.data) : e.data; }catch(err){ return; }
+    if(!d || d.event !== "infoDelivery" || !d.info) return;
+    const p = pv.p; let ch = false;
+    // only show the player once it is really playing; until then the cover stays
+    if(d.info.playerState === 1){ const f = pv.el.querySelector("iframe"); if(f) f.classList.add("on"); }
+    if(d.info.duration && !p._dur){ p._dur = d.info.duration; ch = true; }
+    const q = d.info.availableQualityLevels;
+    if(Array.isArray(q) && q.length && p.hd == null && p._hd == null){ p._hd = q.some(l => /hd|highres/.test(l)); ch = true; }
+    if(ch) refreshRow(p);
+  });
+  if(canPeek){
+    addEventListener("resize", () => closePeek(true));
+    addEventListener("keydown", e => { if(e.key === "Escape") closePeek(); });
+
+    // Uitgelicht: rest 1 s on the front card while the carousel stands still
+    const cfFront = c => +c.tabIndex === 0 && Math.abs(goal - offset) < .01 && Math.abs(goal - Math.round(goal)) < .01;
+    const cfArm = c => { clearTimeout(peekTimer); peekTimer = setTimeout(() => { if(!drag.on && c.matches(":hover") && cfFront(c)) openPeek(c, cfCtx); }, PEEK_MS); };
+    track.addEventListener("mouseover", e => {
+      const c = e.target.closest(".cf-item"); if(!c || c.contains(e.relatedTarget) || drag.on || !cfFront(c)) return;
+      cfArm(c);
+    });
+    track.addEventListener("mouseout", e => { const c = e.target.closest(".cf-item"); if(c && !c.contains(e.relatedTarget)) clearTimeout(peekTimer); });
+    cf.addEventListener("pointerdown", () => clearTimeout(peekTimer));
+    cf.addEventListener("wheel", () => clearTimeout(peekTimer), {passive:true});
+    // when a turn ends with the new front card under the pointer, the wait starts for that one
+    cfSettled = () => { if(pv) return; const c = track.querySelector(".cf-item:hover"); if(c && cfFront(c)) cfArm(c); };
+  }
+
 
   // ---------- player ----------
   const dlg = $("#player");

@@ -3,14 +3,15 @@
 (function(){
   const T = {
     "nav.main":        {nl:"Hoofdmenu",            en:"Main menu",            fr:"Menu principal"},
-    "nav.video":       {nl:"Videografie",          en:"Videography",          fr:"Vidéographie"},
-    "nav.ritcs":       {nl:"RITCS",                en:"RITCS",                fr:"RITCS"},
+    "nav.video":       {nl:"Video",                en:"Video",                fr:"Vidéo"},
+    "nav.ritcs":       {nl:"Film",                 en:"Film",                 fr:"Film"},
     "nav.other":       {nl:"Overig",               en:"Other",                fr:"Autres"},
     "nav.top":         {nl:"Tristan Nijs Media, naar boven", en:"Tristan Nijs Media, back to top", fr:"Tristan Nijs Media, retour en haut"},
     "lang.label":      {nl:"Taal",                 en:"Language",             fr:"Langue"},
     "menu.open":       {nl:"Menu openen",          en:"Open menu",            fr:"Ouvrir le menu"},
     "menu.close":      {nl:"Menu sluiten",         en:"Close menu",           fr:"Fermer le menu"},
     "hero.down":       {nl:"Naar beneden",         en:"Scroll down",          fr:"Défiler vers le bas"},
+    "foot.mail":       {nl:"Mail",                 en:"Email",                fr:"E-mail"},
     "sec.about":       {nl:"Over",                 en:"About",                fr:"À propos"},
     "about.1": {nl:"Ik ben Tristan Nijs, videograaf en editor. Ik kom uit Gent en studeer filmmontage in Brussel aan het RITCS.",
                 en:"I’m Tristan Nijs, videographer and editor. I’m from Ghent and study film editing at RITCS in Brussels.",
@@ -54,6 +55,17 @@
     "Trouwfilm":      {en:"Wedding film",  fr:"Film de mariage"},
     "Pop-up opening": {en:"Pop-up opening", fr:"Ouverture pop-up"}
   };
+  // what Tristan did on a project (data.js: roles, written in Dutch)
+  const ROLE = {
+    "Script":   {en:"Script",      fr:"Scénario"},
+    "Scenario": {en:"Script",      fr:"Scénario"},
+    "Regie":    {en:"Direction",   fr:"Réalisation"},
+    "Camera":   {en:"Camera",      fr:"Caméra"},
+    "Montage":  {en:"Editing",     fr:"Montage"},
+    "Kleur":    {en:"Colour",      fr:"Étalonnage"},
+    "Productie":{en:"Production",  fr:"Production"},
+    "Geluid":   {en:"Sound",       fr:"Son"}
+  };
   const LANGS = ["nl","en","fr"], LOCALE = {nl:"nl-BE", en:"en-GB", fr:"fr-BE"};
   // project titles from data.js: course names and "Film van" are translated, names of films stay
   const LABEL = {
@@ -89,6 +101,7 @@
       if(vars) for(const k in vars) s = s.replace("{" + k + "}", vars[k]);
       return s;
     },
+    role(s){ const e = ROLE[s]; return lang === "nl" || !e ? s : (e[lang] ?? s); },
     sub(s){ const e = SUB[s]; return lang === "nl" || !e ? s : (e[lang] ?? s); },
     label(s){ return lang === "nl" ? s : (LABEL[lang] || []).reduce((a, [re, to]) => a.replace(re, to), s); },
     // short month for the timeline ruler
