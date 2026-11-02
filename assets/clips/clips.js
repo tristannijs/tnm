@@ -828,6 +828,98 @@ window.CLIPS = {
    ]
   },
   {
+   "src": "assets/clips/videografie/dochoFall_3.mp4",
+   "av1": "assets/clips/videografie/dochoFall_3-av1.mp4",
+   "poster": "assets/clips/videografie/dochoFall_3.jpg",
+   "project": "dochofall",
+   "dur": 4.6,
+   "x": 0.379,
+   "y": 0.18,
+   "focus": [
+    [
+     0,
+     0.379,
+     0.18
+    ],
+    [
+     1.4,
+     0.516,
+     0.379
+    ],
+    [
+     1.48,
+     0.446,
+     0.149
+    ],
+    [
+     1.8,
+     0.539,
+     0.467
+    ],
+    [
+     2.0,
+     0.666,
+     0.206
+    ],
+    [
+     2.6,
+     0.545,
+     0.268
+    ],
+    [
+     2.84,
+     0.616,
+     0.247
+    ],
+    [
+     3.8,
+     0.435,
+     0.193
+    ],
+    [
+     4.2,
+     0.4,
+     0.217
+    ]
+   ]
+  },
+  {
+   "src": "assets/clips/videografie/dochoFall_4.mp4",
+   "av1": "assets/clips/videografie/dochoFall_4-av1.mp4",
+   "poster": "assets/clips/videografie/dochoFall_4.jpg",
+   "project": "dochofall",
+   "dur": 3.04,
+   "x": 0.414,
+   "y": 0.406,
+   "focus": [
+    [
+     0,
+     0.414,
+     0.406
+    ],
+    [
+     0.28,
+     0.252,
+     0.099
+    ],
+    [
+     1.12,
+     0.419,
+     0.165
+    ],
+    [
+     2.12,
+     0.618,
+     0.318
+    ],
+    [
+     3.0,
+     0.578,
+     0.328
+    ]
+   ]
+  },
+  {
    "src": "assets/clips/videografie/dochoSpring_2.mp4",
    "av1": "assets/clips/videografie/dochoSpring_2-av1.mp4",
    "poster": "assets/clips/videografie/dochoSpring_2.jpg",
@@ -860,6 +952,32 @@ window.CLIPS = {
      3.8,
      0.464,
      0.361
+    ]
+   ]
+  },
+  {
+   "src": "assets/clips/videografie/dochoSpring_3.mp4",
+   "av1": "assets/clips/videografie/dochoSpring_3-av1.mp4",
+   "poster": "assets/clips/videografie/dochoSpring_3.jpg",
+   "project": "dochospring",
+   "dur": 3.4,
+   "x": 0.597,
+   "y": 0.314,
+   "focus": [
+    [
+     0,
+     0.597,
+     0.314
+    ],
+    [
+     1.6,
+     0.548,
+     0.457
+    ],
+    [
+     3.0,
+     0.474,
+     0.401
     ]
    ]
   },
