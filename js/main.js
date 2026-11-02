@@ -44,8 +44,11 @@
 
   // ---------- top bar ----------
   const bar = $("#bar");
-  const onScroll = () => bar.classList.toggle("solid", scrollY > 8);
-  addEventListener("scroll", onScroll, {passive:true}); onScroll();
+  // transparent with only language + menu while the hero words are in view; once they have scrolled
+  // away (under the bar) it turns black and the links come in
+  const doorsEl = $("#doors");
+  const onScroll = () => { const r = doorsEl.getBoundingClientRect(); bar.classList.toggle("solid", r.bottom < bar.offsetHeight); };
+  addEventListener("scroll", onScroll, {passive:true}); addEventListener("resize", onScroll); onScroll();
 
   const menuBtn = $("#menuBtn"), drawer = $("#drawer");
   function setMenu(open){
@@ -223,11 +226,19 @@
       });
     }
   });
+  // the background stays put while the page scrolls over it; once the hero is out of sight it stops playing
+  let heroSeen = true, curKey = "home";
+  new IntersectionObserver(([e]) => {
+    heroSeen = e.isIntersecting;
+    $(".hero-bg").style.visibility = heroSeen ? "" : "hidden";
+    layers.forEach(l => { if(l.player && l.dataset.key === curKey){ heroSeen ? l.player.play() : l.player.pause(); } });
+  }).observe($("#hero"));
   function showLayer(key){
+    curKey = key;
     layers.forEach(l => {
       const on = l.dataset.key === key;
       l.classList.toggle("on", on);
-      if(l.player){ if(on) l.player.play(); else l.player.pause(); }
+      if(l.player){ if(on && heroSeen) l.player.play(); else l.player.pause(); }
     });
   }
   const doors = $("#doors");
