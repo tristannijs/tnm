@@ -26,7 +26,7 @@ aside a i{font-style:normal;color:var(--accent)}
 main{display:flex;flex-direction:column;min-width:0;padding:18px 22px;gap:14px;overflow:auto}
 .top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .top h1{font-size:18px;font-weight:600;margin:0 auto 0 0}
-.stage{display:flex;gap:22px;align-items:flex-start}
+.stage{flex:none;display:flex;gap:22px;align-items:flex-start}
 .frame{position:relative;flex:1;min-width:0;cursor:crosshair;user-select:none}
 .frame video{display:block;width:100%;aspect-ratio:16/9;background:#000}
 .win{position:absolute;top:0;bottom:0;border:2px solid var(--accent);box-shadow:0 0 0 9999px rgba(0,0,0,.55);pointer-events:none}
@@ -34,11 +34,12 @@ main{display:flex;flex-direction:column;min-width:0;padding:18px 22px;gap:14px;o
 .phone{flex:none;width:190px}
 .phone canvas{display:block;width:190px;height:411px;background:#000;border:1px solid #333;border-radius:18px}
 .phone p{margin:6px 0 0;color:var(--muted);font-size:12px;text-align:center}
-.tl{position:relative;height:46px;background:#1b1b1b;border:1px solid var(--line);cursor:pointer;user-select:none}
+.tl{position:relative;flex:none;height:46px;background:#1b1b1b;border:1px solid var(--line);cursor:pointer;user-select:none}
 .shot{position:absolute;top:0;bottom:0;border-right:2px solid #000;background:#262626}
 .shot.sel{background:#2f3b52}
 .shot b{position:absolute;left:6px;top:5px;font-size:11px;font-weight:500;color:#bbb}
-.shot.move b::after{content:" ↗ beweegt";color:var(--accent)}
+.key{position:absolute;top:26px;width:12px;height:12px;margin-left:-6px;transform:rotate(45deg);background:#bbb;border:1px solid #000;cursor:pointer}
+.key.act{background:var(--accent)}
 .ph{position:absolute;top:-4px;bottom:-4px;width:2px;background:#fff;pointer-events:none}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .row .sp{flex:1}
@@ -72,18 +73,19 @@ kbd{font:12px "Geist";background:#262626;border:1px solid #3a3a3a;padding:1px 5p
       <span class="time" id="time">0.00 s</span>
       <span class="sp"></span>
       <button id="mid">Midden</button>
-      <button id="move">Beweegt</button>
+      <button id="kadd" title="keyframe op de afspeelkop (K)">+ Keyframe</button>
+      <button id="kdel" title="actieve keyframe weg (Delete)">− Keyframe</button>
       <button id="cut">Cut hier</button>
       <button id="uncut">Cut weg</button>
       <button id="reset">Automatisch terug</button>
     </div>
     <p class="hint" id="target"></p>
     <p class="hint">
-      <b>Klik in het beeld</b> om de uitsnede van de shot onder de afspeelkop te zetten: die positie geldt vanaf het eerste frame van de shot tot de volgende cut.
-      Zet <b>Beweegt</b> aan voor een shot waarin iemand door het beeld loopt: dan zet je een begin- en een eindpositie (klik in de eerste helft van de shot voor het begin, in de tweede helft voor het einde) en schuift de uitsnede daartussen.
-      Mist er een cut, zet de afspeelkop op het eerste frame van de nieuwe shot en klik <b>Cut hier</b>.
-      <kbd>spatie</kbd> speel/pauze · <kbd>←</kbd><kbd>→</kbd> frame · <kbd>C</kbd> cut hier · <kbd>M</kbd> midden · <kbd>↓</kbd> volgende clip.
-      Je werk blijft in deze browser bewaard. Klaar? <b>Download clips.js</b> en vervang <code>assets/clips/clips.js</code> in je repo (of stuur het bestand door).
+      <b>Klik in het beeld</b> om de actieve keyframe (oranje ruit) op die plek te zetten. Elke shot begint met een keyframe op zijn eerste frame: met één keyframe staat de uitsnede de hele shot stil, en bij een cut springt hij meteen.
+      Wil je dat de uitsnede binnen een shot meebeweegt: zet de afspeelkop waar het moet, klik <b>+ Keyframe</b> (<kbd>K</kbd>) of <b>shift-klik</b> in het beeld. Tussen keyframes in dezelfde shot schuift de uitsnede rechtlijnig, na de laatste blijft hij staan tot de cut.
+      Klik op een ruit om ernaartoe te springen. Mist er een cut, zet de afspeelkop op het eerste frame van de nieuwe shot en klik <b>Cut hier</b>.
+      <kbd>spatie</kbd> speel/pauze · <kbd>←</kbd><kbd>→</kbd> frame · <kbd>K</kbd> keyframe · <kbd>Delete</kbd> keyframe weg · <kbd>C</kbd> cut hier · <kbd>M</kbd> midden · <kbd>↓</kbd> volgende clip.
+      Je werk blijft in deze browser bewaard. Klaar? <b>Download clips.js</b> en stuur het mij, of vervang <code>assets/clips/clips.js</code> in je repo.
     </p>
   </main>
 </div>
@@ -98,7 +100,7 @@ kbd{font:12px "Geist";background:#262626;border:1px solid #3a3a3a;padding:1px 5p
   const v = $("#v"), ph = $("#ph"), g = ph.getContext("2d");
   let clip = null, M = null, playing = false;
 
-  // ---- model: shots between cuts, each one spot (or a start and end spot when it moves) ----
+  // ---- model ----
   function at(f, x, y, t){
     if(!f) return [x, y];
     let i = 0; while(i < f.length - 1 && f[i + 1][0] <= t + .001) i++;
@@ -106,28 +108,32 @@ kbd{font:12px "Geist";background:#262626;border:1px solid #3a3a3a;padding:1px 5p
     const [t0, x0, y0] = f[i], [t1, x1, y1] = f[i + 1], k = Math.min(1, Math.max(0, (t - t0) / (t1 - t0)));
     return [x0 + (x1 - x0) * k, y0 + (y1 - y0) * k];
   }
+  // a clip = cuts + per shot a list of keyframes {t, x, y}; the first one sits on the shot's first frame.
+  // Between keyframes of one shot the crop slides; from the last one it stays put until the next cut.
   function fromClip(c){
-    const dur = c.dur;
+    const dur = c.dur, f = c.focus;
     let cuts = (c.cuts || []).slice();
-    if(!c.cuts && c.focus) cuts = c.focus.filter((k, i) => i && !c.focus[i - 1][3]).map(k => k[0]);
+    if(!c.cuts && f) cuts = f.filter((k, i) => i && !f[i - 1][3]).map(k => k[0]);
     const b = [0, ...cuts, dur];
     const shots = b.slice(0, -1).map((s, i) => {
-      const e = b[i + 1], f = c.focus;
-      const a = at(f, c.x, c.y, s + .01), z = at(f, c.x, c.y, Math.max(s, e - .05));
-      const move = !!(f && f.some(k => k[3] && k[0] >= s - .001 && k[0] < e - .001));
-      return {x:a[0], y:a[1], move, x2:z[0], y2:z[1]};
+      const e = b[i + 1], a = at(f, c.x, c.y, s + .001);
+      const keys = [{t:s, x:a[0], y:a[1]}];
+      (f || []).forEach(k => { if(k[0] > s + .02 && k[0] < e - .001) keys.push({t:k[0], x:k[1], y:k[2]}); });
+      return {keys};
     });
     return {cuts, shots};
   }
   function toFocus(m, dur){
-    const b = [0, ...m.cuts, dur], keys = [];
+    const b = [0, ...m.cuts, dur], out = [];
     m.shots.forEach((s, i) => {
-      const t0 = +b[i].toFixed(3), t1 = b[i + 1];
-      if(s.move){ keys.push([t0, +s.x.toFixed(3), +s.y.toFixed(3), 1]); keys.push([+Math.max(t0, t1 - .04).toFixed(3), +s.x2.toFixed(3), +s.y2.toFixed(3), 0]); }
-      else keys.push([t0, +s.x.toFixed(3), +s.y.toFixed(3), 0]);
+      s.keys[0].t = b[i];
+      s.keys.sort((p, q) => p.t - q.t).forEach((k, j) => {
+        const g = j < s.keys.length - 1 ? 1 : 0, key = [+k.t.toFixed(3), +k.x.toFixed(3), +k.y.toFixed(3), g];
+        const p = out[out.length - 1];
+        if(p && !p[3] && !g && j === 0 && p[1] === key[1] && p[2] === key[2]) return;   // same framing as the shot before
+        out.push(key);
+      });
     });
-    const out = [];
-    keys.forEach(k => { const p = out[out.length - 1]; if(p && !p[3] && !k[3] && p[1] === k[1] && p[2] === k[2]) return; out.push(k); });
     return out;
   }
   const shotAt = t => { let i = 0; while(i < M.cuts.length && M.cuts[i] <= t + .001) i++; return i; };
@@ -163,11 +169,16 @@ kbd{font:12px "Geist";background:#262626;border:1px solid #3a3a3a;padding:1px 5p
   // ---- timeline ----
   function drawTl(){
     const b = [0, ...M.cuts, clip.dur], cur = shotAt(v.currentTime);
-    $("#tl").innerHTML = M.shots.map((s, i) => `<div class="shot${i === cur ? " sel" : ""}${s.move ? " move" : ""}" style="left:${b[i] / clip.dur * 100}%;width:${(b[i + 1] - b[i]) / clip.dur * 100}%"><b>${i + 1}</b></div>`).join("") + `<div class="ph" id="phd"></div>`;
+    $("#tl").innerHTML = M.shots.map((s, i) => `<div class="shot${i === cur ? " sel" : ""}" style="left:${b[i] / clip.dur * 100}%;width:${(b[i + 1] - b[i]) / clip.dur * 100}%"><b>${i + 1}</b></div>`).join("")
+      + M.shots.flatMap((s, i) => s.keys.map((k, j) => `<div class="key" data-s="${i}" data-k="${j}" style="left:max(6px, ${k.t / clip.dur * 100}%)"></div>`)).join("")
+      + `<div class="ph" id="phd"></div>`;
   }
   let scrub = false;
   const seekTo = e => { const r = $("#tl").getBoundingClientRect(); v.currentTime = Math.max(0, Math.min(clip.dur - .001, (e.clientX - r.left) / r.width * clip.dur)); };
-  $("#tl").addEventListener("pointerdown", e => { scrub = true; v.pause(); seekTo(e); $("#tl").setPointerCapture(e.pointerId); });
+  $("#tl").addEventListener("pointerdown", e => {
+    const d = e.target.closest(".key");
+    if(d){ v.pause(); v.currentTime = M.shots[+d.dataset.s].keys[+d.dataset.k].t + .001; return; }
+    scrub = true; v.pause(); seekTo(e); $("#tl").setPointerCapture(e.pointerId); });
   $("#tl").addEventListener("pointermove", e => { if(scrub) seekTo(e); });
   $("#tl").addEventListener("pointerup", () => { scrub = false; if(playing) v.play(); });
 
@@ -183,37 +194,58 @@ kbd{font:12px "Geist";background:#262626;border:1px solid #3a3a3a;padding:1px 5p
     const i = shotAt(t), s = M.shots[i], phd = $("#phd");
     if(phd) phd.style.left = t / clip.dur * 100 + "%";
     document.querySelectorAll(".shot").forEach((el, k) => el.classList.toggle("sel", k === i));
-    $("#move").classList.toggle("on", s.move);
-    $("#target").innerHTML = `Shot ${i + 1} van ${M.shots.length}` + (s.move ? ` · een klik zet nu de <span class="target">${half(t, i) ? "eindpositie" : "beginpositie"}</span>` : "");
+    const ak = active(t);
+    document.querySelectorAll(".key").forEach(d => d.classList.toggle("act", +d.dataset.s === i && +d.dataset.k === ak));
+    $("#target").innerHTML = `Shot ${i + 1} van ${M.shots.length} · keyframe <span class="target">${ak + 1} van ${s.keys.length}</span>` + (s.keys.length > 1 ? " · de uitsnede schuift tussen de keyframes van deze shot" : "");
   }
   const bounds = i => { const b = [0, ...M.cuts, clip.dur]; return [b[i], b[i + 1]]; };
-  const half = (t, i) => { const [a, b] = bounds(i); return t > (a + b) / 2; };
+  // the keyframe a click changes: the one on this frame, else the last one before the playhead
+  const active = t => { const ks = M.shots[shotAt(t)].keys; let k = 0; ks.forEach((q, j) => { if(q.t <= t + .5 / FPS) k = j; }); return k; };
+  const frameT = () => +(Math.round(v.currentTime * FPS) / FPS).toFixed(3);
   const loop = () => { show(); "requestVideoFrameCallback" in v ? v.requestVideoFrameCallback(loop) : requestAnimationFrame(loop); };
   v.addEventListener("loadeddata", show); v.addEventListener("seeked", show);
   "requestVideoFrameCallback" in v ? v.requestVideoFrameCallback(loop) : requestAnimationFrame(loop);
   setInterval(show, 120);
 
   // ---- editing ----
+  function addKey(x, y){
+    const t = frameT(), i = shotAt(v.currentTime), s = M.shots[i], ks = s.keys;
+    const hit = ks.find(k => Math.abs(k.t - t) < .5 / FPS);
+    if(hit){ if(x != null){ hit.x = x; hit.y = y; } }
+    else {
+      const [cx, cy] = at(toFocus(M, clip.dur), 0, 0, v.currentTime);
+      ks.push({t, x: x ?? cx, y: y ?? cy}); ks.sort((p, q) => p.t - q.t);
+    }
+    apply();
+  }
   $("#frame").addEventListener("click", e => {
     const r = v.getBoundingClientRect(), x = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)), y = Math.max(0, Math.min(1, (e.clientY - r.top) / r.height));
-    const i = shotAt(v.currentTime), s = M.shots[i];
-    if(s.move && half(v.currentTime, i)){ s.x2 = x; s.y2 = y; } else { s.x = x; s.y = y; if(!s.move){ s.x2 = x; s.y2 = y; } }
+    if(e.shiftKey) return addKey(x, y);
+    const k = M.shots[shotAt(v.currentTime)].keys[active(v.currentTime)]; k.x = x; k.y = y;
     apply();
   });
-  $("#mid").onclick = () => { const s = M.shots[shotAt(v.currentTime)]; Object.assign(s, {x:.5, y:.5, x2:.5, y2:.5, move:false}); apply(); };
-  $("#move").onclick = () => { const s = M.shots[shotAt(v.currentTime)]; s.move = !s.move; if(!s.move){ s.x2 = s.x; s.y2 = s.y; } apply(); };
+  $("#mid").onclick = () => { const k = M.shots[shotAt(v.currentTime)].keys[active(v.currentTime)]; k.x = .5; k.y = .5; apply(); };
+  $("#kadd").onclick = () => addKey();
+  $("#kdel").onclick = () => {
+    const s = M.shots[shotAt(v.currentTime)], j = active(v.currentTime);
+    if(j === 0){ if(s.keys.length > 1) s.keys.splice(1, 1); else return; }          // the first one stays: drop the next
+    else s.keys.splice(j, 1);
+    apply();
+  };
   function addCut(){
     const t = +(Math.round(v.currentTime * FPS) / FPS).toFixed(3);
     if(t <= 0 || t >= clip.dur || M.cuts.some(c => Math.abs(c - t) < .02)) return;
-    const i = shotAt(t), s = M.shots[i];
+    const i = shotAt(t), s = M.shots[i], [cx, cy] = at(toFocus(M, clip.dur), 0, 0, t);
     M.cuts.push(t); M.cuts.sort((a, b) => a - b);
-    M.shots.splice(i + 1, 0, {...s});
+    const after = s.keys.filter(k => k.t > t + .001);
+    s.keys = s.keys.filter(k => k.t <= t + .001 && (k.t < t - .001 || k === s.keys[0]));
+    M.shots.splice(i + 1, 0, {keys:[{t, x:cx, y:cy}, ...after]});
     apply();
   }
   $("#cut").onclick = addCut;
   $("#uncut").onclick = () => {
     const i = shotAt(v.currentTime); if(i === 0) return;       // the cut at the start of this shot
-    M.cuts.splice(i - 1, 1); M.shots.splice(i, 1); apply();
+    M.cuts.splice(i - 1, 1); M.shots[i - 1].keys.push(...M.shots[i].keys); M.shots.splice(i, 1); apply();
   };
   $("#reset").onclick = () => {
     const o = Object.values(ORIG).flat().find(c => c.src === clip.src);
@@ -234,6 +266,8 @@ kbd{font:12px "Geist";background:#262626;border:1px solid #3a3a3a;padding:1px 5p
     else if(e.key === "ArrowRight"){ e.preventDefault(); step(1); }
     else if(e.key === "c" || e.key === "C") addCut();
     else if(e.key === "m" || e.key === "M") $("#mid").click();
+    else if(e.key === "k" || e.key === "K") addKey();
+    else if(e.key === "Delete" || e.key === "Backspace"){ e.preventDefault(); $("#kdel").click(); }
     else if(e.key === "ArrowDown" || e.key === "ArrowUp"){
       e.preventDefault(); const all = Object.values(window.CLIPS).flat(), k = all.indexOf(clip) + (e.key === "ArrowDown" ? 1 : -1);
       if(all[k]) open(all[k]);
