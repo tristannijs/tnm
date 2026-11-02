@@ -97,7 +97,11 @@ img{display:block;max-width:100%}
 /* below the hero (which scrolls over the fixed background): Uitgelicht on #111, then a fade to black;
    a faint noise breaks up the 8-bit steps of the long dark gradient */
 .after-hero{position:relative;z-index:1;background:var(--bg)}
-.to-black{background:url(../assets/noise.png) 0 0/128px 128px,linear-gradient(180deg,var(--bg) 0,#0b0b0b 35%,#040404 70%,#000 100%)}
+/* one fine noise over everything below the hero, on top of it all: it breaks up the 8-bit steps of every
+   dark gradient (carousel fades, shadows, the fade to black) without seams where one area meets the next */
+.after-hero::after{content:"";position:absolute;inset:0;z-index:7;pointer-events:none;background:url(../assets/noise.png) 0 0/128px 128px}
+/* flat #111 where the carousel fades reach down, then an eased (smoothstep) fade to black: no kinks */
+.to-black{background:linear-gradient(180deg,#111 0,#111 14%,rgb(16.67,16.67,16.67) 21.2%,rgb(15.74,15.74,15.74) 28.3%,rgb(14.34,14.34,14.34) 35.5%,rgb(12.59,12.59,12.59) 42.7%,rgb(10.61,10.61,10.61) 49.8%,rgb(8.50,8.50,8.50) 57.0%,rgb(6.39,6.39,6.39) 64.2%,rgb(4.41,4.41,4.41) 71.3%,rgb(2.66,2.66,2.66) 78.5%,rgb(1.26,1.26,1.26) 85.7%,rgb(0.33,0.33,0.33) 92.8%,rgb(0.00,0.00,0.00) 100.0%)}
 .sh{position:relative;z-index:6}
 .sh{margin:0;padding:0 max(var(--gut),7.7vw) 0 max(var(--gut),9.3vw);text-align:left;font-size:19px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#fff}
 .sh sup{font-size:.48em;font-weight:600;letter-spacing:.06em;margin-left:.35em;vertical-align:.95em}
@@ -156,7 +160,8 @@ img{display:block;max-width:100%}
 .cf-item .cap b{font-size:clamp(14px,2.05vw,36px);line-height:1.05}
 .cf-item .cap span{font-size:clamp(11px,1.5vw,26px);margin-top:3px}
 /* the black fade at both sides */
-.cf::before,.cf::after{content:"";position:absolute;top:0;bottom:-80px;width:20%;z-index:4;pointer-events:none}
+.cf::before,.cf::after{content:"";position:absolute;top:0;bottom:-80px;width:20%;z-index:4;pointer-events:none;
+  -webkit-mask-image:linear-gradient(180deg,#000 calc(100% - 80px),transparent);mask-image:linear-gradient(180deg,#000 calc(100% - 80px),transparent)}
 .cf::before{left:0;background:linear-gradient(90deg,var(--bg) 0,rgba(17,17,17,.85) 35%,rgba(17,17,17,0) 100%)}
 .cf::after{right:0;background:linear-gradient(270deg,var(--bg) 0,rgba(17,17,17,.85) 35%,rgba(17,17,17,0) 100%)}
 
