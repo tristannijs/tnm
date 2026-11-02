@@ -85,13 +85,13 @@ img{display:block;max-width:100%}
 .sh{margin:0;text-align:center;font-size:19.5px;font-weight:400;letter-spacing:.04em;text-transform:uppercase;color:#e8e8e8;padding-bottom:10px;border-bottom:1px solid var(--line)}
 
 /* ---------- over ---------- */
-/* ---------- Over: measured off Tristan's design at 1440 px: 645 px text, 79 px gap, 446 px photo,
-   27 px medium; a rule closes the section ---------- */
+/* ---------- Over: measured off Tristan's design at 1440 px: 675 px text, 66 px gap, 458 px photo,
+   27 px Geist Light, justified; equal space above and below; a rule closes the section ---------- */
 .about{border-bottom:1px solid var(--line)}
-.about-body{display:grid;grid-template-columns:645fr 446fr;gap:5.5vw;align-items:center;max-width:1170px;margin:0 auto;
-  padding:clamp(48px,11.2vw,162px) max(var(--gut),8.75vw) clamp(48px,9vw,130px);box-sizing:content-box}
-.about-text{font-weight:500;font-size:clamp(19px,1.875vw,27px);line-height:1.17;text-align:justify;color:var(--fg)}
-.about-text p{margin:0 0 1.17em}
+.about-body{display:grid;grid-template-columns:675fr 458fr;gap:4.6vw;align-items:center;max-width:1199px;margin:0 auto;
+  padding:clamp(48px,10.4vw,150px) max(var(--gut),8.3vw);box-sizing:content-box}
+.about-text{font-weight:300;font-size:clamp(19px,1.875vw,27px);line-height:1.2;text-align:justify;color:var(--fg)}
+.about-text p{margin:0 0 1.2em}
 .about-text p:last-child{margin:0}
 .about-img{width:100%;height:auto}
 @media (max-width:760px){
