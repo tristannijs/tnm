@@ -268,7 +268,8 @@
     b.addEventListener("click", () => {
       if(moved) return;
       const d = wrap(i - offset);
-      if(Math.abs(d) < .5) openPlayer(p); else { goal = Math.round(goal) + Math.sign(d); run(); }
+      // the front card opens into its preview right away (hovering 1 s does the same)
+      if(Math.abs(d) < .5){ if(!pv || pv.card !== b) openPeek(b); } else { goal = Math.round(goal) + Math.sign(d); run(); }
     });
     track.appendChild(b);
     return {el:b, shade};
@@ -428,7 +429,7 @@
     document.body.appendChild(el);
     const me = pv = {el, card, p, shrunk, ctx, off: offset};
     refreshRow(p);
-    el.addEventListener("mouseleave", () => { if(pv === me) closePeek(); });
+    el.addEventListener("mouseleave", () => { if(pv === me && !me.live) closePeek(); });
     // sideways scrolling over the open preview keeps turning the carousel underneath it
     el.addEventListener("wheel", e => {
       const dx = e.shiftKey && !e.deltaX ? e.deltaY : e.deltaX;
@@ -437,7 +438,8 @@
       const unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? innerWidth : 1;
       ctx.wheel(dx * unit);
     }, {passive:false});
-    el.addEventListener("click", () => { if(pv !== me) return; closePeek(true); openPlayer(p); });
+    // clicking the open preview turns it into the player itself: sound and controls, right there
+    el.addEventListener("click", () => { if(pv !== me || me.live) return; goLive(me); });
     // start the moment the picture is ready to draw (a cached one is ready within a frame)
     const ready = fi && fi.decode ? fi.decode().catch(() => {}) : Promise.resolve();
     Promise.race([ready, new Promise(res => setTimeout(res, 150))]).then(() => {
@@ -454,6 +456,26 @@
       });
     });
   }
+  addEventListener("keydown", e => { if(e.key === "Escape") closePeek(); });
+  function goLive(me){
+    me.live = true; me.el.classList.add("live");
+    const media = me.el.querySelector(".pv-media"), p = me.p;
+    media.querySelectorAll("iframe,video").forEach(m => m.remove());
+    if(p.vids){
+      const v = document.createElement("video");
+      Object.assign(v, {src:p.vids[0].src, controls:true, autoplay:true, playsInline:true});
+      v.classList.add("on"); media.appendChild(v);
+    } else if(p.yt){
+      const f = document.createElement("iframe");
+      f.src = `https://www.youtube-nocookie.com/embed/${p.yt}?autoplay=1&rel=0&playsinline=1&modestbranding=1&iv_load_policy=3`;
+      f.allow = "autoplay; encrypted-media; fullscreen; picture-in-picture"; f.allowFullscreen = true; f.title = pvTitle(p);
+      f.classList.add("on"); media.appendChild(f);
+    }
+  }
+  // a live preview closes with Escape or a click anywhere else on the page
+  document.addEventListener("pointerdown", e => {
+    if(pv && pv.live && !pv.el.contains(e.target)) closePeek();
+  }, true);
   function startClip(p, media){
     // muted, because browsers only autoplay muted video
     if(p.vids){
@@ -501,7 +523,6 @@
   });
   if(canPeek){
     addEventListener("resize", () => closePeek(true));
-    addEventListener("keydown", e => { if(e.key === "Escape") closePeek(); });
 
     // Uitgelicht: rest 1 s on the front card while the carousel stands still
     const cfFront = c => +c.tabIndex === 0 && Math.abs(goal - offset) < .01 && Math.abs(goal - Math.round(goal)) < .01;
