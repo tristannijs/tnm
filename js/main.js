@@ -324,6 +324,7 @@
       else { X = sg*(sx + (a-1)*sx*.6); Z = -600 - (a-1)*400; R = -22*sg; B = .4; O = Math.max(0, Math.min(1, (1.5 - a)/.45)); }
       el.style.transform = `translate(-50%,-50%) translate3d(${X.toFixed(3)}%,0,${Z.toFixed(2)}px) rotateY(${R.toFixed(3)}deg)`;
       el.style.opacity = O.toFixed(3);
+      el.style.zIndex = 100 - Math.round(a * 10);     // nearest card on top (the track is drawn flat)
       el.style.visibility = O < .01 ? "hidden" : "";
       el.style.pointerEvents = O < .5 ? "none" : "";
       shade.style.opacity = B.toFixed(3);

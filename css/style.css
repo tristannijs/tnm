@@ -135,8 +135,12 @@ img{display:block;max-width:100%}
 .cap span{font-weight:400}
 
 /* ---------- Uitgelicht: three cards on a turntable ---------- */
-.cf{--sx:118;position:relative;margin-top:clamp(-23px,-1.6vw,-6px);height:clamp(240px,37vw,640px);perspective:1500px;clip-path:inset(-160px 0 -160px 0);outline:none;touch-action:pan-y;user-select:none}
-.cf-track{position:absolute;inset:0;transform-style:preserve-3d}
+.cf{--sx:118;position:relative;margin-top:clamp(-23px,-1.6vw,-6px);height:clamp(240px,37vw,640px);clip-path:inset(-160px 0 -160px 0);outline:none;touch-action:pan-y;user-select:none}
+/* The sides fade out by masking the cards themselves instead of laying a #111 gradient over them: the empty
+   page underneath is never painted over, so the fade can't show bands there. The track reaches 120 px above
+   and below so the card shadows stay inside the mask. A masked layer is drawn flat, so the depth comes from
+   the perspective on the track and the stacking order from z-index (main.js). */
+.cf-track{position:absolute;inset:-120px 0;perspective:1500px;-webkit-mask-image:linear-gradient(90deg,transparent 0,rgba(0,0,0,.15) 7%,#000 20%,#000 80%,rgba(0,0,0,.15) 93%,transparent 100%);mask-image:linear-gradient(90deg,transparent 0,rgba(0,0,0,.15) 7%,#000 20%,#000 80%,rgba(0,0,0,.15) 93%,transparent 100%)}
 .cf-item{position:absolute;left:50%;top:50%;width:45.6%;aspect-ratio:16/9;border:0;padding:0;background:none;cursor:pointer;
   will-change:transform,opacity;backface-visibility:hidden;isolation:isolate}
 .cf-item::before,.cf-item::after{content:"";position:absolute;pointer-events:none}
@@ -152,9 +156,6 @@ img{display:block;max-width:100%}
 .cf-item .cap b{font-size:clamp(14px,2.05vw,36px);line-height:1.05}
 .cf-item .cap span{font-size:clamp(11px,1.5vw,26px);margin-top:3px}
 /* the black fade at both sides */
-.cf::before,.cf::after{content:"";position:absolute;top:0;bottom:-80px;width:20%;z-index:4;pointer-events:none}
-.cf::before{left:0;background:linear-gradient(90deg,var(--bg) 0,rgba(17,17,17,.85) 35%,rgba(17,17,17,0) 100%)}
-.cf::after{right:0;background:linear-gradient(270deg,var(--bg) 0,rgba(17,17,17,.85) 35%,rgba(17,17,17,0) 100%)}
 
 /* ---------- Recent: newest left ---------- */
 .rc{position:relative;margin-top:clamp(28px,4.5vw,70px)}
