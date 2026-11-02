@@ -96,7 +96,7 @@ img{display:block;max-width:100%}
 .sec{padding-top:56px}
 /* below the hero (which scrolls over the fixed background): Uitgelicht on #111, then a fade to black;
    a faint noise breaks up the 8-bit steps of the long dark gradient */
-.after-hero{position:relative;z-index:1;background:var(--bg)}
+.after-hero{position:relative;z-index:1;background:url(../assets/noise.png) 0 0/128px 128px,var(--bg)}
 .to-black{background:url(../assets/noise.png) 0 0/128px 128px,linear-gradient(180deg,var(--bg) 0,#0b0b0b 35%,#040404 70%,#000 100%)}
 .sh{position:relative;z-index:6}
 .sh{margin:0;padding:0 max(var(--gut),7.7vw) 0 max(var(--gut),9.3vw);text-align:left;font-size:19px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#fff}
@@ -156,9 +156,9 @@ img{display:block;max-width:100%}
 .cf-item .cap b{font-size:clamp(15px,2.3vw,40px);line-height:1.05}
 .cf-item .cap span{font-size:clamp(11px,1.5vw,26px);margin-top:3px}
 /* the black fade at both sides */
-.cf::before,.cf::after{content:"";position:absolute;top:0;bottom:-80px;width:20%;z-index:4;pointer-events:none}
-.cf::before{left:0;background:linear-gradient(90deg,var(--bg) 0,rgba(17,17,17,.85) 35%,rgba(17,17,17,0) 100%)}
-.cf::after{right:0;background:linear-gradient(270deg,var(--bg) 0,rgba(17,17,17,.85) 35%,rgba(17,17,17,0) 100%)}
+.cf::before,.cf::after{content:"";position:absolute;top:-80px;bottom:-80px;width:20%;z-index:4;pointer-events:none}
+.cf::before{left:0;background:url(../assets/noise.png) 0 0/128px 128px,linear-gradient(90deg,#111 0,rgba(17,17,17,.97) 12%,rgba(17,17,17,.9) 24%,rgba(17,17,17,.78) 36%,rgba(17,17,17,.6) 48%,rgba(17,17,17,.4) 60%,rgba(17,17,17,.22) 72%,rgba(17,17,17,.09) 85%,rgba(17,17,17,0) 100%)}
+.cf::after{right:0;background:url(../assets/noise.png) 0 0/128px 128px,linear-gradient(270deg,#111 0,rgba(17,17,17,.97) 12%,rgba(17,17,17,.9) 24%,rgba(17,17,17,.78) 36%,rgba(17,17,17,.6) 48%,rgba(17,17,17,.4) 60%,rgba(17,17,17,.22) 72%,rgba(17,17,17,.09) 85%,rgba(17,17,17,0) 100%)}
 
 /* ---------- Recent: newest left ---------- */
 .rc{position:relative;margin-top:clamp(28px,4.5vw,70px)}
@@ -186,8 +186,6 @@ img{display:block;max-width:100%}
 .pv.open::before{opacity:1}
 .pv-media iframe,.pv-media video{position:absolute;inset:0;z-index:2;width:100%;height:100%;border:0;object-fit:cover;pointer-events:none;opacity:0;transition:opacity .6s ease}
 .pv-media iframe.on,.pv-media video.on{opacity:1}
-.pv.live{cursor:default}
-.pv.live .pv-media iframe,.pv.live .pv-media video{pointer-events:auto}
 /* the caption is drawn --k times larger, so once scaled down to the card it matches the card exactly */
 .pv .cap{margin:0 4% 6% 4%;padding-left:calc(5px * var(--k,1));border-left-width:calc(2px * var(--k,1));transition:opacity .25s}
 .pv .cap b{font-size:calc(clamp(12px,1.15vw,19px) * var(--k,1))}
@@ -200,10 +198,24 @@ img{display:block;max-width:100%}
 .pv-info{display:flex;align-items:flex-start;justify-content:space-between;gap:1.5em;background:#000;border-top:2px solid var(--c);padding:.85em 1.4em .95em;opacity:0;transition:opacity .12s ease}
 .pv.open .pv-info{opacity:1;transition:opacity .3s ease .4s}
 .pv-l{min-width:0}
-/* what Tristan did, on the right: a small label, then each role on its own line */
-.pv-role{flex:none;display:flex;flex-direction:column;align-items:flex-end;text-align:right;padding-top:.1em;line-height:1.25}
-.pv-role small{font-size:.62em;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#8a8a8a;margin-bottom:.45em}
-.pv-role span{font-size:.86em;font-style:italic;font-weight:400}
+/* what Tristan did, on the right, in italics */
+.pv-role{flex:none;max-width:42%;text-align:right;font-style:italic;font-weight:400;font-size:1.02em;line-height:1.65;padding-top:.05em}
+/* our own player bar: there while the pointer is over the picture, gone the moment it leaves */
+.pv-ctl{position:absolute;left:0;right:0;bottom:0;z-index:3;display:flex;align-items:center;gap:.9em;padding:2.2em 1.1em .75em;
+  background:linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,.65));opacity:0;transition:opacity .08s linear;cursor:default}
+.pv-media:hover .pv-ctl,.pv-media:fullscreen .pv-ctl{opacity:1;transition-duration:.18s}
+.pv-ctl button{flex:none;width:1.5em;height:1.5em;padding:0;border:0;background:none;color:#fff;cursor:pointer;opacity:.9}
+.pv-ctl button:hover{opacity:1}
+.pv-ctl svg{display:block;width:100%;height:100%}
+.pv-ctl .seek{position:relative;flex:1;height:1.2em;cursor:pointer}
+.pv-ctl .seek::before,.pv-ctl .seek i{content:"";position:absolute;left:0;top:50%;height:3px;margin-top:-1.5px;background:rgba(255,255,255,.3)}
+.pv-ctl .seek::before{right:0}
+.pv-ctl .seek i{background:var(--c,#fff);width:0}
+.pv-ctl .tm{flex:none;font-size:.78em;font-variant-numeric:tabular-nums;color:#ddd}
+.pv-media:fullscreen{background:#000}
+.pv-media:fullscreen iframe,.pv-media:fullscreen video{object-fit:contain}
+.pv{cursor:default}
+.pv-media{cursor:pointer}
 .pv-t{font-size:1.19em;font-weight:800;text-transform:uppercase;line-height:1.15;letter-spacing:.005em}
 .pv-m{margin-top:.4em;font-size:.82em;text-transform:uppercase;letter-spacing:.02em}
 .pv-m .dot{margin:0 .6em}

@@ -414,7 +414,7 @@
     el.innerHTML = `<div class="pv-media"></div>
       <div class="pv-info"><div class="pv-l"><div class="pv-t">${esc(RITCS[p.cat] ? title(p) : pvTitle(p))}</div>
         <div class="pv-m">${esc(kind(p))}<span class="dot">•</span>${esc(when(p))}</div>
-        <div class="pv-r"></div></div>${rolesOf(p).length ? `<div class="pv-role"><small>${esc(t(rolesOf(p).length > 1 ? "role.many" : "role.one"))}</small>${rolesOf(p).map(r => `<span>${esc(r)}</span>`).join("")}</div>` : ""}</div>`;
+        <div class="pv-r"></div></div>${rolesOf(p).length ? `<div class="pv-role">${esc(rolesOf(p).join(", "))}</div>` : ""}</div>`;
     const media = el.querySelector(".pv-media");
     // reuse the card's own, already decoded picture so the first frame is never empty
     const own = card.querySelector(".face img"), f = face(p), fi = f.querySelector("img");
@@ -440,8 +440,8 @@
       const unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? innerWidth : 1;
       ctx.wheel(dx * unit);
     }, {passive:false});
-    // clicking the open preview turns it into the player itself: sound and controls, right there
-    el.addEventListener("click", () => { if(pv !== me || me.live) return; goLive(me); });
+    // it is a player straight away: clicking the picture plays / pauses, the bar handles the rest
+    el.addEventListener("click", e => { if(pv !== me || e.target.closest(".pv-ctl")) return; if(me.ctl) me.ctl.toggle(); });
     // start the moment the picture is ready to draw (a cached one is ready within a frame)
     const ready = fi && fi.decode ? fi.decode().catch(() => {}) : Promise.resolve();
     Promise.race([ready, new Promise(res => setTimeout(res, 150))]).then(() => {
@@ -459,43 +459,73 @@
     });
   }
   addEventListener("keydown", e => { if(e.key === "Escape") closePeek(); });
-  function goLive(me){
-    me.live = true; me.el.classList.add("live");
-    const media = me.el.querySelector(".pv-media"), p = me.p;
-    media.querySelectorAll("iframe,video").forEach(m => m.remove());
-    if(p.vids){
-      const v = document.createElement("video");
-      Object.assign(v, {src:p.vids[0].src, controls:true, autoplay:true, playsInline:true});
-      v.classList.add("on"); media.appendChild(v);
-    } else if(p.yt){
-      const f = document.createElement("iframe");
-      f.src = `https://www.youtube-nocookie.com/embed/${p.yt}?autoplay=1&rel=0&playsinline=1&modestbranding=1&iv_load_policy=3`;
-      f.allow = "autoplay; encrypted-media; fullscreen; picture-in-picture"; f.allowFullscreen = true; f.title = pvTitle(p);
-      f.classList.add("on"); media.appendChild(f);
-    }
-  }
   // an open preview closes with Escape or a click anywhere else on the page (hovering does nothing)
   document.addEventListener("pointerdown", e => {
     if(pv && !pv.el.contains(e.target) && !pv.card.contains(e.target)) closePeek();
   }, true);
+  // The preview is the player. YouTube's own bar is off; ours shows only while the pointer is over the
+  // picture and is gone the moment it leaves. YouTube is driven through its iframe messages.
+  const IC = {
+    play:`<svg viewBox="0 0 24 24"><path d="M7 4.5v15l12.5-7.5z" fill="currentColor"/></svg>`,
+    pause:`<svg viewBox="0 0 24 24"><path d="M6.5 4.5h4v15h-4zM13.5 4.5h4v15h-4z" fill="currentColor"/></svg>`,
+    vol:`<svg viewBox="0 0 24 24"><path d="M3 9h4l5-4.5v15L7 15H3z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.3 5.8a9 9 0 0 1 0 12.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>`,
+    mute:`<svg viewBox="0 0 24 24"><path d="M3 9h4l5-4.5v15L7 15H3z" fill="currentColor"/><path d="M16 9.5l5 5M21 9.5l-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>`,
+    full:`<svg viewBox="0 0 24 24"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5" fill="none" stroke="currentColor" stroke-width="2"/></svg>`
+  };
   function startClip(p, media){
-    // with sound: the preview only opens on a click, and browsers allow sound after one
+    const me = pv; if(!me) return;
+    const bar = document.createElement("div"); bar.className = "pv-ctl";
+    bar.innerHTML = `<button type="button" class="pp" aria-label="Play">${IC.pause}</button>
+      <div class="seek"><i></i></div><span class="tm">0:00</span>
+      <button type="button" class="mu" aria-label="Mute">${IC.vol}</button><button type="button" class="fs" aria-label="Fullscreen">${IC.full}</button>`;
+    const st = {t:0, at:performance.now(), dur:0, playing:false, muted:false};
+    let send = () => {}, raf = 0;
+    const show = () => {
+      const t = st.playing ? st.t + (performance.now() - st.at) / 1000 : st.t, d = st.dur || p._dur || 0;
+      bar.querySelector(".seek i").style.width = d ? Math.min(100, t / d * 100) + "%" : "0";
+      bar.querySelector(".tm").textContent = d ? `${mmss(t)} / ${mmss(d)}` : mmss(t);
+      bar.querySelector(".pp").innerHTML = st.playing ? IC.pause : IC.play;
+      bar.querySelector(".mu").innerHTML = st.muted ? IC.mute : IC.vol;
+      raf = pv === me ? requestAnimationFrame(show) : 0;
+    };
     if(p.vids){
       const v = document.createElement("video");
-      Object.assign(v, {src:p.vids[0].src, loop:true, autoplay:true, playsInline:true});
-      v.addEventListener("loadedmetadata", () => { p._dur = v.duration; if(p.hd == null) p._hd = v.videoHeight >= 720; refreshRow(p); });
+      Object.assign(v, {src:p.vids[0].src, autoplay:true, playsInline:true});
+      v.addEventListener("loadedmetadata", () => { p._dur = st.dur = v.duration; if(p.hd == null) p._hd = v.videoHeight >= 720; refreshRow(p); });
       v.addEventListener("playing", () => v.classList.add("on"));
+      v.addEventListener("timeupdate", () => { st.t = v.currentTime; st.at = performance.now(); st.playing = !v.paused; st.muted = v.muted; });
       media.appendChild(v);
+      me.ctl = {toggle(){ v.paused ? v.play() : v.pause(); }, seek(f){ v.currentTime = f * v.duration; }, mute(){ v.muted = !v.muted; st.muted = v.muted; }};
+      v.addEventListener("pause", () => { st.playing = false; st.t = v.currentTime; }); v.addEventListener("play", () => { st.playing = true; st.at = performance.now(); });
     } else if(p.yt){
       const f = document.createElement("iframe");
-      f.src = `https://www.youtube-nocookie.com/embed/${p.yt}?autoplay=1&controls=0&rel=0&playsinline=1&loop=1&playlist=${p.yt}&modestbranding=1&iv_load_policy=3&disablekb=1&enablejsapi=1&origin=${encodeURIComponent(location.origin)}`;
-      f.allow = "autoplay; encrypted-media"; f.tabIndex = -1; f.title = pvTitle(p);
-      // ask the player for its state, duration and quality levels
+      f.src = `https://www.youtube-nocookie.com/embed/${p.yt}?autoplay=1&controls=0&rel=0&playsinline=1&modestbranding=1&iv_load_policy=3&disablekb=1&fs=0&enablejsapi=1&origin=${encodeURIComponent(location.origin)}`;
+      f.allow = "autoplay; encrypted-media; fullscreen"; f.tabIndex = -1; f.title = pvTitle(p);
+      send = (func, args = []) => { try{ f.contentWindow.postMessage(JSON.stringify({event:"command", func, args}), "*"); }catch(e){} };
+      // ask the player for its state, time, duration and quality levels
       f.addEventListener("load", () => {
         try{ f.contentWindow.postMessage(JSON.stringify({event:"listening", id:p.id, channel:"widget"}), "*"); }catch(e){}
       });
       media.appendChild(f);
+      me.yt = st;
+      me.ctl = {
+        toggle(){ st.playing ? (send("pauseVideo"), st.t += (performance.now() - st.at) / 1000, st.playing = false) : (send("playVideo"), st.playing = true, st.at = performance.now()); },
+        seek(fr){ const d = st.dur || p._dur; if(!d) return; st.t = fr * d; st.at = performance.now(); send("seekTo", [st.t, true]); },
+        mute(){ st.muted = !st.muted; send(st.muted ? "mute" : "unMute"); }
+      };
     }
+    me.st = st;
+    media.appendChild(bar);
+    bar.querySelector(".pp").addEventListener("click", () => me.ctl && me.ctl.toggle());
+    bar.querySelector(".mu").addEventListener("click", () => me.ctl && me.ctl.mute());
+    bar.querySelector(".fs").addEventListener("click", () => {
+      if(document.fullscreenElement) document.exitFullscreen(); else (media.requestFullscreen || media.webkitRequestFullscreen || (() => {})).call(media);
+    });
+    const sk = bar.querySelector(".seek");
+    const seekAt = e => { const r = sk.getBoundingClientRect(); me.ctl && me.ctl.seek(Math.max(0, Math.min(1, (e.clientX - r.left) / r.width))); };
+    sk.addEventListener("pointerdown", e => { sk.setPointerCapture(e.pointerId); seekAt(e); sk.onpointermove = seekAt; });
+    sk.addEventListener("pointerup", () => { sk.onpointermove = null; });
+    show();
   }
   function closePeek(now){
     clearTimeout(peekTimer);
@@ -518,6 +548,13 @@
     const p = pv.p; let ch = false;
     // only show the player once it is really playing; until then the cover stays
     if(d.info.playerState === 1){ const f = pv.el.querySelector("iframe"); if(f) f.classList.add("on"); }
+    const st = pv.yt;
+    if(st){
+      if(typeof d.info.currentTime === "number"){ st.t = d.info.currentTime; st.at = performance.now(); }
+      if(d.info.duration) st.dur = d.info.duration;
+      if(typeof d.info.playerState === "number") st.playing = d.info.playerState === 1 || d.info.playerState === 3;
+      if(typeof d.info.muted === "boolean") st.muted = d.info.muted;
+    }
     if(d.info.duration && !p._dur){ p._dur = d.info.duration; ch = true; }
     const q = d.info.availableQualityLevels;
     if(Array.isArray(q) && q.length && p.hd == null && p._hd == null){ p._hd = q.some(l => /hd|highres/.test(l)); ch = true; }
