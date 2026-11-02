@@ -77,10 +77,21 @@ img{display:block;max-width:100%}
 .sh{margin:0;text-align:center;font-size:19.5px;font-weight:400;letter-spacing:.04em;text-transform:uppercase;color:#e8e8e8;padding-bottom:10px;border-bottom:1px solid var(--line)}
 
 /* ---------- over ---------- */
-.about-text{max-width:660px;margin:0 auto;padding:30px var(--gut) 8px;font-size:17px;line-height:1.65;font-weight:400;color:var(--fg-2)}
-.about-text p{margin:0 0 1.05em}
-.about-text p:first-child{color:var(--fg)}
-@media (max-width:600px){.about-text{font-size:16px;padding-left:22px;padding-right:22px}}
+/* ---------- Over: measured off Tristan's design at 1440 px: 645 px text, 79 px gap, 446 px photo,
+   27 px Neue Montreal; a rule closes the section ---------- */
+@font-face{font-family:"Neue Montreal";src:url(../assets/fonts/NeueMontreal-Medium.woff2) format("woff2");font-weight:500;font-display:swap}
+.about{border-bottom:1px solid var(--line)}
+.about-body{display:grid;grid-template-columns:645fr 446fr;gap:5.5vw;align-items:center;max-width:1170px;margin:0 auto;
+  padding:clamp(48px,11.2vw,162px) max(var(--gut),8.75vw) clamp(48px,9vw,130px);box-sizing:content-box}
+.about-text{font-family:"Neue Montreal",var(--f);font-weight:500;font-size:clamp(19px,1.875vw,27px);line-height:1.17;text-align:justify;color:var(--fg)}
+.about-text p{margin:0 0 1.17em}
+.about-text p:last-child{margin:0}
+.about-img{width:100%;height:auto}
+@media (max-width:760px){
+  .about-body{grid-template-columns:1fr;gap:40px;padding:40px 22px 48px}
+  .about-text{text-align:left;font-size:20px}
+  .about-img{max-width:446px;justify-self:center}
+}
 
 /* ---------- arrows (shared) ---------- */
 .arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:5;background:none;border:0;padding:10px;cursor:pointer;color:#e8e8e8;opacity:.9;transition:opacity .2s}
