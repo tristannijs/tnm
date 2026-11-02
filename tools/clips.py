@@ -157,7 +157,7 @@ def simplify(ts, xs, tol):
         return rdp(a, k) + [k] + rdp(k, b) if abs(xs[k] - line(k)) > tol else []
     return [0] + rdp(0, len(ts) - 1) + [len(ts) - 1]
 
-CENTRE = .08     # a subject this close to the middle is already in the centred crop: leave it centred
+CENTRE = .04     # a subject this close to the middle is already in the centred crop: leave it centred
 MOVES = .12      # a subject that travels further than this within one shot is followed; otherwise one spot
 
 def focus(path):

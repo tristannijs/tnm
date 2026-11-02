@@ -16,7 +16,7 @@ window.CLIPS = {
    "poster": "assets/clips/ritcs/elevator_1.jpg",
    "project": "elevator",
    "dur": 1.08,
-   "x": 0.5,
+   "x": 0.421,
    "y": 0.5
   },
   {
@@ -53,7 +53,21 @@ window.CLIPS = {
    "project": "filippenzen",
    "dur": 3.76,
    "x": 0.5,
-   "y": 0.189
+   "y": 0.189,
+   "focus": [
+    [
+     0.0,
+     0.5,
+     0.189,
+     0
+    ],
+    [
+     1.2,
+     0.565,
+     0.179,
+     0
+    ]
+   ]
   },
   {
    "src": "assets/clips/ritcs/filippenzen_3.mp4",
@@ -224,6 +238,12 @@ window.CLIPS = {
      0.5,
      0.5,
      0
+    ],
+    [
+     4.72,
+     0.452,
+     0.5,
+     0
     ]
    ]
   },
@@ -295,7 +315,21 @@ window.CLIPS = {
    "project": "nieuwgent",
    "dur": 2.96,
    "x": 0.5,
-   "y": 0.5
+   "y": 0.5,
+   "focus": [
+    [
+     0.0,
+     0.5,
+     0.5,
+     0
+    ],
+    [
+     1.4,
+     0.441,
+     0.5,
+     0
+    ]
+   ]
   },
   {
    "src": "assets/clips/ritcs/nieuwGent_5.mp4",
@@ -344,7 +378,7 @@ window.CLIPS = {
     ],
     [
      2.08,
-     0.5,
+     0.554,
      0.5,
      0
     ],
@@ -427,7 +461,7 @@ window.CLIPS = {
     ],
     [
      0.84,
-     0.5,
+     0.456,
      0.136,
      0
     ],
@@ -457,8 +491,22 @@ window.CLIPS = {
    "poster": "assets/clips/videografie/banana_2.jpg",
    "project": "banana",
    "dur": 4.36,
-   "x": 0.5,
-   "y": 0.225
+   "x": 0.552,
+   "y": 0.225,
+   "focus": [
+    [
+     0.0,
+     0.552,
+     0.225,
+     0
+    ],
+    [
+     2.24,
+     0.5,
+     0.283,
+     0
+    ]
+   ]
   },
   {
    "src": "assets/clips/videografie/banana_3.mp4",
@@ -466,11 +514,17 @@ window.CLIPS = {
    "poster": "assets/clips/videografie/banana_3.jpg",
    "project": "banana",
    "dur": 4.2,
-   "x": 0.5,
+   "x": 0.428,
    "y": 0.5,
    "focus": [
     [
      0.0,
+     0.428,
+     0.5,
+     0
+    ],
+    [
+     1.12,
      0.5,
      0.5,
      0
@@ -515,7 +569,7 @@ window.CLIPS = {
     ],
     [
      2.2,
-     0.5,
+     0.567,
      0.5,
      0
     ]
@@ -567,7 +621,7 @@ window.CLIPS = {
     ],
     [
      2.44,
-     0.5,
+     0.565,
      0.343,
      0
     ],
@@ -699,7 +753,7 @@ window.CLIPS = {
     ],
     [
      3.0,
-     0.5,
+     0.452,
      0.216,
      0
     ]
@@ -787,7 +841,7 @@ window.CLIPS = {
     ],
     [
      4.32,
-     0.5,
+     0.433,
      0.5,
      0
     ]
@@ -857,12 +911,12 @@ window.CLIPS = {
    "poster": "assets/clips/videografie/dokfeesten_1.jpg",
    "project": "dokfeesten",
    "dur": 1.64,
-   "x": 0.5,
+   "x": 0.561,
    "y": 0.5,
    "focus": [
     [
      0.0,
-     0.5,
+     0.561,
      0.5,
      0
     ],
@@ -891,6 +945,12 @@ window.CLIPS = {
     ],
     [
      1.04,
+     0.442,
+     0.5,
+     0
+    ],
+    [
+     2.04,
      0.5,
      0.5,
      0
@@ -1030,7 +1090,7 @@ window.CLIPS = {
     ],
     [
      0.84,
-     0.5,
+     0.574,
      0.5,
      0
     ],
@@ -1042,7 +1102,7 @@ window.CLIPS = {
     ],
     [
      1.92,
-     0.5,
+     0.556,
      0.139,
      0
     ],
@@ -1083,7 +1143,7 @@ window.CLIPS = {
     ],
     [
      1.68,
-     0.5,
+     0.427,
      0.5,
      0
     ]
@@ -1095,7 +1155,7 @@ window.CLIPS = {
    "poster": "assets/clips/videografie/elienJens_1.jpg",
    "project": "elienjens",
    "dur": 1.84,
-   "x": 0.5,
+   "x": 0.556,
    "y": 0.316
   },
   {
@@ -1104,12 +1164,12 @@ window.CLIPS = {
    "poster": "assets/clips/videografie/elienJens_2.jpg",
    "project": "elienjens",
    "dur": 2.52,
-   "x": 0.5,
+   "x": 0.558,
    "y": 0.5,
    "focus": [
     [
      0.0,
-     0.5,
+     0.558,
      0.5,
      0
     ],
@@ -1318,7 +1378,7 @@ window.CLIPS = {
     ],
     [
      4.96,
-     0.5,
+     0.451,
      0.5,
      0
     ]
@@ -1341,7 +1401,7 @@ window.CLIPS = {
     ],
     [
      1.96,
-     0.5,
+     0.454,
      0.22,
      0
     ],
@@ -1489,7 +1549,7 @@ window.CLIPS = {
     ],
     [
      4.12,
-     0.5,
+     0.558,
      0.339,
      0
     ],
