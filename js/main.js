@@ -114,24 +114,39 @@
     function load(v, c){ v.clip = c; v.src = useAv1 ? c.av1 : c.src; v.poster = c.poster; v.preload = "auto"; v.load(); }
     // where the point of interest is at time t: straight lines between key points; a cut is two key points
     // 0.04 s apart, so it jumps
+    // where the point of interest is at time t. Key points are [t, x, y, glide]: from a key point the spot
+    // stays put until the next one (a cut: the new shot is framed from its first frame), unless glide is set,
+    // then it moves in a straight line to the next one (a subject walking through one shot)
     function at(c, t){
       const f = c.focus;
       if(!f) return [c.x, c.y];
+      t += .01;                                   // frame times can come in a hair early
       let i = 0; while(i < f.length - 1 && f[i + 1][0] <= t) i++;
-      if(i === f.length - 1) return [f[i][1], f[i][2]];
-      const [t0, x0, y0] = f[i], [t1, x1, y1] = f[i + 1], k = (t - t0) / (t1 - t0);
+      if(i === f.length - 1 || !f[i][3]) return [f[i][1], f[i][2]];
+      const [t0, x0, y0] = f[i], [t1, x1, y1] = f[i + 1], k = Math.min(1, Math.max(0, (t - t0) / (t1 - t0)));
       return [x0 + (x1 - x0) * k, y0 + (y1 - y0) * k];
     }
     // object-position for a point: the crop window centred on it as far as the frame allows
-    function place(v){
+    function place(v, t){
       const c = v.clip; if(!c) return;
       const W = l.clientWidth, H = l.clientHeight, va = (v.videoWidth / v.videoHeight) || 16 / 9, ca = W / H;
-      const [x, y] = at(c, v.currentTime || 0);
+      const [x, y] = at(c, t ?? v.currentTime ?? 0);
       const pos = (p, vis) => vis >= 1 ? 50 : Math.min(100, Math.max(0, (p - vis / 2) / (1 - vis) * 100));
-      v.style.objectPosition = `${pos(x, ca / va).toFixed(2)}% ${pos(y, va / ca).toFixed(2)}%`;
+      const op = `${pos(x, ca / va).toFixed(2)}% ${pos(y, va / ca).toFixed(2)}%`;
+      if(v.style.objectPosition !== op) v.style.objectPosition = op;
     }
-    function tick(){ place(vids[cur]); raf = playing && vids[cur].clip && vids[cur].clip.focus ? requestAnimationFrame(tick) : 0; }
-    function track(){ cancelAnimationFrame(raf); tick(); }
+    // follow the clip frame by frame: requestVideoFrameCallback reports the exact time of the frame about to
+    // be shown, so the crop changes on the very frame of a cut (phones included); older browsers use rAF
+    const RVFC = "requestVideoFrameCallback" in HTMLVideoElement.prototype;
+    function tick(){
+      const v = vids[cur];
+      if(!(playing && v.clip && v.clip.focus)){ place(v); raf = 0; return; }
+      if(RVFC){ const me = rv = v; raf = me.requestVideoFrameCallback((now, m) => { raf = 0; if(me !== vids[cur]) return; place(me, m.mediaTime); tick(); }); }
+      else { place(v); raf = requestAnimationFrame(tick); }
+    }
+    let rv = null;
+    function stop(){ if(!raf) return; if(RVFC) rv.cancelVideoFrameCallback(raf); else cancelAnimationFrame(raf); raf = 0; }
+    function track(){ stop(); tick(); }
     function show(i){
       vids.forEach((v, k) => v.classList.toggle("cur", k === i));
     }
@@ -156,7 +171,7 @@
     }
     const p = {
       play(){ start().then(() => { playing = true; vids[cur].play().catch(() => {}); track(); }); },
-      pause(){ playing = false; vids[cur].pause(); cancelAnimationFrame(raf); }
+      pause(){ playing = false; vids[cur].pause(); stop(); }
     };
     // the layer you see first plays straight away, on every device; the hover layers fetch their first clips
     // once the page has loaded, and only where hovering exists (not on phones)

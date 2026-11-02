@@ -92,99 +92,129 @@ def people_in(img):
         found.append((fx / s, fy / s, float(conf) * (bw * bh / s / s) ** 1.25))
     return found
 
-STEP = .4                                # seconds between analysed frames
+EVERY = 3                                # look for people in every 3rd frame (0.12 s at 25 fps)
 
 def scan(path):
-    """decode the clip once: frames every STEP s (640 px wide), the shot each belongs to (hard cuts found by
-    comparing colour histograms), the cut times, and the clip's length in s"""
+    """decode the clip once. Returns the frames looked at for people [(t, frame 640 px wide)], the hard cuts
+    (times of the first frame of each new shot), the frame rate and the length in s.
+    A cut is a frame that differs from the one before it far more than the frames around it do: colour
+    histogram plus a brightness-free comparison of the picture, so dark shots and busy action both work."""
     cap = cv2.VideoCapture(path)
     fps = cap.get(cv2.CAP_PROP_FPS) or 25
-    every = max(1, round(fps * STEP))
-    samples, cuts, prev, shot, i = [], [], None, 0, 0
+    samples, diff, prev, i = [], [0.0], None, 0
     while True:
         ok, f = cap.read()
         if not ok: break
-        hsv = cv2.cvtColor(cv2.resize(f, (160, 90)), cv2.COLOR_BGR2HSV)
-        hist = cv2.calcHist([hsv], [0, 1, 2], None, [12, 6, 6], [0, 180, 0, 256, 0, 256])
+        small = cv2.resize(f, (96, 54), interpolation=cv2.INTER_AREA)
+        hist = cv2.calcHist([cv2.cvtColor(small, cv2.COLOR_BGR2HSV)], [0, 1, 2], None, [12, 6, 6], [0, 180, 0, 256, 0, 256])
         cv2.normalize(hist, hist)
-        if prev is not None and cv2.compareHist(prev, hist, cv2.HISTCMP_BHATTACHARYYA) > .45 and (not cuts or i / fps - cuts[-1] > .4):
-            cuts.append(i / fps); shot += 1
-            samples.append((i / fps, shot, cv2.resize(f, (640, int(640 * f.shape[0] / f.shape[1])))))
-        elif i % every == every // 2 and (not cuts or i / fps - cuts[-1] > STEP / 2):   # not right on top of a cut frame
-            samples.append((i / fps, shot, cv2.resize(f, (640, int(640 * f.shape[0] / f.shape[1])))))
-        prev, i = hist, i + 1
+        g = cv2.cvtColor(small, cv2.COLOR_BGR2GRAY).astype(np.float32)
+        g = (g - g.mean()) / (g.std() + 8)
+        if prev is not None:
+            diff.append(cv2.compareHist(prev[0], hist, cv2.HISTCMP_BHATTACHARYYA) + .5 * float(np.abs(g - prev[1]).mean()))
+        prev = (hist, g)
+        samples.append((i, cv2.resize(f, (640, int(640 * f.shape[0] / f.shape[1])))) if i % EVERY == 0 else (i, None))
+        i += 1
     cap.release()
-    return samples, cuts, i / fps
+    d = np.array(diff); cut_frames = []
+    for k in range(1, len(d)):
+        around = np.concatenate([d[max(1, k - 6):k], d[k + 1:k + 7]])
+        base = float(np.median(around)) if len(around) else 0.0
+        if d[k] > .5 and d[k] > 2 * base + .15 and (not cut_frames or k - cut_frames[-1] > 3): cut_frames.append(k)
+    # always look at the first frame of every shot too
+    keep = set(cut_frames)
+    frames_out = [(k / fps, f if f is not None else None) for k, f in samples if f is not None or k in keep]
+    if keep:   # frames on a cut that were skipped above: decode them
+        need = [k for k, f in samples if f is None and k in keep]
+        if need:
+            got = frames_at(path, [k / fps for k in need])
+            fix = dict(zip(need, got))
+            frames_out = [(t, f if f is not None else fix[round(t * fps)]) for t, f in frames_out]
+    return frames_out, [k / fps for k in cut_frames], fps, i / fps
 
 def point_in(f):
-    """(x, y) of the main person in a frame as fractions, or None; plus a saliency guess"""
+    """(x, y) of the main person in a frame as fractions, or None"""
     h, w = f.shape[:2]
     gray = cv2.cvtColor(f, cv2.COLOR_BGR2GRAY)
     y0, y1 = active_rows(gray)
     ppl = [p for p in people_in(f) if y0 <= p[1] <= y1]
-    person = None
-    if ppl:
-        top = max(p[2] for p in ppl)
-        big = [p for p in ppl if p[2] > top * .4]              # the main person; others only when nearly as big
-        if max(p[0] for p in big) - min(p[0] for p in big) > PHONE * .8 * w:
-            # too far apart for one crop: the person nearest the middle (out-of-focus shoulders at the edges
-            # of the frame are often bigger than the subject)
-            big = [min((p for p in ppl if p[2] > top * .2), key=lambda p: abs(p[0] / w - .5))]
-        ppl = big
-        a = sum(p[2] for p in ppl)
-        person = (sum(p[0] * p[2] for p in ppl) / a / w, sum(p[1] * p[2] for p in ppl) / a / h)
-    sm = saliency(gray); sm[:y0] = 0; sm[y1:] = 0
-    ys, xs = np.nonzero(sm >= np.quantile(sm[y0:y1], .93))
-    sal = (.5 + (xs.mean() / w - .5) * .8, .5 + (ys.mean() / h - .5) * .8) if len(xs) else (.5, .5)
-    return person, sal
+    if not ppl: return None
+    top = max(p[2] for p in ppl)
+    big = [p for p in ppl if p[2] > top * .4]                  # the main person; others only when nearly as big
+    if max(p[0] for p in big) - min(p[0] for p in big) > PHONE * .8 * w:
+        # too far apart for one crop: the person nearest the middle (out-of-focus shoulders at the edges
+        # of the frame are often bigger than the subject)
+        big = [min((p for p in ppl if p[2] > top * .2), key=lambda p: abs(p[0] / w - .5))]
+    a = sum(p[2] for p in big)
+    return (sum(p[0] * p[2] for p in big) / a / w, sum(p[1] * p[2] for p in big) / a / h)
+
+def simplify(ts, xs, tol):
+    """indices of the points a line through them needs (Ramer-Douglas-Peucker)"""
+    def rdp(a, b):
+        if b - a < 2: return []
+        line = lambda i: xs[a] + (xs[b] - xs[a]) * (ts[i] - ts[a]) / max(ts[b] - ts[a], 1e-6)
+        k = max(range(a + 1, b), key=lambda i: abs(xs[i] - line(i)))
+        return rdp(a, k) + [k] + rdp(k, b) if abs(xs[k] - line(k)) > tol else []
+    return [0] + rdp(0, len(ts) - 1) + [len(ts) - 1]
+
+CENTRE = .08     # a subject this close to the middle is already in the centred crop: leave it centred
+MOVES = .12      # a subject that travels further than this within one shot is followed; otherwise one spot
 
 def focus(path):
-    """the point of interest through the clip: [{t, x, y, how}] key points as fractions of the frame. Between
-    two key points the crop glides; at a cut it jumps (a key point just before the cut holds the old spot)."""
-    samples, cuts, length = scan(path)
-    rows = [(t, shot) + point_in(f) for t, shot, f in samples]
-    shot_of, extra = [], 0
-    for i, r in enumerate(rows):
-        if i and r[1] == rows[i - 1][1] and r[2] and rows[i - 1][2] and abs(r[2][0] - rows[i - 1][2][0]) > .15 \
-           and (i + 1 == len(rows) or not rows[i + 1][2] or abs(rows[i + 1][2][0] - r[2][0]) < .1):
-            extra += 1; cuts = sorted(cuts + [r[0]])
-        shot_of.append(r[1] + extra)
-    cuts = sorted(set(round(c, 2) for c in cuts))
-    shots = {}
-    for r, shot in zip(rows, shot_of):
-        shots.setdefault(shot, []).append((r[0],) + r[2:])
+    """the point of interest through the clip, per shot: [{t, x, y, glide, how}].
+    Every shot gets its own spot from its first frame on (a step at each cut, never a slide across one).
+    Only when the subject clearly travels within a shot does the crop follow it (glide: move in a straight
+    line to the next key point). Shots without a person, or with the person already near the middle, stay
+    centred."""
+    samples, cuts, fps, length = scan(path)
+    bounds = [0.0] + cuts + [length + 1]
     keys = []
-    for shot in sorted(shots):
-        rows = shots[shot]
-        people = [r for r in rows if r[1]]
-        if len(people) >= max(1, len(rows) * .3):
-            how = "persoon"
-            # frames without a person keep the nearest person's spot
-            pts = [(t, (p or min(people, key=lambda r: abs(r[0] - t))[1])) for t, p, _ in rows]
-        else:
-            how = "opvallend"
-            m = (float(np.mean([r[2][0] for r in rows])), float(np.mean([r[2][1] for r in rows])))
-            pts = [(rows[0][0], m)]                            # saliency jumps around: one spot per shot
-        xs = np.array([p[1][0] for p in pts]); ys = np.array([p[1][1] for p in pts])
-        if len(xs) >= 3:                                       # smooth out detector jitter
-            xs = np.convolve(np.pad(xs, 1, mode="edge"), [1/3] * 3, "valid"); ys = np.convolve(np.pad(ys, 1, mode="edge"), [1/3] * 3, "valid")
-        ts = [p[0] for p in pts]
-        if shot == min(shots): ts[0] = 0             # every other shot starts on its cut frame
-        # keep only the points that change the path: drop those the straight line between neighbours already gives
-        idx = [0]
-        for i in range(1, len(ts) - 1):
-            a, b = idx[-1], i + 1
-            lerp = xs[a] + (xs[b] - xs[a]) * (ts[i] - ts[a]) / max(ts[b] - ts[a], 1e-6)
-            if abs(lerp - xs[i]) > .04: idx.append(i)
-        if len(ts) > 1 and abs(xs[-1] - xs[idx[-1]]) > .02: idx.append(len(ts) - 1)
-        if shot and keys:                                      # hold the old spot up to the cut
-            keys.append({**keys[-1], "t": round(ts[0] - .04, 2)})
-        for i in idx:
-            keys.append({"t": round(ts[i], 2), "x": round(float(np.clip(xs[i], 0, 1)), 3), "y": round(float(np.clip(ys[i], 0, 1)), 3), "how": how})
-    # a shot framed like the one before it needs no jump
+    for s0, s1 in zip(bounds, bounds[1:]):
+        rows = [(t, point_in(f)) for t, f in samples if s0 - 1e-6 <= t < s1 - 1e-6]
+        if not rows: continue
+        seen = [r for r in rows if r[1]]
+        if len(seen) < max(1, len(rows) * .3):
+            keys.append({"t": s0, "x": .5, "y": .5, "glide": 0, "how": "midden"}); continue
+        pts = [(t, p or min(seen, key=lambda r: abs(r[0] - t))[1]) for t, p in rows]
+        ts = [t for t, _ in pts]
+        xs = np.array([p[0] for _, p in pts]); ys = np.array([p[1] for _, p in pts])
+        if len(xs) >= 5:                                       # detector jitter out, real movement stays
+            xs = np.array([np.median(xs[max(0, i - 2):i + 3]) for i in range(len(xs))])
+            ys = np.array([np.median(ys[max(0, i - 2):i + 3]) for i in range(len(ys))])
+        # the detector sometimes hops to another person, and a dissolve swaps the subject without a hard cut:
+        # a jump that then stays put starts a new part (a step, like a cut); small wobbles don't
+        parts, start = [], 0
+        for i in range(1, len(xs)):
+            if abs(xs[i] - xs[i - 1]) > .15 and all(abs(xs[j] - xs[i]) < .1 for j in range(i, min(len(xs), i + 4))):
+                parts.append((start, i)); start = i
+        parts.append((start, len(xs)))
+        merged = []                                    # a part too short to be a real swap joins the one before
+        for a, b in parts:
+            if merged and b - a < 4: merged[-1] = (merged[-1][0], b)
+            else: merged.append((a, b))
+        if len(merged) > 1 and merged[0][1] - merged[0][0] < 4: merged[1] = (0, merged[1][1]); merged.pop(0)
+        parts = merged
+        for a, b in parts:
+            px, py, pt = xs[a:b], ys[a:b], ts[a:b]
+            t0 = s0 if a == 0 else pt[0]
+            steps = np.abs(np.diff(px)) if len(px) > 1 else np.array([0.0])
+            moving = (np.percentile(px, 90) - np.percentile(px, 10) >= MOVES and steps.max() <= .06
+                      and pt[-1] - pt[0] >= .8)
+            if not moving:
+                x, y = float(np.median(px)), float(np.median(py))
+                if abs(x - .5) < CENTRE: x = .5
+                if abs(y - .5) < .15: y = .5
+                keys.append({"t": t0, "x": x, "y": y, "glide": 0, "how": "persoon"})
+            else:                                          # the subject travels through the shot: follow it
+                idx = simplify(pt, px, .05)
+                for n, i in enumerate(idx):
+                    keys.append({"t": t0 if n == 0 else pt[i], "x": float(px[i]), "y": float(py[i]),
+                                 "glide": int(n < len(idx) - 1), "how": "volgt"})
     out = []
     for k in keys:
-        if out and abs(out[-1]["x"] - k["x"]) < .03 and abs(out[-1]["y"] - k["y"]) < .06: continue
+        k = {**k, "t": round(k["t"], 3), "x": round(float(np.clip(k["x"], 0, 1)), 3), "y": round(float(np.clip(k["y"], 0, 1)), 3)}
+        # the next shot framed the same: nothing to change
+        if out and not out[-1]["glide"] and not k["glide"] and abs(out[-1]["x"] - k["x"]) < .03 and abs(out[-1]["y"] - k["y"]) < .06: continue
         out.append(k)
     return out
 
@@ -212,13 +242,12 @@ def review(cat, items):
     for it in items:
         tr = it["track"]
         for i, k in enumerate(tr):
-            if i + 1 < len(tr) and tr[i + 1]["t"] - k["t"] < .1: continue      # the hold point before a cut
             f = frames_at(it["path"], [k["t"] + .05])[0]
             h, w = f.shape[:2]
             for left, col in ((crop_left(.5, PHONE), (110, 110, 110)), (crop_left(k["x"], PHONE), (60, 200, 255))):
                 x0 = int(left * w); cv2.rectangle(f, (x0, 1), (x0 + int(PHONE * w), h - 2), col, 2)
             cv2.circle(f, (int(k["x"] * w), int(k["y"] * h)), 6, (60, 200, 255), -1)
-            txt = f'{it["file"]} {k["t"]:.1f}s  x{round(k["x"]*100)} ({k["how"]})'
+            txt = f'{it["file"]} {k["t"]:.2f}s  x{round(k["x"]*100)} ({k["how"]})'
             cv2.putText(f, txt, (10, 24), cv2.FONT_HERSHEY_SIMPLEX, .6, (0, 0, 0), 3, cv2.LINE_AA)
             cv2.putText(f, txt, (10, 24), cv2.FONT_HERSHEY_SIMPLEX, .6, (255, 255, 255), 1, cv2.LINE_AA)
             tiles.append(f)
@@ -260,8 +289,8 @@ def main():
         items.append({"file": key + ".mp4", "src": rel + ".mp4", "av1": rel + "-av1.mp4", "poster": rel + ".jpg",
                       "project": project, "dur": round(duration(base + ".mp4" if os.path.exists(base + ".mp4") else inp), 2),
                       "x": x, "y": y, "how": how, "path": path,
-                      **({"focus": [[k["t"], k["x"], k["y"]] for k in track]} if len(track) > 1 else {}), "track": track})
-        print(f"{key:16} " + "  ".join(f'{k["t"]:.1f}s x={k["x"]:.2f} y={k["y"]:.2f} ({k["how"]})' for k in track), flush=True)
+                      **({"focus": [[k["t"], k["x"], k["y"], k["glide"]] for k in track]} if len(track) > 1 else {}), "track": track})
+        print(f"{key:16} " + "  ".join(f'{k["t"]:.2f}s x={k["x"]:.2f}{"~" if k["glide"] else ""} ({k["how"]})' for k in track), flush=True)
     data[cat] = [{k: v for k, v in it.items() if k not in ("file", "how", "path", "track")} for it in items]
     with open(listing, "w") as fh:
         fh.write("// written by tools/clips.py — the background clips per hero button, with each clip's point of interest\n")
