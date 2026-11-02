@@ -409,67 +409,6 @@ window.CLIPS = {
    "av1": "assets/clips/ritcs/tenAnker_1-av1.mp4",
    "poster": "assets/clips/ritcs/tenAnker_1.jpg",
    "project": "tenanker",
-   "dur": 2.36,
-   "x": 0.447,
-   "y": 0.196
-  },
-  {
-   "src": "assets/clips/ritcs/tenAnker_2.mp4",
-   "av1": "assets/clips/ritcs/tenAnker_2-av1.mp4",
-   "poster": "assets/clips/ritcs/tenAnker_2.jpg",
-   "project": "tenanker",
-   "dur": 2.28,
-   "x": 0.526,
-   "y": 0.516,
-   "focus": [
-    [
-     0,
-     0.526,
-     0.516
-    ],
-    [
-     0.96,
-     0.515,
-     0.401
-    ],
-    [
-     2.2,
-     0.46,
-     0.432
-    ]
-   ]
-  },
-  {
-   "src": "assets/clips/ritcs/tenAnker_3.mp4",
-   "av1": "assets/clips/ritcs/tenAnker_3-av1.mp4",
-   "poster": "assets/clips/ritcs/tenAnker_3.jpg",
-   "project": "tenanker",
-   "dur": 3.08,
-   "x": 0.457,
-   "y": 0.436,
-   "focus": [
-    [
-     0,
-     0.457,
-     0.436
-    ],
-    [
-     1.4,
-     0.425,
-     0.396
-    ],
-    [
-     1.64,
-     0.252,
-     0.241
-    ]
-   ]
-  },
-  {
-   "src": "assets/clips/ritcs/tenAnker_4.mp4",
-   "av1": "assets/clips/ritcs/tenAnker_4-av1.mp4",
-   "poster": "assets/clips/ritcs/tenAnker_4.jpg",
-   "project": "tenanker",
    "dur": 7.6,
    "x": 0.223,
    "y": 0.317,
@@ -512,9 +451,9 @@ window.CLIPS = {
    ]
   },
   {
-   "src": "assets/clips/ritcs/tenAnker_5.mp4",
-   "av1": "assets/clips/ritcs/tenAnker_5-av1.mp4",
-   "poster": "assets/clips/ritcs/tenAnker_5.jpg",
+   "src": "assets/clips/ritcs/tenAnker_2.mp4",
+   "av1": "assets/clips/ritcs/tenAnker_2-av1.mp4",
+   "poster": "assets/clips/ritcs/tenAnker_2.jpg",
    "project": "tenanker",
    "dur": 2.8,
    "x": 0.185,
@@ -543,9 +482,9 @@ window.CLIPS = {
    ]
   },
   {
-   "src": "assets/clips/ritcs/tenAnker_6.mp4",
-   "av1": "assets/clips/ritcs/tenAnker_6-av1.mp4",
-   "poster": "assets/clips/ritcs/tenAnker_6.jpg",
+   "src": "assets/clips/ritcs/tenAnker_3.mp4",
+   "av1": "assets/clips/ritcs/tenAnker_3-av1.mp4",
+   "poster": "assets/clips/ritcs/tenAnker_3.jpg",
    "project": "tenanker",
    "dur": 5.32,
    "x": 0.785,
@@ -936,9 +875,9 @@ window.CLIPS = {
    "av1": "assets/clips/videografie/joachimFelien_1-av1.mp4",
    "poster": "assets/clips/videografie/joachimFelien_1.jpg",
    "project": "joachimfelien",
-   "dur": 1.72,
-   "x": 0.481,
-   "y": 0.463
+   "dur": 1.6,
+   "x": 0.479,
+   "y": 0.466
   },
   {
    "src": "assets/clips/videografie/strijken_1.mp4",

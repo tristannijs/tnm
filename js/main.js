@@ -92,7 +92,9 @@
   function clipLayer(l){
     const C = window.CLIPS || {};
     // data-clips="all": every category's clips in one pool (the background when no button is hovered)
-    const list = l.dataset.clips === "all" ? Object.values(C).flat() : C[l.dataset.clips] || [];
+    // data-skip leaves out projects by name, e.g. data-skip="jonathan nelson"
+    const skip = (l.dataset.skip || "").toLowerCase().split(/\s+/).filter(Boolean);
+    const list = (l.dataset.clips === "all" ? Object.values(C).flat() : C[l.dataset.clips] || []).filter(c => !skip.includes(c.project));
     if(!list.length) return null;
     const vids = [0, 1].map(() => {
       const v = document.createElement("video");
