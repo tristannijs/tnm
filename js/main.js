@@ -24,12 +24,12 @@
     if(p.cover || p.yt) f.appendChild(coverImg(p));
     return f;
   }
-  // a card's caption: the title, then what it is and the year ("IAO • 2025", "Aftermovie • 2026")
+  // a card on the page only shows its title; what it is, the year and the roles are in the opened preview
   const RITCS = {fictie:1, docu:1, iao:1};
   const kind = p => p.cat === "iao" ? "IAO" : RITCS[p.cat] ? "RITCS" : t("type." + p.cat);
   const year = p => (p.t1 || p.t0 || "").slice(0, 4);
   const title = p => p.name ? L.label(p.name) : flat(lab(p));
-  const capHTML = p => `<b>${esc(title(p))}</b><span>${esc(kind(p))}<i class="dot">•</i>${esc(year(p))}</span>`;
+  const capHTML = p => `<b>${esc(title(p))}</b>`;
   // what Tristan did on it, bottom right of a featured card
   const VIDCAT = {event:1, trouw:1, promo:1};
   const rolesOf = p => (p.roles || (VIDCAT[p.cat] ? ["Videograaf"] : [])).map(L.role);
