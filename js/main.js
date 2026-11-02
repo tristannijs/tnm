@@ -112,8 +112,6 @@
       return last = bag.splice(k, 1)[0];
     }
     function load(v, c){ v.clip = c; v.src = useAv1 ? c.av1 : c.src; v.poster = c.poster; v.preload = "auto"; v.load(); }
-    // where the point of interest is at time t: straight lines between key points; a cut is two key points
-    // 0.04 s apart, so it jumps
     // where the point of interest is at time t. Key points are [t, x, y, glide]: from a key point the spot
     // stays put until the next one (a cut: the new shot is framed from its first frame), unless glide is set,
     // then it moves in a straight line to the next one (a subject walking through one shot)
@@ -126,23 +124,39 @@
       const [t0, x0, y0] = f[i], [t1, x1, y1] = f[i + 1], k = Math.min(1, Math.max(0, (t - t0) / (t1 - t0)));
       return [x0 + (x1 - x0) * k, y0 + (y1 - y0) * k];
     }
-    // object-position for a point: the crop window centred on it as far as the frame allows
+    // the crop window centred on the point as far as the frame allows, as a fraction 0..1 of the room to move
+    const pos = (p, vis) => vis >= 1 ? .5 : Math.min(1, Math.max(0, (p - vis / 2) / (1 - vis)));
     function place(v, t){
       const c = v.clip; if(!c) return;
       const W = l.clientWidth, H = l.clientHeight, va = (v.videoWidth / v.videoHeight) || 16 / 9, ca = W / H;
       const [x, y] = at(c, t ?? v.currentTime ?? 0);
-      const pos = (p, vis) => vis >= 1 ? 50 : Math.min(100, Math.max(0, (p - vis / 2) / (1 - vis) * 100));
-      const op = `${pos(x, ca / va).toFixed(2)}% ${pos(y, va / ca).toFixed(2)}%`;
+      const op = `${(pos(x, ca / va) * 100).toFixed(2)}% ${(pos(y, va / ca) * 100).toFixed(2)}%`;
       if(v.style.objectPosition !== op) v.style.objectPosition = op;
     }
-    // follow the clip frame by frame: requestVideoFrameCallback reports the exact time of the frame about to
-    // be shown, so the crop changes on the very frame of a cut (phones included); older browsers use rAF
+    // Where the browser reports every video frame (requestVideoFrameCallback), each frame is painted into a
+    // canvas together with its own crop. Moving the crop with CSS instead lands one frame late on phones, so
+    // the first frame after a cut still showed the old framing. The <video> keeps playing underneath.
     const RVFC = "requestVideoFrameCallback" in HTMLVideoElement.prototype;
+    const cv = RVFC ? document.createElement("canvas") : null, g = cv && cv.getContext("2d", {alpha:false});
+    if(cv){ cv.className = "clip-canvas"; l.appendChild(cv); }
+    function paint(v, t){
+      if(!v.clip || v.readyState < 2) return false;
+      const dpr = Math.min(devicePixelRatio || 1, 2), W = Math.round(l.clientWidth * dpr), H = Math.round(l.clientHeight * dpr);
+      if(!W || !H) return false;
+      if(cv.width !== W || cv.height !== H){ cv.width = W; cv.height = H; }
+      const vw = v.videoWidth, vh = v.videoHeight, s = Math.max(W / vw, H / vh), sw = W / s, sh = H / s;
+      const [x, y] = at(v.clip, t);
+      g.drawImage(v, pos(x, sw / vw) * (vw - sw), pos(y, sh / vh) * (vh - sh), sw, sh, 0, 0, W, H);
+      if(!l.classList.contains("painted")) l.classList.add("painted");
+      return true;
+    }
     function tick(){
       const v = vids[cur];
-      if(!(playing && v.clip && v.clip.focus)){ place(v); raf = 0; return; }
-      if(RVFC){ const me = rv = v; raf = me.requestVideoFrameCallback((now, m) => { raf = 0; if(me !== vids[cur]) return; place(me, m.mediaTime); tick(); }); }
-      else { place(v); raf = requestAnimationFrame(tick); }
+      place(v);
+      if(!playing){ raf = 0; return; }
+      if(RVFC){ const me = rv = v; raf = me.requestVideoFrameCallback((now, m) => { raf = 0; if(me !== vids[cur]) return; paint(me, m.mediaTime); tick(); }); }
+      else if(v.clip && v.clip.focus) raf = requestAnimationFrame(tick);
+      else raf = 0;
     }
     let rv = null;
     function stop(){ if(!raf) return; if(RVFC) rv.cancelVideoFrameCallback(raf); else cancelAnimationFrame(raf); raf = 0; }
@@ -161,7 +175,7 @@
       if(n.readyState >= 2) go(); else n.addEventListener("loadeddata", go, {once:true});
     }));
     vids.forEach(v => v.addEventListener("loadedmetadata", () => place(v)));
-    addEventListener("resize", () => vids.forEach(place));
+    addEventListener("resize", () => { vids.forEach(v => place(v)); if(cv) paint(vids[cur], vids[cur].currentTime); });
     let started = false;
     async function start(){
       if(started) return; started = true;
