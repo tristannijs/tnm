@@ -368,12 +368,10 @@
     subs:`<svg viewBox="0 0 26 24" aria-hidden="true"><path d="M2 2h22v15H9l-5 5v-5H2z" fill="currentColor"/><path d="M6.5 7.5h13M6.5 11.5h13" stroke="#000" stroke-width="1.8"/></svg>`
   };
   // any device with a mouse or trackpad (touch-only screens tap straight to the player)
-  const canPeek = matchMedia("(any-hover: hover)").matches;
   var cfSettled = () => {};
   const shade = document.createElement("div"); shade.className = "pv-shade"; document.body.appendChild(shade);
   // var, not let: the carousel above already checks `pv` while it draws its first frame
   var pv = null, peekTimer = 0, peekLeft = 0;
-  const PEEK_MS = 1000, GROW = 1.55;
   const cfCtx = {
     grow: 1.12, cls: "pv-cf",
     home: c => c.getBoundingClientRect(),
@@ -429,7 +427,6 @@
     document.body.appendChild(el);
     const me = pv = {el, card, p, shrunk, ctx, off: offset};
     refreshRow(p);
-    el.addEventListener("mouseleave", () => { if(pv === me && !me.live) closePeek(); });
     // sideways scrolling over the open preview keeps turning the carousel underneath it
     el.addEventListener("wheel", e => {
       const dx = e.shiftKey && !e.deltaX ? e.deltaY : e.deltaX;
@@ -472,9 +469,9 @@
       f.classList.add("on"); media.appendChild(f);
     }
   }
-  // a live preview closes with Escape or a click anywhere else on the page
+  // an open preview closes with Escape or a click anywhere else on the page (hovering does nothing)
   document.addEventListener("pointerdown", e => {
-    if(pv && pv.live && !pv.el.contains(e.target)) closePeek();
+    if(pv && !pv.el.contains(e.target) && !pv.card.contains(e.target)) closePeek();
   }, true);
   function startClip(p, media){
     // muted, because browsers only autoplay muted video
@@ -521,22 +518,8 @@
     if(Array.isArray(q) && q.length && p.hd == null && p._hd == null){ p._hd = q.some(l => /hd|highres/.test(l)); ch = true; }
     if(ch) refreshRow(p);
   });
-  if(canPeek){
-    addEventListener("resize", () => closePeek(true));
+  addEventListener("resize", () => closePeek(true));
 
-    // Uitgelicht: rest 1 s on the front card while the carousel stands still
-    const cfFront = c => +c.tabIndex === 0 && Math.abs(goal - offset) < .01 && Math.abs(goal - Math.round(goal)) < .01;
-    const cfArm = c => { clearTimeout(peekTimer); peekTimer = setTimeout(() => { if(!drag.on && c.matches(":hover") && cfFront(c)) openPeek(c, cfCtx); }, PEEK_MS); };
-    track.addEventListener("mouseover", e => {
-      const c = e.target.closest(".cf-item"); if(!c || c.contains(e.relatedTarget) || drag.on || !cfFront(c)) return;
-      cfArm(c);
-    });
-    track.addEventListener("mouseout", e => { const c = e.target.closest(".cf-item"); if(c && !c.contains(e.relatedTarget)) clearTimeout(peekTimer); });
-    cf.addEventListener("pointerdown", () => clearTimeout(peekTimer));
-    cf.addEventListener("wheel", () => clearTimeout(peekTimer), {passive:true});
-    // when a turn ends with the new front card under the pointer, the wait starts for that one
-    cfSettled = () => { if(pv) return; const c = track.querySelector(".cf-item:hover"); if(c && cfFront(c)) cfArm(c); };
-  }
 
 
   // ---------- player ----------
