@@ -279,6 +279,38 @@
     track.appendChild(b);
     return {el:b, shade};
   });
+  // ---- the cards' drop shadow, drawn per pixel ----
+  // A CSS shadow this dark only spans about 11 grey levels on #111, and browsers round every pixel to the
+  // nearest level, so the soft edge shows as rings. Photoshop dithers when it writes 8-bit; browsers don't.
+  // So the shadow is drawn here into a canvas at the screen's own pixel size, with each pixel's level
+  // chosen by dithering, the way Photoshop would. Same shape as the CSS shadow it replaces
+  // (0 18px 50px rgba(0,0,0,.66) at 1440 px), scaled with the card.
+  const BG = 17;                                   // #111
+  const erf = x => { const t = 1 / (1 + .3275911 * Math.abs(x)), y = 1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - .284496736) * t + .254829592) * t * Math.exp(-x * x); return x >= 0 ? y : -y; };
+  function drawShadow(el){
+    let cv = el.querySelector("canvas.drop");
+    if(!cv){ cv = document.createElement("canvas"); cv.className = "drop"; cv.setAttribute("aria-hidden", "true"); el.prepend(cv); }
+    const w = el.offsetWidth, h = el.offsetHeight; if(!w) return;
+    const k = w / 657, sig = 25 * k, off = 18 * k, m = Math.ceil(sig * 3.2), dpr = Math.min(devicePixelRatio || 1, 2);
+    const W = Math.round((w + 2 * m) * dpr), H = Math.round((h + 2 * m) * dpr);
+    cv.style.left = cv.style.top = -m + "px"; cv.style.width = (w + 2 * m) + "px"; cv.style.height = (h + 2 * m) + "px";
+    cv.width = W; cv.height = H;
+    const g = cv.getContext("2d"), img = g.createImageData(W, H), d = img.data, s2 = sig * Math.SQRT2;
+    const fx = new Float32Array(W), fy = new Float32Array(H);
+    for(let x = 0; x < W; x++){ const X = x / dpr - m; fx[x] = .5 * (erf(X / s2) - erf((X - w) / s2)); }
+    for(let y = 0; y < H; y++){ const Y = y / dpr - m - off; fy[y] = .5 * (erf(Y / s2) - erf((Y - h) / s2)); }
+    for(let y = 0, i = 0; y < H; y++) for(let x = 0; x < W; x++, i += 4){
+      const v = BG * (1 - .66 * fx[x] * fy[y]);              // the grey this pixel should be over #111
+      const lv = Math.min(BG, Math.floor(v + Math.random()));  // dithered to a whole level
+      d[i + 3] = 15 * (BG - lv);                               // black at the alpha that gives exactly that level
+    }
+    g.putImageData(img, 0, 0);
+  }
+  let shT = 0;
+  const shadows = () => cfItems.forEach(({el}) => drawShadow(el));
+  addEventListener("resize", () => { clearTimeout(shT); shT = setTimeout(shadows, 150); });
+  requestAnimationFrame(shadows);
+
   let sx = 118;
   const readSx = () => { sx = parseFloat(getComputedStyle(cf).getPropertyValue("--sx")) || 118; };
   function render(){
