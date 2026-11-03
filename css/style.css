@@ -119,15 +119,15 @@ img{display:block;max-width:100%}
 .about{padding-top:clamp(44px,4.2vw,61px)}
 .about-body{display:grid;grid-template-columns:635fr 486fr;gap:5.1vw;align-items:center;
   padding:clamp(28px,2.4vw,35px) max(var(--gut),7.7vw) 0 max(var(--gut),9.3vw)}
-.about-text{font-weight:300;font-size:clamp(17px,1.49vw,21.5px);line-height:1.2;text-align:left;color:var(--fg)}
+.about-text{font-weight:300;font-size:clamp(17px,1.49vw,21.5px);line-height:1.2;text-align:justify;text-align-last:left;color:var(--fg)}
 .about-text p{margin:0 0 1.2em}
-.about-text p:last-child{margin:0;text-align-last:auto}
+.about-text p:last-child{margin:0}
 /* the box is just the rectangle of the photo (900 x 471 of the 900 x 675 file); the head sticks out above it */
 .about-fig{position:relative;aspect-ratio:900/471}
 .about-img{position:absolute;left:0;bottom:0;width:100%;height:auto}
 @media (max-width:760px){
   .about-body{grid-template-columns:1fr;gap:110px;padding:44px 22px 48px}
-  .about-text{text-align:left;font-size:19px}
+  .about-text{font-size:19px}
   .about-fig{width:100%;max-width:448px;justify-self:center}
 }
 

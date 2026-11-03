@@ -561,7 +561,15 @@
     if(Array.isArray(q) && q.length && p.hd == null && p._hd == null){ p._hd = q.some(l => /hd|highres/.test(l)); ch = true; }
     if(ch) refreshRow(p);
   });
-  addEventListener("resize", () => closePeek(true));
+  // a resize moves the cards, so an open preview closes, except the resize that going into or out of
+  // full screen causes (that closed the player the moment its full-screen button was pressed)
+  let fsQuiet = 0;
+  const fsChange = () => { fsQuiet = performance.now() + 1500; };
+  document.addEventListener("fullscreenchange", fsChange); document.addEventListener("webkitfullscreenchange", fsChange);
+  addEventListener("resize", () => {
+    if(document.fullscreenElement || document.webkitFullscreenElement || performance.now() < fsQuiet) return;
+    closePeek(true);
+  });
 
 
 
