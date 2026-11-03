@@ -95,7 +95,7 @@ img{display:block;max-width:100%}
 /* ---------- section heading ---------- */
 .sec{padding-top:56px}
 /* below the hero (which scrolls over the fixed background): Uitgelicht on #111, then a fade to black */
-.after-hero{position:relative;z-index:1;background:var(--bg)}
+.after-hero{position:relative;z-index:1;background:var(--bg);overflow:hidden}   /* phones ignore overflow on <html>: the carousel's side cards must not widen the page */
 /* flat #111 where the carousel fades reach down, then an eased fade to black */
 .to-black{background:linear-gradient(180deg,#111 0,#111 14%,rgb(16.67,16.67,16.67) 21.2%,rgb(15.74,15.74,15.74) 28.3%,rgb(14.34,14.34,14.34) 35.5%,rgb(12.59,12.59,12.59) 42.7%,rgb(10.61,10.61,10.61) 49.8%,rgb(8.50,8.50,8.50) 57.0%,rgb(6.39,6.39,6.39) 64.2%,rgb(4.41,4.41,4.41) 71.3%,rgb(2.66,2.66,2.66) 78.5%,rgb(1.26,1.26,1.26) 85.7%,rgb(0.33,0.33,0.33) 92.8%,rgb(0.00,0.00,0.00) 100.0%)}
 .sh{position:relative;z-index:6}
