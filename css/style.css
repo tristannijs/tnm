@@ -146,7 +146,7 @@ img{display:block;max-width:100%}
 .cf-item::before,.cf-item::after{content:"";position:absolute;pointer-events:none}
 .cf-item::before{content:none}
 /* the drop shadow is a canvas drawn in main.js (dithered, so it has no rings) */
-.cf-item canvas.drop{position:absolute;z-index:-2;pointer-events:none}
+canvas.drop{position:absolute;z-index:-2;pointer-events:none}
 .cf-item::after{content:none}
 .cf-item .cap{margin:0 6% 4.8% 6%}
 .cf-item .roles{display:none;position:absolute;z-index:1;right:3.5%;bottom:6.5%;max-width:25%;text-align:right;font-style:italic;font-weight:400;
@@ -203,6 +203,11 @@ img{display:block;max-width:100%}
 .pv-t{font-size:1.19em;font-weight:800;text-transform:uppercase;line-height:1.15;letter-spacing:.005em}
 .pv-m{margin-top:.4em;font-size:.82em;text-transform:uppercase;letter-spacing:.02em}
 .pv-m .dot{margin:0 .6em}
+.pv-m .sq,.flt .sq{display:inline-block;width:.78em;height:.78em;margin-right:.6em;background:var(--c);vertical-align:-.04em}
+.pv-role small{display:block;margin-top:.5em;font-size:.82em;font-style:normal;color:#9a9a9a}
+.pv-parts{display:flex;gap:.4em;margin-top:.7em}
+.pv-parts button{min-width:2em;height:2em;padding:0 .5em;border:1px solid #555;background:none;color:#ccc;font:inherit;font-size:.8em;cursor:pointer}
+.pv-parts button[aria-current]{background:#fff;color:#000;border-color:#fff}
 .pv-r{display:flex;align-items:center;flex-wrap:wrap;gap:.35em 1.3em;margin-top:.7em;font-size:.86em}
 .pv-r span{display:inline-flex;align-items:center;gap:.4em;line-height:1}
 .pv-r svg{height:1.3em;width:auto;display:block}
@@ -340,4 +345,59 @@ dialog::backdrop{background:rgba(0,0,0,.88)}
   .foot-icons a{padding:11px}
   .sh{padding:0 22px;font-size:clamp(22px,6.4vw,28px);letter-spacing:.03em}
   .sh sup{font-size:.45em}
+}
+
+/* ---------- work page (Video / Film / Overig): measured off Tristan's design at 1440 px ---------- */
+.hero-work{position:relative;z-index:2;text-align:center;margin-bottom:max(30px,7.4vh)}
+.wk-t{margin:0;font-size:clamp(34px,4.3vw,62px);font-weight:800;letter-spacing:.005em;line-height:1;text-transform:uppercase;
+  text-shadow:0 2px 24px rgba(0,0,0,.35);transition:transform .7s cubic-bezier(.22,.8,.22,1)}
+.wk-t .b{transition:opacity .45s ease .25s}
+.wk-s{margin:.75em 0 0;font-size:clamp(14px,1.18vw,17px);font-weight:400;color:#e8e8e8;transition:opacity .45s ease .35s}
+.hero-work.flying .wk-t .b,.hero-work.flying .wk-s{opacity:0;transition:none}
+body.is-work .hero-doors:not([style]){display:none}
+body.is-work .hero-doors[style]{opacity:0;pointer-events:none;transition:opacity .3s ease}
+.hero-doors.back{animation:doorsIn .5s ease}
+@keyframes doorsIn{from{opacity:0}}
+
+.werk{padding:clamp(48px,8.2vw,118px) max(var(--gut),9.3vw) 0}
+.werk.in{animation:werkIn .6s ease .2s both}
+@keyframes werkIn{from{opacity:0;transform:translateY(14px)}}
+.filters{position:relative;z-index:8;display:flex;flex-wrap:wrap;gap:22px clamp(28px,7.3vw,106px)}
+.flt{position:relative;width:clamp(140px,11.3vw,163px)}
+.flt-l{display:block;font-size:12px;font-weight:700;color:#fff;margin-bottom:9px}
+.flt-v{display:flex;align-items:center;width:100%;gap:6px;padding:0 0 3px;border:0;border-bottom:1px solid #fff;background:none;color:#fff;
+  font:inherit;font-size:clamp(16px,1.32vw,19px);font-weight:300;text-align:left;cursor:pointer}
+.flt-v span{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.flt-v svg{flex:none;width:15px;height:10px;transition:transform .2s}
+.flt.open .flt-v svg{transform:rotate(180deg)}
+.flt-o{position:absolute;left:0;top:100%;min-width:100%;margin:0;padding:10px 0 0;list-style:none;white-space:nowrap}
+.flt-o li{padding:4px 0;font-size:14px;font-weight:400;color:#cfcfcf;cursor:pointer}
+.flt-o li:hover,.flt-o li[aria-selected]{color:#fff}
+.flt-o li[aria-selected]{font-weight:600}
+.flt-o sup{font-size:.62em;font-weight:600;margin-left:.3em;color:#8a8a8a}
+.flt.open{z-index:2}
+.flt.open .flt-o{background:var(--bg);padding:10px 14px 8px;margin-left:-14px;box-shadow:0 18px 30px rgba(0,0,0,.45)}
+.wk-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(12px,1.3vw,19px);margin-top:clamp(56px,8.4vw,121px)}
+.wk-card{position:relative;isolation:isolate;aspect-ratio:16/9;border:0;padding:0;background:none;cursor:pointer;color:#fff;font-family:var(--f)}
+.wk-card .face img{transition:transform .5s ease,filter .3s}
+.wk-card:hover .face img{transform:scale(1.03);filter:brightness(1.07)}
+.wk-card .cap{margin:0 7.4% 7% 7.4%}
+.wk-card .cap b{font-size:clamp(12px,1.06vw,15.5px);line-height:1.08}
+.wk-card .cap span{font-size:clamp(12px,1.06vw,15.5px);font-weight:300;text-transform:none;margin-top:1px}
+.wk-card.lifted{visibility:hidden}
+.wk-n{position:absolute;z-index:2;top:7px;right:9px;font-style:normal;font-size:9.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.pv-wk .cap{margin:0 7.4% 7% 7.4%}
+.pv-wk .cap b{font-size:calc(clamp(12px,1.06vw,15.5px) * var(--k,1));line-height:1.08}
+.pv-wk .cap span{font-size:calc(clamp(12px,1.06vw,15.5px) * var(--k,1));font-weight:300;text-transform:none}
+.wk-none{margin:40px 0 0;color:#9a9a9a}
+body.is-work .foot{padding-top:clamp(70px,12.4vw,178px)}
+@media (max-width:900px){.wk-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:760px){
+  .werk{padding:44px 22px 0}
+  .filters{display:grid;grid-template-columns:1fr 1fr;gap:24px 22px}
+  .flt{width:auto}
+  .wk-grid{grid-template-columns:1fr;gap:14px;margin-top:44px}
+  .wk-card .cap b,.wk-card .cap span{font-size:15px}
+  .flt:nth-child(even) .flt-o{left:auto;right:0}
+  .flt.open:nth-child(even) .flt-o{margin:0 -14px 0 0}
 }

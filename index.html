@@ -13,16 +13,17 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap">
 <link rel="preload" href="assets/fonts/Geist-Regular.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/Geist-Medium.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="css/style.css?v=20261103093125">
+<link rel="stylesheet" href="css/style.css?v=20261103103617">
 </head>
 <body>
 
 <header class="bar" id="bar">
   <a class="logo-link" href="#top" data-i18n-aria="nav.top" aria-label="Tristan Nijs Media, naar boven"><img src="assets/logo.png" alt="Tristan Nijs Media" width="1320" height="245"></a>
   <nav class="nav" data-i18n-aria="nav.main" aria-label="Hoofdmenu">
-    <a class="nav-link" href="#videografie" data-i18n="nav.video">Video</a>
-    <a class="nav-link" href="#ritcs" data-i18n="nav.ritcs">Film</a>
-    <a class="nav-link" href="#overig" data-i18n="nav.other">Overig</a>
+    <a class="nav-link" href="#" data-view="home" data-i18n="nav.start">Start</a>
+    <a class="nav-link" href="#video" data-view="video" data-i18n="nav.video">Video</a>
+    <a class="nav-link" href="#film" data-view="film" data-i18n="nav.ritcs">Film</a>
+    <a class="nav-link" href="#overig" data-view="overig" data-i18n="nav.other">Overig</a>
     <div class="lang-wrap">
       <button class="lang" id="langBtn" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="langMenu">NL</button>
       <div class="lang-menu" id="langMenu" hidden>
@@ -38,9 +39,10 @@
 </header>
 
 <nav class="drawer" id="drawer" hidden aria-label="Menu">
-  <a href="#videografie" data-i18n="nav.video">Video</a>
-  <a href="#ritcs" data-i18n="nav.ritcs">Film</a>
-  <a href="#overig" data-i18n="nav.other">Overig</a>
+  <a href="#" data-view="home" data-i18n="nav.start">Start</a>
+  <a href="#video" data-view="video" data-i18n="nav.video">Video</a>
+  <a href="#film" data-view="film" data-i18n="nav.ritcs">Film</a>
+  <a href="#overig" data-view="overig" data-i18n="nav.other">Overig</a>
 </nav>
 
 <main id="top">
@@ -56,9 +58,13 @@
     </div>
     <div class="hero-shade" aria-hidden="true"></div>
     <div class="hero-doors" id="doors">
-      <a class="door" href="#videografie" data-bg="videografie"><span data-i18n="nav.video">Video</span><svg viewBox="0 0 16 10" aria-hidden="true"><path d="M1 1.5l7 7 7-7" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></a>
-      <a class="door" href="#ritcs" data-bg="ritcs"><span data-i18n="nav.ritcs">Film</span><svg viewBox="0 0 16 10" aria-hidden="true"><path d="M1 1.5l7 7 7-7" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></a>
-      <a class="door" href="#overig" data-bg="overig"><span data-i18n="nav.other">Overig</span><svg viewBox="0 0 16 10" aria-hidden="true"><path d="M1 1.5l7 7 7-7" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></a>
+      <a class="door" href="#video" data-bg="videografie" data-view="video"><span data-i18n="nav.video">Video</span><svg viewBox="0 0 16 10" aria-hidden="true"><path d="M1 1.5l7 7 7-7" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></a>
+      <a class="door" href="#film" data-bg="ritcs" data-view="film"><span data-i18n="nav.ritcs">Film</span><svg viewBox="0 0 16 10" aria-hidden="true"><path d="M1 1.5l7 7 7-7" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></a>
+      <a class="door" href="#overig" data-bg="overig" data-view="overig"><span data-i18n="nav.other">Overig</span><svg viewBox="0 0 16 10" aria-hidden="true"><path d="M1 1.5l7 7 7-7" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></a>
+    </div>
+    <div class="hero-work" id="heroWork" hidden>
+      <h1 class="wk-t" id="wkT"><span class="a"></span><span class="b"></span></h1>
+      <p class="wk-s" id="wkS"></p>
     </div>
     <a class="hero-down" href="#uitgelicht" data-i18n-aria="hero.down" aria-label="Naar beneden">
       <svg viewBox="0 0 40 20" aria-hidden="true"><path d="M1 1l19 17L39 1" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
@@ -73,6 +79,12 @@
       <button class="arrow prev" type="button" data-dir="-1" data-i18n-aria="prev" aria-label="Vorige"><svg viewBox="0 0 20 40" aria-hidden="true"><path d="M19 1L1 20l18 19" fill="none" stroke="currentColor" stroke-width="1.2"/></svg></button>
       <button class="arrow next" type="button" data-dir="1" data-i18n-aria="next" aria-label="Volgende"><svg viewBox="0 0 20 40" aria-hidden="true"><path d="M1 1l18 19L1 39" fill="none" stroke="currentColor" stroke-width="1.2"/></svg></button>
     </div>
+  </section>
+
+  <section class="werk" id="werk" hidden>
+    <div class="filters" id="filters"></div>
+    <div class="wk-grid" id="wkGrid"></div>
+    <p class="wk-none" id="wkNone" hidden data-i18n="f.none">Hier staat nog niets.</p>
   </section>
 
   <div class="to-black">
@@ -113,9 +125,9 @@
   </div>
 </dialog>
 
-<script src="js/i18n.js?v=20261103093125"></script>
-<script src="assets/clips/clips.js?v=20261103093125"></script>
-<script src="js/data.js?v=20261103093125"></script>
-<script src="js/main.js?v=20261103093125"></script>
+<script src="js/i18n.js?v=20261103103617"></script>
+<script src="assets/clips/clips.js?v=20261103103617"></script>
+<script src="js/data.js?v=20261103103617"></script>
+<script src="js/main.js?v=20261103103617"></script>
 </body>
 </html>

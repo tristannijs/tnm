@@ -32,7 +32,7 @@
   const capHTML = p => `<b>${esc(title(p))}</b>`;
   // what Tristan did on it, bottom right of a featured card
   const VIDCAT = {event:1, trouw:1, promo:1};
-  const rolesOf = p => (p.roles || (VIDCAT[p.cat] ? ["Videograaf"] : [])).map(L.role);
+  const rolesOf = p => (p.roles || []).map(L.role);
   function roles(p){
     const r = document.createElement("i"); r.className = "roles"; r.dataset.pid = p.id;
     r.textContent = rolesOf(p).join(", ");
@@ -51,7 +51,7 @@
   const doorsEl = $("#doors");
   const onScroll = () => {
     bar.classList.toggle("solid", scrollY > 8);
-    bar.classList.toggle("links", doorsEl.getBoundingClientRect().bottom < bar.offsetHeight);
+    bar.classList.toggle("links", document.body.classList.contains("is-work") || doorsEl.getBoundingClientRect().bottom < bar.offsetHeight);
   };
   addEventListener("scroll", onScroll, {passive:true}); addEventListener("resize", onScroll); onScroll();
 
@@ -247,12 +247,14 @@
     });
   }
   const doors = $("#doors");
+  // hovering a door previews its background (only on the start page)
+  const onHome = () => !document.body.classList.contains("is-work");
   doors.querySelectorAll(".door").forEach(d => {
-    d.addEventListener("mouseenter", () => showLayer(d.dataset.bg));
-    d.addEventListener("focus", () => showLayer(d.dataset.bg));
-    d.addEventListener("blur", () => showLayer("home"));
+    d.addEventListener("mouseenter", () => { if(onHome()) showLayer(d.dataset.bg); });
+    d.addEventListener("focus", () => { if(onHome()) showLayer(d.dataset.bg); });
+    d.addEventListener("blur", () => { if(onHome()) showLayer("home"); });
   });
-  doors.addEventListener("mouseleave", () => showLayer("home"));
+  doors.addEventListener("mouseleave", () => { if(onHome()) showLayer("home"); });
 
   // ---------- Uitgelicht: cards on a turntable that follows your fingers ----------
   const cf = $("#cf"), track = $("#cfTrack");
@@ -446,8 +448,8 @@
     el.setAttribute("role", "button"); el.setAttribute("aria-label", t("play", {t:pvTitle(p)}));
     el.innerHTML = `<div class="pv-media"></div>
       <div class="pv-info"><div class="pv-l"><div class="pv-t">${esc(RITCS[p.cat] ? title(p) : pvTitle(p))}</div>
-        <div class="pv-m">${esc(kind(p))}<span class="dot">•</span>${esc(when(p))}</div>
-        <div class="pv-r"></div></div>${rolesOf(p).length ? `<div class="pv-role">${esc(rolesOf(p).join(", "))}</div>` : ""}</div>`;
+        <div class="pv-m"><i class="sq" aria-hidden="true"></i>${esc(kind(p))}<span class="dot">•</span>${esc(when(p))}</div>
+        <div class="pv-r"></div></div>${rolesOf(p).length ? `<div class="pv-role">${esc(rolesOf(p).join(", "))}${(p.credits || []).map(([r, n]) => `<small>${esc(L.role(r))}: ${esc(n)}</small>`).join("")}</div>` : ""}</div>`;
     const media = el.querySelector(".pv-media");
     // reuse the card's own, already decoded picture so the first frame is never empty
     const own = card.querySelector(".face img"), f = face(p), fi = f.querySelector("img");
@@ -501,6 +503,17 @@
       const v = document.createElement("video");
       Object.assign(v, {src:p.vids[0].src, autoplay:true, controls:true, playsInline:true});
       v.addEventListener("loadedmetadata", () => { p._dur = v.duration; if(p.hd == null) p._hd = v.videoHeight >= 720; refreshRow(p); });
+      // a project made of several videos: numbered buttons to switch between them
+      if(p.vids.length > 1){
+        const parts = document.createElement("div"); parts.className = "pv-parts";
+        parts.innerHTML = p.vids.map((x, i) => `<button type="button"${i ? "" : ' aria-current="true"'}>${i + 1}</button>`).join("");
+        parts.addEventListener("click", e => {
+          const b = e.target.closest("button"); if(!b) return;
+          parts.querySelectorAll("button").forEach(x => x.removeAttribute("aria-current")); b.setAttribute("aria-current", "true");
+          v.src = p.vids[[...parts.children].indexOf(b)].src; p._dur = 0; v.play().catch(() => {});
+        });
+        media.closest(".pv").querySelector(".pv-l").appendChild(parts);
+      }
       v.addEventListener("playing", () => v.classList.add("on"));
       media.appendChild(v);
     } else if(p.yt){
@@ -545,6 +558,195 @@
   addEventListener("resize", () => closePeek(true));
 
 
+
+
+  // ---------- work page: Video / Film / Overig ----------
+  // One page for all work, reached from the hero words, the top bar or a link (#video, #film, #overig,
+  // #werk). The hero word grows into the page title; the filters below narrow the grid. Each filter only
+  // offers what still has results given the others, with the count; picking a context also sets its field.
+  const VELD = {video:1, film:1, overig:1};
+  const veldOf = p => VIDCAT[p.cat] ? "video" : RITCS[p.cat] ? "film" : "overig";
+  const ctxOf = p => VIDCAT[p.cat] ? p.cat : RITCS[p.cat] ? "ritcs" : "";
+  const CTX = {video:["event", "trouw", "promo"], film:["ritcs"], overig:[]};
+  const CTXC = {event:"event", trouw:"trouw", promo:"promo", ritcs:"ritcs"};
+  const yearsOf = p => { const a = +p.t0.slice(0, 4), b = +(p.t1 || p.t0).slice(0, 4), r = []; for(let y = b; y >= a; y--) r.push(String(y)); return r; };
+  const LAYER = {alle:"home", video:"videografie", film:"ritcs", overig:"overig"};
+  const TITLE = {alle:["wk.all.a", ""], video:["wk.video.a", "wk.video.b"], film:["wk.film.a", ""], overig:["wk.other.a", ""]};
+  const SUB = {alle:"wk.all.s", video:"wk.video.s", film:"wk.film.s", overig:"wk.other.s"};
+  const ALL = P.slice().sort((a, b) => D(b.t1 || b.t0) - D(a.t1 || a.t0));
+  const st = {veld:"alle", ctx:"alle", jaar:"alle", rol:"alle"};
+  // (a context belongs to one field, so the field list ignores the context: switching field resets it)
+  const hit = (p, skip) =>
+    (skip === "veld" || st.veld === "alle" || veldOf(p) === st.veld) &&
+    (skip === "ctx" || skip === "veld" || st.ctx === "alle" || ctxOf(p) === st.ctx) &&
+    (skip === "jaar" || st.jaar === "alle" || yearsOf(p).includes(st.jaar)) &&
+    (skip === "rol" || st.rol === "alle" || (p.roles || []).includes(st.rol));
+  // the choices of one filter, with how many projects each would show
+  function options(key){
+    const pool = ALL.filter(p => hit(p, key)), n = f => pool.filter(f).length;
+    let o;
+    if(key === "veld") o = ["video", "film", "overig"].map(v => [v, n(p => veldOf(p) === v)]);
+    else if(key === "ctx") o = (st.veld === "alle" ? [...CTX.video, ...CTX.film] : CTX[st.veld]).map(c => [c, n(p => ctxOf(p) === c)]);
+    else if(key === "jaar") o = [...new Set(ALL.flatMap(yearsOf))].sort((a, b) => b - a).map(y => [y, n(p => yearsOf(p).includes(y))]);
+    else { const r = [...new Set(pool.flatMap(p => p.roles || []))]; const ord = ["Camera", "Montage", "Regie", "Script", "Concept", "Acteur"]; r.sort((a, b) => (ord.indexOf(a) + 99) % 99 - (ord.indexOf(b) + 99) % 99); o = r.map(x => [x, n(p => (p.roles || []).includes(x))]); }
+    return [["alle", pool.length], ...o.filter(([v, c]) => c || v === st[key])];
+  }
+  const label = (key, v) => v === "alle" ? t("f.all") : key === "veld" ? t({video:"nav.video", film:"nav.ritcs", overig:"nav.other"}[v]) : key === "ctx" ? t("f." + v) : key === "rol" ? L.role(v) : v;
+  const sq = (key, v) => key === "ctx" && v !== "alle" ? `<i class="sq" style="background:var(--c-${CTXC[v]})"></i>` : "";
+  const filtersEl = $("#filters"), grid = $("#wkGrid");
+  function drawFilters(){
+    filtersEl.innerHTML = ["veld", "ctx", "jaar", "rol"].map(key => {
+      const opts = options(key);
+      return `<div class="flt" data-key="${key}"><span class="flt-l">${esc(t("f." + key))}</span>
+        <button type="button" class="flt-v" aria-haspopup="listbox" aria-expanded="false">${sq(key, st[key])}<span>${esc(label(key, st[key]))}</span><svg viewBox="0 0 16 10" aria-hidden="true"><path d="M1 1.5l7 7 7-7" fill="none" stroke="currentColor" stroke-width="1.4"/></svg></button>
+        <ul class="flt-o" role="listbox" hidden>${opts.map(([v, c]) => `<li role="option" data-v="${esc(v)}"${v === st[key] ? ' aria-selected="true"' : ""}>${sq(key, v)}${esc(label(key, v))}<sup>[${c}]</sup></li>`).join("")}</ul></div>`;
+    }).join("");
+  }
+  filtersEl.addEventListener("click", e => {
+    const f = e.target.closest(".flt"); if(!f) return;
+    const li = e.target.closest("li[data-v]");
+    if(li){ choose(f.dataset.key, li.dataset.v); return; }
+    if(e.target.closest(".flt-v")){
+      const open = f.querySelector(".flt-o").hidden;
+      closeFilters(); if(open){ f.querySelector(".flt-o").hidden = false; f.classList.add("open"); f.querySelector(".flt-v").setAttribute("aria-expanded", "true"); }
+    }
+  });
+  const closeFilters = () => filtersEl.querySelectorAll(".flt").forEach(f => { f.classList.remove("open"); f.querySelector(".flt-o").hidden = true; f.querySelector(".flt-v").setAttribute("aria-expanded", "false"); });
+  document.addEventListener("click", e => { if(!e.target.closest("#filters")) closeFilters(); });
+  addEventListener("keydown", e => { if(e.key === "Escape") closeFilters(); });
+  function choose(key, v){
+    st[key] = v;
+    if(key === "ctx" && v !== "alle") st.veld = CTX.video.includes(v) ? "video" : "film";     // a context belongs to one field
+    if(key === "veld" && st.ctx !== "alle" && v !== "alle" && !CTX[v].includes(st.ctx)) st.ctx = "alle";
+    // a choice the others no longer allow falls back to "all"
+    for(const k of ["ctx", "jaar", "rol"]) if(st[k] !== "alle" && !options(k).some(([x, c]) => x === st[k] && c)) st[k] = "alle";
+    writeHash(); renderWork();
+  }
+  function writeHash(){
+    const q = new URLSearchParams();
+    if(st.ctx !== "alle") q.set("context", st.ctx);
+    if(st.jaar !== "alle") q.set("jaar", st.jaar);
+    if(st.rol !== "alle") q.set("rol", st.rol);
+    const h = "#" + (st.veld === "alle" ? "werk" : st.veld) + (q.toString() ? "?" + q : "");
+    if(location.hash !== h) history.replaceState(null, "", h);   // replaceState fires no hashchange
+    routed = location.hash;
+  }
+  const cardTitle = p => p.gt || title(p);
+  function drawGrid(){
+    const list = ALL.filter(p => hit(p));
+    grid.innerHTML = "";
+    list.forEach(p => {
+      const b = document.createElement("button");
+      b.type = "button"; b.className = "wk-card"; b.dataset.id = p.id; b.style.setProperty("--c", COLOR(p.cat));
+      b.setAttribute("aria-label", `${cardTitle(p)}${p.gs ? ", " + p.gs : ""}, ${kind(p)} ${year(p)}`);
+      const c = document.createElement("div"); c.className = "cap";
+      c.innerHTML = `<b>${esc(cardTitle(p))}</b>${p.gs ? `<span>${esc(p.gs)}</span>` : ""}`;
+      b.append(face(p), c);
+      if(p.vids && p.vids.length > 1){ const n = document.createElement("i"); n.className = "wk-n"; n.textContent = t("f.vids", {n:p.vids.length}); b.append(n); }
+      b.addEventListener("click", () => { if(!pv || pv.card !== b) openPeek(b, wkCtx); });
+      grid.appendChild(b);
+    });
+    $("#wkNone").hidden = list.length > 0;
+    requestAnimationFrame(() => grid.querySelectorAll(".wk-card").forEach(drawShadow));
+  }
+  function drawTitle(){
+    const [a, b] = TITLE[st.veld];
+    $("#wkT .a").textContent = t(a); $("#wkT .b").textContent = b ? t(b) : "";
+    $("#wkS").textContent = t(SUB[st.veld]);
+    document.title = (st.veld === "alle" ? t(a) : t(a) + (b ? t(b) : "")) + " — Tristan Nijs Media";
+    document.querySelectorAll("[data-view]").forEach(a => a.toggleAttribute("aria-current", a.dataset.view === (document.body.classList.contains("is-work") ? st.veld : "home")));
+  }
+  let lastVeld = null;
+  function renderWork(){
+    drawFilters(); drawGrid(); drawTitle();
+    if(st.veld !== lastVeld){ showLayer(LAYER[st.veld]); lastVeld = st.veld; }
+  }
+  // a preview from the grid grows more than one from the carousel
+  const wkCtx = {
+    grow: 1.6, cls: "pv-wk",
+    home: c => c.getBoundingClientRect(),
+    shift: () => 0, begin(){}, open(){}, close(){}, wheel(){}
+  };
+  addEventListener("resize", () => { if(document.body.classList.contains("is-work")) grid.querySelectorAll(".wk-card").forEach(drawShadow); });
+
+  // ---- going between the start page and the work page ----
+  const hero = $("#hero"), heroWork = $("#heroWork"), werk = $("#werk");
+  const homeParts = [$("#uitgelicht"), $("#over")];
+  function readHash(){
+    const h = decodeURIComponent(location.hash.slice(1)), [path, qs] = h.split("?");
+    const v = {video:"video", videografie:"video", film:"film", ritcs:"film", overig:"overig", werk:"alle"}[path.toLowerCase()];
+    if(!v) return null;
+    const q = new URLSearchParams(qs || "");
+    return {veld:v, ctx:q.get("context") || "alle", jaar:q.get("jaar") || "alle", rol:q.get("rol") || "alle"};
+  }
+  function toWork(next, door){
+    closePeek(true); closeFilters();
+    const wasWork = document.body.classList.contains("is-work");
+    Object.assign(st, next);
+    for(const k of ["ctx", "jaar", "rol"]) if(st[k] !== "alle" && !options(k).some(([x, c]) => x === st[k] && c)) st[k] = "alle";
+    // the hero word the visitor clicked, if it is in view: the title grows out of it
+    const word = !wasWork && door && door.querySelector("span"), r0 = word && word.getBoundingClientRect();
+    const fly = r0 && r0.bottom > 0 && r0.top < innerHeight;
+    if(fly){   // keep the words where they are while they fade
+      doors.style.cssText = `position:absolute;left:0;right:0;top:${doors.offsetTop}px;margin:0`;
+      word.style.visibility = "hidden";
+    }
+    document.body.classList.add("is-work");
+    heroWork.hidden = false; werk.hidden = false; homeParts.forEach(x => x.hidden = true);
+    renderWork(); writeHash(); onScroll();
+    if(!wasWork && !fly) scrollTo({top:0, behavior:"instant"});
+    if(fly){
+      const h1 = $("#wkT"), a = h1.querySelector(".a"), r1 = a.getBoundingClientRect(), rh = h1.getBoundingClientRect(), s = r0.height / r1.height;
+      h1.style.transformOrigin = `${r1.left - rh.left}px ${r1.top - rh.top}px`;
+      h1.style.transition = "none";
+      h1.style.transform = `translate(${r0.left - r1.left}px,${r0.top - r1.top}px) scale(${s})`;
+      heroWork.classList.add("flying");
+      h1.getBoundingClientRect();
+      requestAnimationFrame(() => {
+        h1.style.transition = ""; h1.style.transform = "";
+        heroWork.classList.remove("flying");
+        setTimeout(() => { doors.style.cssText = ""; word.style.visibility = ""; }, 700);
+      });
+    }
+    werk.classList.remove("in"); werk.getBoundingClientRect(); werk.classList.add("in");
+    routed = location.hash;
+  }
+  function toHome(){
+    if(!document.body.classList.contains("is-work")) return;
+    closePeek(true); closeFilters();
+    document.body.classList.remove("is-work");
+    heroWork.hidden = true; werk.hidden = true; homeParts.forEach(x => x.hidden = false);
+    doors.classList.remove("back"); doors.getBoundingClientRect(); doors.classList.add("back");
+    showLayer("home"); lastVeld = null; document.title = "Tristan Nijs Media";
+    document.querySelectorAll("[data-view]").forEach(a => a.toggleAttribute("aria-current", a.dataset.view === "home"));
+    scrollTo({top:0, behavior:"instant"});
+    readSx(); render(); shadows(); onScroll();
+    routed = location.hash;
+  }
+  let pendingDoor = null;
+  document.addEventListener("click", e => {
+    const a = e.target.closest("a[data-view]"); if(!a) return;
+    pendingDoor = a.classList.contains("door") ? a : null;
+    if(a.dataset.view === "home"){ e.preventDefault(); if(location.hash) history.pushState(null, "", location.pathname + location.search); toHome(); }
+  });
+  let routed = null;      // hashchange and popstate both fire for one click: handle it once
+  function route(){
+    if(location.hash === routed) return;
+    routed = location.hash;
+    const next = readHash();
+    if(next){ toWork(next, pendingDoor); pendingDoor = null; return; }
+    pendingDoor = null;
+    if(!document.body.classList.contains("is-work")) return;      // plain anchors on the start page scroll as usual
+    const anchor = /^#(uitgelicht|over)$/.test(location.hash) && $(location.hash);
+    toHome();
+    if(anchor) anchor.scrollIntoView();
+  }
+  addEventListener("hashchange", route);
+  addEventListener("popstate", route);
+  // the arrow under the title: down to the grid
+  $(".hero-down").addEventListener("click", e => { if(document.body.classList.contains("is-work")){ e.preventDefault(); werk.scrollIntoView({behavior:"smooth"}); } });
+  L.onChange(() => { if(document.body.classList.contains("is-work")) renderWork(); });
+  { const start = readHash(); if(start) toWork(start, null); }
 
   // ---------- player ----------
   const dlg = $("#player");
