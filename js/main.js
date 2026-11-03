@@ -584,7 +584,7 @@
   // offers what still has results given the others, with the count; picking a context also sets its field.
   const VELD = {video:1, film:1, overig:1};
   const veldOf = p => VIDCAT[p.cat] ? "video" : RITCS[p.cat] ? "film" : "overig";
-  const CTX = {video:["event", "trouw", "promo"], film:["fictie", "docu", "ritcs", "iao"], overig:[]};
+  const CTX = {video:["event", "trouw", "promo"], film:["fictie", "docu", "ritcs", "iao"], overig:["bio", "foto", "muziek", "persoonlijk"]};
   const CTXC = {event:"event", trouw:"trouw", promo:"promo", ritcs:"ritcs", iao:"iao", fictie:"fictie", docu:"docu"};
   const yearsOf = p => { const a = +p.t0.slice(0, 4), b = +(p.t1 || p.t0).slice(0, 4), r = []; for(let y = b; y >= a; y--) r.push(String(y)); return r; };
   const LAYER = {alle:"home", video:"videografie", film:"ritcs", overig:"overig"};
@@ -602,11 +602,13 @@
   function options(key){
     const pool = ALL.filter(p => hit(p, key)), n = f => pool.filter(f).length;
     let o;
-    if(key === "veld") o = ["video", "film", "overig"].map(v => [v, n(p => veldOf(p) === v) + (v === "overig" && st.jaar === "alle" && st.rol === "alle" ? PH.length : 0)]);
-    else if(key === "ctx") o = (st.veld === "alle" ? [...CTX.video, ...CTX.film] : CTX[st.veld]).map(c => [c, n(p => tagsOf(p).includes(c))]);
+    if(key === "veld") o = ["video", "film", "overig"].map(v => [v, n(p => veldOf(p) === v) + (v === "overig" && st.jaar === "alle" && st.rol === "alle" ? PH.length + 1 : 0)]);
+    else if(key === "ctx") o = (st.veld === "alle" ? [...CTX.video, ...CTX.film] : CTX[st.veld]).map(c => [c, n(p => tagsOf(p).includes(c)) + extra(c)]);
     else if(key === "jaar") o = [...new Set(ALL.flatMap(yearsOf))].sort((a, b) => b - a).map(y => [y, n(p => yearsOf(p).includes(y))]);
     else { const r = [...new Set(pool.flatMap(p => p.roles || []))]; const ord = ["Camera", "Montage", "Regie", "Script", "Concept", "Acteur"]; r.sort((a, b) => (ord.indexOf(a) + 99) % 99 - (ord.indexOf(b) + 99) % 99); o = r.map(x => [x, n(p => (p.roles || []).includes(x))]); }
-    return [["alle", pool.length], ...o.filter(([v, c]) => c || v === st[key])];
+    // under Overig every context stays listed, also the ones still empty (music, personal)
+    const keep = key === "ctx" && st.veld === "overig";
+    return [["alle", pool.length + (key === "ctx" && st.veld === "overig" ? extra("bio") + extra("foto") : 0)], ...o.filter(([v, c]) => c || keep || v === st[key])];
   }
   const label = (key, v) => v === "alle" ? t("f.all") : key === "veld" ? t({video:"nav.video", film:"nav.ritcs", overig:"nav.other"}[v]) : key === "ctx" ? t("f." + v) : key === "rol" ? L.role(v) : v;
   const sq = (key, v) => key === "ctx" && CTXC[v] ? `<i class="sq" style="background:var(--c-${CTXC[v]})"></i>` : "";
@@ -642,10 +644,10 @@
   addEventListener("keydown", e => { if(e.key === "Escape") closeFilters(); });
   function choose(key, v){
     st[key] = v;
-    if(key === "ctx" && v !== "alle") st.veld = CTX.video.includes(v) ? "video" : "film";     // a tag belongs to one field
+    if(key === "ctx" && v !== "alle") st.veld = Object.keys(CTX).find(f => CTX[f].includes(v));     // a tag belongs to one field
     if(key === "veld" && st.ctx !== "alle" && v !== "alle" && !CTX[v].includes(st.ctx)) st.ctx = "alle";
     // a choice the others no longer allow falls back to "all"
-    for(const k of ["ctx", "jaar", "rol"]) if(st[k] !== "alle" && !options(k).some(([x, c]) => x === st[k] && c)) st[k] = "alle";
+    for(const k of ["ctx", "jaar", "rol"]) if(st[k] !== "alle" && !options(k).some(([x, c]) => x === st[k] && (c || (k === "ctx" && st.veld === "overig")))) st[k] = "alle";
     writeHash(); renderWork();
   }
   function writeHash(){
@@ -672,9 +674,11 @@
       b.addEventListener("click", () => { if(!pv || pv.card !== b) openPeek(b, wkCtx); });
       grid.appendChild(b);
     });
-    const photos = st.veld === "overig" && PH.length > 0;
-    $("#wkNone").hidden = list.length > 0 || photos;
-    drawPhotos(photos);
+    const free = st.veld === "overig" && st.jaar === "alle" && st.rol === "alle";
+    const photos = free && (st.ctx === "alle" || st.ctx === "foto") && PH.length > 0;
+    const bio = free && (st.ctx === "alle" || st.ctx === "bio");
+    $("#wkNone").hidden = list.length > 0 || photos || bio;
+    drawBio(bio); drawPhotos(photos);
     requestAnimationFrame(() => grid.querySelectorAll(".wk-card").forEach(drawShadow));
   }
   function drawTitle(){
@@ -693,6 +697,7 @@
   // posted there shows up here without changing the site (the feed gives the 20 newest)
   const FLICKR = "205114923@N07";
   let PH = [];
+  const extra = c => st.jaar !== "alle" || st.rol !== "alle" ? 0 : c === "foto" ? PH.length : c === "bio" ? 1 : 0;
   const flickrSize = (u, s) => u.replace(/_[a-z]\.(jpg|png)$/, "_" + s + ".$1");
   window.tnmFlickr = d => {
     PH = (d.items || []).map(i => ({src:i.media.m, title:i.title, link:i.link}));
@@ -703,10 +708,17 @@
   };
   (() => { const sc = document.createElement("script"); sc.src = `https://www.flickr.com/services/feeds/photos_public.gne?id=${FLICKR}&format=json&jsoncallback=tnmFlickr`; sc.async = true; document.head.appendChild(sc); })();
   const phGrid = $("#phGrid");
+  // eager, not lazy: Safari doesn't load lazy images in the later columns of a column layout
   function drawPhotos(show){
-    phGrid.hidden = !show; $("#phMore").hidden = !show;
+    phGrid.hidden = !show;
     if(!show || phGrid.childElementCount === PH.length) return;
-    phGrid.innerHTML = PH.map((ph, i) => `<button type="button" class="ph" data-i="${i}"><img src="${esc(flickrSize(ph.src, "c"))}" alt="${esc(ph.title || "")}" loading="lazy"></button>`).join("");
+    phGrid.innerHTML = PH.map((ph, i) => `<button type="button" class="ph" data-i="${i}"><img src="${esc(flickrSize(ph.src, "c"))}" alt="${esc(ph.title || "")}"></button>`).join("");
+  }
+  // the biography: the same text and photo as Over on the start page
+  const bioEl = $("#wkBio");
+  function drawBio(show){
+    bioEl.hidden = !show;
+    if(show && !bioEl.firstChild) bioEl.appendChild($(".about-body").cloneNode(true));
   }
   const lb = $("#lightbox"), lbImg = $("#lbImg"); let lbI = 0;
   const lbShow = i => { lbI = (i + PH.length) % PH.length; lbImg.src = flickrSize(PH[lbI].src, "b"); lbImg.alt = PH[lbI].title || ""; };
