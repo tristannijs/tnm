@@ -719,24 +719,26 @@
   ];
   let PH = [];
   const byId = new Map();
+  const OVERIG_BG = "";      // Flickr id of the photo behind OVERIG (left empty: the newest one)
   const extra = c => st.jaar !== "alle" || st.rol !== "alle" ? 0 : c === "foto" ? PH.length : c === "bio" ? 1 : 0;
   const flickrSize = (u, s) => u.replace(/_[a-z]\.(jpg|png)$/, "_" + s + ".$1");
   let phT = 0;
   function takeFeed(d, album){
     (d.items || []).forEach(i => {
       const id = (i.link.match(/\/(\d+)\/?$/) || [])[1] || i.media.m;
-      const ph = byId.get(id) || {id, src:i.media.m, title:i.title, link:i.link, date:i.date_taken || i.published || "", albums:[]};
+      const ph = byId.get(id) || {id, src:i.media.m, title:i.title, link:i.link, date:i.date_taken || i.published || "", albums:[], rnd:Math.random()};
       ph.year = ph.date.slice(0, 4);
       if(album && !ph.albums.includes(album)) ph.albums.push(album);
       byId.set(id, ph);
     });
-    PH = [...byId.values()].sort((a, b) => (b.date > a.date) - (b.date < a.date));
+    PH = [...byId.values()].sort((a, b) => a.rnd - b.rnd);      // a random order, new on every visit
     clearTimeout(phT); phT = setTimeout(photosIn, 60);
   }
   function photosIn(){
     // the newest photo is the background behind OVERIG
     const ov = document.querySelector('.layer[data-key="overig"] img');
-    if(ov && PH[0] && !ov.dataset.ph){ ov.dataset.ph = 1; const im = new Image(); im.onload = () => { ov.src = im.src; }; im.src = flickrSize(PH[0].src, "b"); }
+    const bg = byId.get(OVERIG_BG) || [...byId.values()].sort((a, b) => (b.date > a.date) - (b.date < a.date))[0];
+    if(ov && bg && ov.dataset.ph !== bg.id){ ov.dataset.ph = bg.id; const im = new Image(); im.onload = () => { ov.src = im.src; }; im.src = flickrSize(bg.src, "b"); }
     if(document.body.classList.contains("is-work")) renderWork();
   }
   [{album:null, url:`photos_public.gne?id=${FLICKR}`}, ...ALBUMS.map(a => ({album:a.id, url:`photoset.gne?set=${a.id}&nsid=${FLICKR}`}))].forEach((f, k) => {
@@ -748,12 +750,18 @@
   const phGrid = $("#phGrid");
   let PHV = [];      // the photos the filters leave
   // eager, not lazy: Safari doesn't load lazy images in the later columns of a column layout
+  const STEP = 18;
+  let phShown = STEP, phKey = "";
   function drawPhotos(show){
-    phGrid.hidden = !show;
+    phGrid.hidden = !show; $("#phMore").hidden = true;
     if(!show) return;
+    const key = st.jaar + "|" + st.album;
+    if(key !== phKey){ phKey = key; phShown = STEP; }       // another filter: start again from the top
     PHV = PH.filter(ph => phHit(ph));
-    phGrid.innerHTML = PHV.map((ph, i) => `<button type="button" class="ph" data-i="${i}"><img src="${esc(flickrSize(ph.src, "c"))}" alt="${esc(ph.title || "")}"></button>`).join("");
+    phGrid.innerHTML = PHV.slice(0, phShown).map((ph, i) => `<button type="button" class="ph" data-i="${i}"><img src="${esc(flickrSize(ph.src, "c"))}" alt="${esc(ph.title || "")}"></button>`).join("");
+    $("#phMore").hidden = PHV.length <= phShown;
   }
+  $("#phMore").addEventListener("click", () => { phShown += STEP; drawPhotos(true); });
   // the biography: the same text and photo as Over on the start page
   const bioEl = $("#wkBio");
   function drawBio(show){

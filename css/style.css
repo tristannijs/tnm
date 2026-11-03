@@ -451,3 +451,6 @@ body.is-work .foot{padding-top:clamp(70px,12.4vw,178px)}
 .wk-bio{margin-top:clamp(56px,8.4vw,121px)}
 .wk-bio .about-body{padding:0}
 .wk-bio + .ph-grid{margin-top:clamp(48px,6vw,90px)}
+.ph-more{display:block;margin:clamp(28px,3vw,44px) auto 0;padding:12px 26px;border:1px solid rgba(255,255,255,.6);background:none;color:#fff;
+  font:inherit;font-size:14px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:background-color .2s,border-color .2s}
+.ph-more:hover{border-color:#fff;background:rgba(255,255,255,.06)}

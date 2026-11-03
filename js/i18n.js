@@ -26,6 +26,7 @@
     "f.veld":          {nl:"Veld",                 en:"Field",                fr:"Domaine"},
     "f.ctx":           {nl:"Context",              en:"Context",              fr:"Contexte"},
     "f.jaar":          {nl:"Jaar",                 en:"Year",                 fr:"Année"},
+    "ph.more":         {nl:"Meer laden",           en:"Load more",            fr:"Voir plus"},
     "f.album":         {nl:"Album",                en:"Album",                fr:"Album"},
     "f.rol":           {nl:"Rol",                  en:"Role",                 fr:"Rôle"},
     "f.all":           {nl:"Alles",                en:"All",                  fr:"Tout"},
