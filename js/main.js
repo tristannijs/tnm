@@ -739,11 +739,12 @@
       });
     }
     werk.classList.remove("in"); werk.getBoundingClientRect(); werk.classList.add("in");
-    if(!wasWork && scrollY < 40){          // a little hop of the arrow: there is more below
-      const dn = $(".hero-down"); dn.classList.remove("nudge");
-      setTimeout(() => { dn.getBoundingClientRect(); dn.classList.add("nudge"); }, 750);
-      dn.addEventListener("animationend", () => dn.classList.remove("nudge"), {once:true});
-    }
+    // after the title has grown, the page glides down until the title sits just under the top bar
+    if(fly) setTimeout(() => {
+      if(scrollY > 10 || !document.body.classList.contains("is-work")) return;     // the visitor already scrolled
+      const y = heroWork.getBoundingClientRect().top + scrollY - bar.offsetHeight - 28;
+      scrollTo({top:Math.max(0, y), behavior:"smooth"});
+    }, 800);
     routed = location.hash;
   }
   function toHome(){

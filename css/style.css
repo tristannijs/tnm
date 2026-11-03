@@ -104,9 +104,6 @@ img{display:block;max-width:100%}
 .door-menu .sq{display:inline-block;width:.7em;height:.7em;margin-right:.55em}
 @media (hover:none){.door-menu{display:none}}
 .hero-down{position:relative;z-index:2;color:var(--fg-2);margin-bottom:1.4vh;display:block;padding:6px}
-/* after clicking a hero word the arrow hops a few times: there is more below */
-.hero-down.nudge{animation:nudge 1.1s ease-in-out 2}
-@keyframes nudge{0%,40%,100%{transform:none}20%{transform:translateY(12px)}30%{transform:translateY(4px)}}
 .hero-down svg{width:40px;height:20px;display:block}
 .hero-down:hover{color:var(--fg)}
 
