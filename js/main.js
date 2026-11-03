@@ -289,6 +289,7 @@
   // (0 18px 50px rgba(0,0,0,.66) at 1440 px), scaled with the card.
   const BG = 17;                                   // #111
   const erf = x => { const t = 1 / (1 + .3275911 * Math.abs(x)), y = 1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - .284496736) * t + .254829592) * t * Math.exp(-x * x); return x >= 0 ? y : -y; };
+  const shadowCache = new Map();     // one computed shadow per card size: the grid's cards share it
   function drawShadow(el){
     let cv = el.querySelector("canvas.drop");
     if(!cv){ cv = document.createElement("canvas"); cv.className = "drop"; cv.setAttribute("aria-hidden", "true"); el.prepend(cv); }
@@ -297,6 +298,8 @@
     const W = Math.round((w + 2 * m) * dpr), H = Math.round((h + 2 * m) * dpr);
     cv.style.left = cv.style.top = -m + "px"; cv.style.width = (w + 2 * m) + "px"; cv.style.height = (h + 2 * m) + "px";
     cv.width = W; cv.height = H;
+    const key = W + "x" + H + "x" + w;
+    if(shadowCache.has(key)){ cv.getContext("2d").putImageData(shadowCache.get(key), 0, 0); return; }
     const g = cv.getContext("2d"), img = g.createImageData(W, H), d = img.data, s2 = sig * Math.SQRT2;
     const fx = new Float32Array(W), fy = new Float32Array(H);
     for(let x = 0; x < W; x++){ const X = x / dpr - m; fx[x] = .5 * (erf(X / s2) - erf((X - w) / s2)); }
@@ -307,6 +310,7 @@
       d[i + 3] = 15 * (BG - lv);                               // black at the alpha that gives exactly that level
     }
     g.putImageData(img, 0, 0);
+    shadowCache.set(key, img);
   }
   let shT = 0;
   const shadows = () => cfItems.forEach(({el}) => drawShadow(el));
@@ -486,16 +490,18 @@
         el.classList.add("open"); el.style.transform = "none";
         shade.classList.add("on");
         ctx.open(card, {left:L + ctx.shift(), right:L + W + ctx.shift(), mid:T + H/2});
-        // the clip itself starts once the preview has opened, so loading it doesn't stutter the motion
-        setTimeout(() => { if(pv === me) startClip(p, media); }, 600);
+        // the clip starts loading right away (YouTube loads in its own process, the motion stays smooth)
+        setTimeout(() => { if(pv === me) startClip(p, media); }, 60);
       });
     });
   }
   addEventListener("keydown", e => { if(e.key === "Escape") closePeek(); });
   // an open preview closes with Escape or a click anywhere else on the page (hovering does nothing)
+  let swallow = false;
   document.addEventListener("pointerdown", e => {
-    if(pv && !pv.el.contains(e.target) && !pv.card.contains(e.target)) closePeek();
+    if(pv && !pv.el.contains(e.target) && !pv.card.contains(e.target)){ closePeek(); swallow = !e.target.closest(".bar,#drawer"); }
   }, true);
+  document.addEventListener("click", e => { if(swallow){ swallow = false; e.preventDefault(); e.stopPropagation(); } }, true);
   // The preview is the player, as the old player window was: YouTube's own player with sound and its own
   // controls (or the video file with the browser's controls)
   function startClip(p, media){
@@ -661,7 +667,11 @@
   function drawTitle(){
     const [a, b] = TITLE[st.veld];
     $("#wkT .a").textContent = t(a); $("#wkT .b").textContent = b ? t(b) : "";
-    $("#wkS").textContent = t(SUB[st.veld]);
+    // the line under the title: each context is a link that applies that filter
+    const ctxs = st.veld === "alle" ? null : CTX[st.veld];
+    if(st.veld === "alle") $("#wkS").innerHTML = ["video", "film", "overig"].map(v => `<a href="#${v}" data-f="veld" data-v="${v}">${esc(label("veld", v))}</a>`).join(", ");
+    else if(ctxs.length) $("#wkS").innerHTML = ctxs.map(c => `<a href="#${st.veld}?context=${c}" data-f="ctx" data-v="${c}"${st.ctx === c ? ' aria-current="true"' : ""}>${esc(t("f." + c + ".p"))}</a>`).join(", ");
+    else $("#wkS").textContent = t(SUB[st.veld]);
     document.title = (st.veld === "alle" ? t(a) : t(a) + (b ? t(b) : "")) + " — Tristan Nijs Media";
     document.querySelectorAll("[data-view]").forEach(a => a.toggleAttribute("aria-current", a.dataset.view === (document.body.classList.contains("is-work") ? st.veld : "home")));
   }
@@ -753,6 +763,12 @@
   }
   addEventListener("hashchange", route);
   addEventListener("popstate", route);
+  $("#wkS").addEventListener("click", e => {
+    const a = e.target.closest("a[data-f]"); if(!a) return;
+    e.preventDefault(); e.stopPropagation();
+    choose(a.dataset.f, a.dataset.f === "ctx" && st.ctx === a.dataset.v ? "alle" : a.dataset.v);   // clicking the active one again clears it
+  }, true);
+  $("#wkBack").addEventListener("click", e => { e.preventDefault(); if(location.hash) history.pushState(null, "", location.pathname + location.search); toHome(); });
   // the arrow under the title: down to the grid
   $(".hero-down").addEventListener("click", e => { if(document.body.classList.contains("is-work")){ e.preventDefault(); werk.scrollIntoView({behavior:"smooth"}); } });
   L.onChange(() => { if(document.body.classList.contains("is-work")) renderWork(); });
