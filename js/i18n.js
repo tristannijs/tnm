@@ -115,12 +115,12 @@
     "Videograaf":{en:"Videographer", fr:"Vidéaste"}
   };
   const LANGS = ["nl","en","fr"], LOCALE = {nl:"nl-BE", en:"en-GB", fr:"fr-BE"};
-  // project titles from data.js: course names and "Film van" are translated, names of films stay
+  // project titles from data.js: course names, "Film van" and the films with a translated title
   const LABEL = {
     en: [[/^Atelier Docu:/, "Documentary Studio:"], [/^Workshop Docu:/, "Documentary Workshop:"],
-         [/^Atelier Fictie:/, "Fiction Studio:"], [/^Atelier Fictie (\d)/, "Fiction Studio $1"], [/\bFilm van\b/, "Film by"]],
+         [/^Atelier Fictie:/, "Fiction Studio:"], [/^Atelier Fictie (\d)/, "Fiction Studio $1"], [/\bFilm van\b/, "Film by"], [/\bNieuw Gent\b/, "New Ghent"], [/\bTen Anker\b/, "At Anchor"]],
     fr: [[/^Atelier Docu:/, "Atelier documentaire :"], [/^Workshop Docu:/, "Workshop documentaire :"],
-         [/^Atelier Fictie:/, "Atelier fiction :"], [/^Atelier Fictie (\d)/, "Atelier fiction $1"], [/\bFilm van\b/, "Film de"]]
+         [/^Atelier Fictie:/, "Atelier fiction :"], [/^Atelier Fictie (\d)/, "Atelier fiction $1"], [/\bFilm van\b/, "Film de"], [/\bNieuw Gent\b/, "Nouveau Gand"], [/\bTen Anker\b/, "Au mouillage"]]
   };
   const DESC = {
     nl: "Tristan Nijs is monteur en videograaf uit Gent: aftermovies, trouwfilms en promo's, en student montage aan het RITCS.",
