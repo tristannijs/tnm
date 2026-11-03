@@ -602,7 +602,7 @@
   function options(key){
     const pool = ALL.filter(p => hit(p, key)), n = f => pool.filter(f).length;
     let o;
-    if(key === "veld") o = ["video", "film", "overig"].map(v => [v, n(p => veldOf(p) === v)]);
+    if(key === "veld") o = ["video", "film", "overig"].map(v => [v, n(p => veldOf(p) === v) + (v === "overig" && st.jaar === "alle" && st.rol === "alle" ? PH.length : 0)]);
     else if(key === "ctx") o = (st.veld === "alle" ? [...CTX.video, ...CTX.film] : CTX[st.veld]).map(c => [c, n(p => tagsOf(p).includes(c))]);
     else if(key === "jaar") o = [...new Set(ALL.flatMap(yearsOf))].sort((a, b) => b - a).map(y => [y, n(p => yearsOf(p).includes(y))]);
     else { const r = [...new Set(pool.flatMap(p => p.roles || []))]; const ord = ["Camera", "Montage", "Regie", "Script", "Concept", "Acteur"]; r.sort((a, b) => (ord.indexOf(a) + 99) % 99 - (ord.indexOf(b) + 99) % 99); o = r.map(x => [x, n(p => (p.roles || []).includes(x))]); }
@@ -672,7 +672,9 @@
       b.addEventListener("click", () => { if(!pv || pv.card !== b) openPeek(b, wkCtx); });
       grid.appendChild(b);
     });
-    $("#wkNone").hidden = list.length > 0;
+    const photos = st.veld === "overig" && PH.length > 0;
+    $("#wkNone").hidden = list.length > 0 || photos;
+    drawPhotos(photos);
     requestAnimationFrame(() => grid.querySelectorAll(".wk-card").forEach(drawShadow));
   }
   function drawTitle(){
@@ -687,6 +689,34 @@
     document.querySelectorAll("[data-view]").forEach(a => a.toggleAttribute("aria-current", a.dataset.view === (document.body.classList.contains("is-work") ? st.veld : "home")));
   }
   let lastVeld = null;
+  // ---- photos: the newest public photos from Flickr, read straight from its public feed, so a photo
+  // posted there shows up here without changing the site (the feed gives the 20 newest)
+  const FLICKR = "205114923@N07";
+  let PH = [];
+  const flickrSize = (u, s) => u.replace(/_[a-z]\.(jpg|png)$/, "_" + s + ".$1");
+  window.tnmFlickr = d => {
+    PH = (d.items || []).map(i => ({src:i.media.m, title:i.title, link:i.link}));
+    // the newest photo is the background behind OVERIG
+    const ov = document.querySelector('.layer[data-key="overig"] img');
+    if(ov && PH[0]){ const im = new Image(); im.onload = () => { ov.src = im.src; }; im.src = flickrSize(PH[0].src, "b"); }
+    if(document.body.classList.contains("is-work")) renderWork();
+  };
+  (() => { const sc = document.createElement("script"); sc.src = `https://www.flickr.com/services/feeds/photos_public.gne?id=${FLICKR}&format=json&jsoncallback=tnmFlickr`; sc.async = true; document.head.appendChild(sc); })();
+  const phGrid = $("#phGrid");
+  function drawPhotos(show){
+    phGrid.hidden = !show; $("#phMore").hidden = !show;
+    if(!show || phGrid.childElementCount === PH.length) return;
+    phGrid.innerHTML = PH.map((ph, i) => `<button type="button" class="ph" data-i="${i}"><img src="${esc(flickrSize(ph.src, "c"))}" alt="${esc(ph.title || "")}" loading="lazy"></button>`).join("");
+  }
+  const lb = $("#lightbox"), lbImg = $("#lbImg"); let lbI = 0;
+  const lbShow = i => { lbI = (i + PH.length) % PH.length; lbImg.src = flickrSize(PH[lbI].src, "b"); lbImg.alt = PH[lbI].title || ""; };
+  phGrid.addEventListener("click", e => { const b = e.target.closest(".ph"); if(!b) return; lbShow(+b.dataset.i); lb.showModal(); });
+  lb.addEventListener("click", e => {
+    const n = e.target.closest(".lb-n"); if(n){ lbShow(lbI + +n.dataset.d); return; }
+    if(e.target === lb || e.target.closest(".lb-x")) lb.close();
+  });
+  lb.addEventListener("keydown", e => { if(e.key === "ArrowRight") lbShow(lbI + 1); if(e.key === "ArrowLeft") lbShow(lbI - 1); });
+
   function renderWork(){
     drawFilters(); drawGrid(); drawTitle();
     if(st.veld !== lastVeld){ showLayer(LAYER[st.veld]); lastVeld = st.veld; }

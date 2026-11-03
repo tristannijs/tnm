@@ -431,3 +431,23 @@ body.is-work .foot{padding-top:clamp(70px,12.4vw,178px)}
   .flt:nth-child(even) .flt-o{left:auto;right:0}
   .flt.open:nth-child(even) .flt-o{margin:0 -14px 0 0}
 }
+
+/* ---------- photos (Overig): Flickr feed in columns, opened in a lightbox ---------- */
+.ph-grid{columns:3;column-gap:clamp(12px,1.3vw,19px);margin-top:clamp(56px,8.4vw,121px)}
+.ph{display:block;width:100%;margin:0 0 clamp(12px,1.3vw,19px);padding:0;border:0;background:#1c1c1c;cursor:zoom-in;break-inside:avoid}
+.ph img{display:block;width:100%;height:auto;transition:filter .3s}
+.ph:hover img{filter:brightness(1.07)}
+.ph-more{margin:28px 0 0;font-size:14px}
+.ph-more a{color:#cfcfcf}
+.ph-more a:hover{color:#fff}
+.lightbox{max-width:none;max-height:none;width:100vw;height:100dvh;margin:0;padding:0;border:0;background:rgba(0,0,0,.94);color:#fff}
+.lightbox::backdrop{background:transparent}
+.lightbox[open]{display:flex;align-items:center;justify-content:center}
+.lightbox img{max-width:calc(100vw - 140px);max-height:calc(100dvh - 60px);object-fit:contain}
+.lb-x{position:absolute;top:14px;right:22px;width:44px;height:44px;border:0;background:none;color:#fff;font-size:32px;font-weight:300;cursor:pointer}
+.lb-n{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:80px;border:0;background:none;color:#e8e8e8;cursor:pointer}
+.lb-n svg{width:20px;height:40px}
+.lb-n.prev{left:18px}.lb-n.next{right:18px}
+@media (max-width:900px){.ph-grid{columns:2}}
+@media (max-width:760px){.ph-grid{margin-top:44px;column-gap:10px}.ph{margin-bottom:10px}.lightbox img{max-width:100vw}.lb-n{display:none}}
+.wk-grid:empty{display:none}

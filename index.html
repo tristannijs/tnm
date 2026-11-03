@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap">
 <link rel="preload" href="assets/fonts/Geist-Regular.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/Geist-Medium.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="css/style.css?v=20261103143153">
+<link rel="stylesheet" href="css/style.css?v=20261103150053">
 </head>
 <body>
 
@@ -87,6 +87,8 @@
   <section class="werk" id="werk" hidden>
     <div class="filters" id="filters"></div>
     <div class="wk-grid" id="wkGrid"></div>
+    <div class="ph-grid" id="phGrid" hidden></div>
+    <p class="ph-more" id="phMore" hidden><a href="https://www.flickr.com/photos/205114923@N07/" target="_blank" rel="noopener" data-i18n="ph.more">Alle foto’s op Flickr ↗</a></p>
     <p class="wk-none" id="wkNone" hidden data-i18n="f.none">Hier staat nog niets.</p>
   </section>
 
@@ -116,6 +118,13 @@
 </main>
 
 
+<dialog class="lightbox" id="lightbox" aria-label="Foto">
+  <img id="lbImg" alt="">
+  <button type="button" class="lb-x" id="lbClose" data-i18n-aria="close" aria-label="Sluiten">×</button>
+  <button type="button" class="lb-n prev" data-d="-1" data-i18n-aria="prev" aria-label="Vorige"><svg viewBox="0 0 20 40" aria-hidden="true"><path d="M19 1L1 20l18 19" fill="none" stroke="currentColor" stroke-width="1.2"/></svg></button>
+  <button type="button" class="lb-n next" data-d="1" data-i18n-aria="next" aria-label="Volgende"><svg viewBox="0 0 20 40" aria-hidden="true"><path d="M1 1l18 19L1 39" fill="none" stroke="currentColor" stroke-width="1.2"/></svg></button>
+</dialog>
+
 <dialog id="player" aria-labelledby="plTitle">
   <div class="pl-screen" id="plScreen"></div>
   <div class="pl-body">
@@ -128,9 +137,9 @@
   </div>
 </dialog>
 
-<script src="js/i18n.js?v=20261103143153"></script>
-<script src="assets/clips/clips.js?v=20261103143153"></script>
-<script src="js/data.js?v=20261103143153"></script>
-<script src="js/main.js?v=20261103143153"></script>
+<script src="js/i18n.js?v=20261103150053"></script>
+<script src="assets/clips/clips.js?v=20261103150053"></script>
+<script src="js/data.js?v=20261103150053"></script>
+<script src="js/main.js?v=20261103150053"></script>
 </body>
 </html>
