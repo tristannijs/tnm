@@ -34,7 +34,7 @@
   const VIDCAT = {event:1, trouw:1, promo:1};
   // a project's tags: film projects list theirs (fictie / docu, ritcs, iao), videography uses its kind
   const tagsOf = p => p.tags || (VIDCAT[p.cat] ? [p.cat] : []);
-  const TAGC = {event:1, trouw:1, promo:1, ritcs:1, iao:1};
+  const TAGC = {event:1, trouw:1, promo:1, ritcs:1, iao:1, fictie:1, docu:1};
   const rolesOf = p => (p.roles || []).map(L.role);
   function roles(p){
     const r = document.createElement("i"); r.className = "roles"; r.dataset.pid = p.id;
@@ -585,7 +585,7 @@
   const VELD = {video:1, film:1, overig:1};
   const veldOf = p => VIDCAT[p.cat] ? "video" : RITCS[p.cat] ? "film" : "overig";
   const CTX = {video:["event", "trouw", "promo"], film:["fictie", "docu", "ritcs", "iao"], overig:[]};
-  const CTXC = {event:"event", trouw:"trouw", promo:"promo", ritcs:"ritcs", iao:"iao"};     // tags without a colour get no block
+  const CTXC = {event:"event", trouw:"trouw", promo:"promo", ritcs:"ritcs", iao:"iao", fictie:"fictie", docu:"docu"};
   const yearsOf = p => { const a = +p.t0.slice(0, 4), b = +(p.t1 || p.t0).slice(0, 4), r = []; for(let y = b; y >= a; y--) r.push(String(y)); return r; };
   const LAYER = {alle:"home", video:"videografie", film:"ritcs", overig:"overig"};
   const TITLE = {alle:["wk.all.a", ""], video:["wk.video.a", "wk.video.b"], film:["wk.film.a", ""], overig:["wk.other.a", ""]};
