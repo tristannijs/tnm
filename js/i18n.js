@@ -33,7 +33,7 @@
     "f.all":           {nl:"Alles",                en:"All",                  fr:"Tout"},
     "f.event":         {nl:"Aftermovie",           en:"Aftermovie",           fr:"Aftermovie"},
     "f.trouw":         {nl:"Trouwfilm",            en:"Wedding film",         fr:"Film de mariage"},
-    "f.promo":         {nl:"Promotioneel werk",    en:"Promotional work",     fr:"Vidéo promotionnelle"},
+    "f.promo":         {nl:"Promo’s",              en:"Promos",               fr:"Promos"},
     "f.ritcs":         {nl:"RITCS",                en:"RITCS",                fr:"RITCS"},
     "f.iao":           {nl:"IAO",                  en:"IAO",                  fr:"IAO"},
     "f.fictie":        {nl:"Fictie",               en:"Fiction",              fr:"Fiction"},
