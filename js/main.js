@@ -447,13 +447,15 @@
     const p = BY[card.dataset.id]; if(!p) return;
     const r = ctx.home(card);
     // where the preview ends up: grown around the card's centre, kept inside the window
-    // an upright video gets an upright preview, as tall as a landscape one is wide would make it, within the window
-    const tall = !!p.tall;
-    let W = Math.min(r.width * ctx.grow, innerWidth - 32), H = W * 9/16;
-    if(tall){ H = Math.max(240, Math.min(W * 1.6, innerHeight - 260)); W = H * 9/16; }
+    // the preview takes the video's own shape (p.ar, 16:9 when left out). Wider or 16:9: as wide as usual.
+    // Narrower: as tall as needed, an upright one up to 1.6 times the usual width, always within the window
+    const ar = p.ar || 16/9, tall = ar < 1, odd = Math.abs(ar - 16/9) > .01;
+    let W = Math.min(r.width * ctx.grow, innerWidth - 32), H = W / ar;
+    if(tall) H = Math.min(W * 1.6, H);
+    if(odd){ H = Math.min(H, innerHeight - 260); W = Math.min(H * ar, innerWidth - 32); H = W / ar; }
     const L = Math.max(16, Math.min(innerWidth - 16 - W, r.left + r.width/2 - W/2));
     let T = r.top + r.height/2 - H/2;
-    if(tall) T = Math.max(84, Math.min(T, innerHeight - H - 190));
+    if(odd) T = Math.max(84, Math.min(T, innerHeight - H - 190));
     const el = document.createElement("div");
     el.className = "pv " + ctx.cls; el.style.setProperty("--c", COLOR(p.cat));
     el.setAttribute("role", "button"); el.setAttribute("aria-label", t("play", {t:pvTitle(p)}));
@@ -466,18 +468,18 @@
     // reuse the card's own, already decoded picture so the first frame is never empty
     const own = card.querySelector(".face img"), f = face(p), fi = f.querySelector("img");
     if(own && fi){ fi.src = own.currentSrc || own.src; fi.loading = "eager"; }
-    if(tall){ media.style.aspectRatio = "9/16"; media.append(f); } else media.append(f, cap(p));
+    if(odd){ media.style.aspectRatio = String(ar); media.append(f); } else media.append(f, cap(p));
     // the preview is laid out once at its final size; growing is a pure scale from the card,
     // which the graphics card animates without the page having to re-lay out every frame
     el.style.left = L + "px"; el.style.top = (T + scrollY) + "px"; el.style.width = W + "px";
     el.style.fontSize = Math.min(24, Math.max(W, 300) / 375 * 16) + "px";
     el.style.setProperty("--k", (W / r.width).toFixed(4));
     ctx.begin();
-    // shrunk onto the card: a landscape preview covers it exactly; an upright one matches its height, centred
+    // shrunk onto the card (16:9): its picture fits inside the card, centred, as the card's own cover shows it
     const shrunk = () => {
-      const q = ctx.home(card), dx = ctx.shift(), k = tall ? q.height / H : q.width / W;
-      const x = tall ? q.left + q.width/2 - W*k/2 : q.left;
-      return `translate(${(x - L - dx).toFixed(2)}px,${(q.top - T).toFixed(2)}px) scale(${k.toFixed(4)})`;
+      const q = ctx.home(card), dx = ctx.shift(), k = ar < 16/9 ? q.height / H : q.width / W;
+      const x = q.left + q.width/2 - W*k/2, y = q.top + q.height/2 - H*k/2;
+      return `translate(${(x - L - dx).toFixed(2)}px,${(y - T).toFixed(2)}px) scale(${k.toFixed(4)})`;
     };
     el.style.transform = shrunk();
     el.style.visibility = "hidden";
@@ -521,7 +523,7 @@
     if(p.vids){
       const v = document.createElement("video");
       Object.assign(v, {src:p.vids[0].src, autoplay:true, controls:true, playsInline:true});
-      if(p.tall) v.classList.add("tall");      // an upright video: whole, with black either side
+      if(p.ar && p.ar < 1) v.classList.add("tall");      // an upright video: whole, with black either side
       v.addEventListener("loadedmetadata", () => { p._dur = v.duration; if(p.hd == null) p._hd = v.videoHeight >= 720; refreshRow(p); });
       // a project made of several videos: numbered buttons to switch between them
       if(p.vids.length > 1){
