@@ -99,9 +99,12 @@ img{display:block;max-width:100%}
   opacity:0;visibility:hidden;transition:opacity .18s,visibility .18s,transform .18s}
 .door-menu:empty{display:none}
 .door-wrap:hover .door-menu,.door-wrap:focus-within .door-menu{opacity:1;visibility:visible;transform:translate(-50%,0)}
-.door-menu a{display:flex;align-items:center;padding:5px 2px;font-size:clamp(14px,1.1vw,16px);font-weight:500;color:#fff;text-shadow:0 1px 10px rgba(0,0,0,.5);opacity:.8}
+.door-menu a{display:flex;align-items:center;padding:3px 2px;font-size:clamp(14px,1.1vw,16px);font-weight:500;color:#fff;text-shadow:0 1px 10px rgba(0,0,0,.5);opacity:.8}
 .door-menu a:hover,.door-menu a:focus-visible{opacity:1}
 .door-menu .sq{display:inline-block;width:.7em;height:.7em;margin-right:.55em}
+/* while a menu is open the arrow underneath steps aside, so the longest list (Film) has room */
+.hero-down{transition:opacity .18s}
+.hero:has(.door-wrap:hover) .hero-down,.hero:has(.door-wrap:focus-within) .hero-down{opacity:0;pointer-events:none}
 @media (hover:none){.door-menu{display:none}}
 .hero-down{position:relative;z-index:2;color:var(--fg-2);margin-bottom:2.3vh;display:block;padding:6px}
 .hero-down svg{width:40px;height:20px;display:block}
