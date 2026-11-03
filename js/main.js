@@ -447,9 +447,13 @@
     const p = BY[card.dataset.id]; if(!p) return;
     const r = ctx.home(card);
     // where the preview ends up: grown around the card's centre, kept inside the window
-    const W = Math.min(r.width * ctx.grow, innerWidth - 32), H = W * 9/16;
+    // an upright video gets an upright preview, as tall as a landscape one is wide would make it, within the window
+    const tall = !!p.tall;
+    let W = Math.min(r.width * ctx.grow, innerWidth - 32), H = W * 9/16;
+    if(tall){ H = Math.max(240, Math.min(W * 1.6, innerHeight - 260)); W = H * 9/16; }
     const L = Math.max(16, Math.min(innerWidth - 16 - W, r.left + r.width/2 - W/2));
-    const T = r.top + r.height/2 - H/2;
+    let T = r.top + r.height/2 - H/2;
+    if(tall) T = Math.max(84, Math.min(T, innerHeight - H - 190));
     const el = document.createElement("div");
     el.className = "pv " + ctx.cls; el.style.setProperty("--c", COLOR(p.cat));
     el.setAttribute("role", "button"); el.setAttribute("aria-label", t("play", {t:pvTitle(p)}));
@@ -462,14 +466,19 @@
     // reuse the card's own, already decoded picture so the first frame is never empty
     const own = card.querySelector(".face img"), f = face(p), fi = f.querySelector("img");
     if(own && fi){ fi.src = own.currentSrc || own.src; fi.loading = "eager"; }
-    media.append(f, cap(p));
+    if(tall){ media.style.aspectRatio = "9/16"; media.append(f); } else media.append(f, cap(p));
     // the preview is laid out once at its final size; growing is a pure scale from the card,
     // which the graphics card animates without the page having to re-lay out every frame
     el.style.left = L + "px"; el.style.top = (T + scrollY) + "px"; el.style.width = W + "px";
     el.style.fontSize = Math.min(24, Math.max(W, 300) / 375 * 16) + "px";
     el.style.setProperty("--k", (W / r.width).toFixed(4));
     ctx.begin();
-    const shrunk = () => { const q = ctx.home(card), dx = ctx.shift(); return `translate(${(q.left - L - dx).toFixed(2)}px,${(q.top - T).toFixed(2)}px) scale(${(q.width / W).toFixed(4)})`; };
+    // shrunk onto the card: a landscape preview covers it exactly; an upright one matches its height, centred
+    const shrunk = () => {
+      const q = ctx.home(card), dx = ctx.shift(), k = tall ? q.height / H : q.width / W;
+      const x = tall ? q.left + q.width/2 - W*k/2 : q.left;
+      return `translate(${(x - L - dx).toFixed(2)}px,${(q.top - T).toFixed(2)}px) scale(${k.toFixed(4)})`;
+    };
     el.style.transform = shrunk();
     el.style.visibility = "hidden";
     document.body.appendChild(el);
