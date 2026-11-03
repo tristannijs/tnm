@@ -19,6 +19,7 @@
   --c-trouw:#e6c65c;
   --c-promo:#a691d8;
   --c-ritcs:#b5615d;
+  --c-iao:#8f3d3a;
   --f:"Geist",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
   --f-tl:"Roboto",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
   --gut:max(44px,env(safe-area-inset-left,0px));
@@ -204,23 +205,27 @@ canvas.drop{position:absolute;z-index:-2;pointer-events:none}
 .pv-cf .cap b{font-size:calc(clamp(14px,2.05vw,36px) * var(--k,1));line-height:1.05}
 .pv-cf .cap span{font-size:calc(clamp(11px,1.5vw,26px) * var(--k,1));margin-top:calc(3px * var(--k,1))}
 /* the details sit under the clip at full size the whole time and only fade, so nothing re-lays out */
-.pv-info{display:flex;align-items:baseline;justify-content:space-between;gap:1.5em;background:#000;padding:.85em 1.4em .95em;opacity:0;transition:opacity .12s ease}
+/* the details under a preview: title / roles, date, tags / HD + running time (two columns, rows lined up) */
+.pv-info{display:grid;grid-template-columns:minmax(0,1fr) fit-content(42%);column-gap:1.5em;align-items:baseline;background:#000;padding:.85em 1.4em 1em;opacity:0;transition:opacity .12s ease}
 .pv.open .pv-info{opacity:1;transition:opacity .3s ease .4s}
 .pv-l{min-width:0}
 /* what Tristan did, on the right, in italics */
-.pv-role{flex:none;max-width:42%;text-align:right;font-style:italic;font-weight:400;font-size:.86em;line-height:1.35;color:#d9d9d9}
+.pv-role{grid-column:2;grid-row:1/span 2;align-self:start;padding-top:.28em;text-align:right;font-style:italic;font-weight:400;font-size:.86em;line-height:1.35;color:#d9d9d9}
+.pv-tags{grid-column:1;display:flex;flex-wrap:wrap;gap:.4em;margin-top:.75em;align-self:center}
+.pv-tag{display:inline-flex;align-items:center;padding:.3em .6em .25em;border:1px solid #444;font-size:.62em;letter-spacing:.06em;text-transform:uppercase;line-height:1.2}
+.pv-tag .sq{display:inline-block;width:.85em;height:.85em;margin-right:.5em}
 .pv{cursor:default}
 /* the player takes clicks straight away, even while the cover still shows over it */
 .pv-media iframe,.pv-media video{pointer-events:auto}
 .pv-t{font-size:1.19em;font-weight:800;text-transform:uppercase;line-height:1.15;letter-spacing:.005em}
-.pv-m{margin-top:.4em;font-size:.82em;text-transform:uppercase;letter-spacing:.02em}
+.pv-m{grid-column:1;margin-top:.4em;font-size:.82em;text-transform:uppercase;letter-spacing:.02em}
 .pv-m .dot{margin:0 .6em}
 .pv-m .sq,.flt .sq{display:inline-block;width:.78em;height:.78em;margin-right:.6em;background:var(--c);vertical-align:-.04em}
 .pv-role small{display:block;margin-top:.5em;font-size:.82em;font-style:normal;color:#9a9a9a}
-.pv-parts{display:flex;gap:.4em;margin-top:.7em}
+.pv-parts{grid-column:1/-1;display:flex;gap:.4em;margin-top:.8em}
 .pv-parts button{min-width:2em;height:2em;padding:0 .5em;border:1px solid #555;background:none;color:#ccc;font:inherit;font-size:.8em;cursor:pointer}
 .pv-parts button[aria-current]{background:#fff;color:#000;border-color:#fff}
-.pv-r{display:flex;align-items:center;flex-wrap:wrap;gap:.35em 1.3em;margin-top:.7em;font-size:.86em}
+.pv-r{grid-column:2;display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:.35em .9em;margin-top:.75em;font-size:.78em;align-self:center}
 .pv-r span{display:inline-flex;align-items:center;gap:.4em;line-height:1}
 .pv-r svg{height:1.3em;width:auto;display:block}
 .pv-r .hd{background:#fff;color:#000;font-weight:800;padding:.18em .32em .14em;font-size:.95em}

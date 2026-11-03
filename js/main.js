@@ -32,6 +32,9 @@
   const capHTML = p => `<b>${esc(title(p))}</b>`;
   // what Tristan did on it, bottom right of a featured card
   const VIDCAT = {event:1, trouw:1, promo:1};
+  // a project's tags: film projects list theirs (fictie / docu, ritcs, iao), videography uses its kind
+  const tagsOf = p => p.tags || (VIDCAT[p.cat] ? [p.cat] : []);
+  const TAGC = {event:1, trouw:1, promo:1, ritcs:1, iao:1};
   const rolesOf = p => (p.roles || []).map(L.role);
   function roles(p){
     const r = document.createElement("i"); r.className = "roles"; r.dataset.pid = p.id;
@@ -451,9 +454,10 @@
     el.className = "pv " + ctx.cls; el.style.setProperty("--c", COLOR(p.cat));
     el.setAttribute("role", "button"); el.setAttribute("aria-label", t("play", {t:pvTitle(p)}));
     el.innerHTML = `<div class="pv-media"></div>
-      <div class="pv-info"><div class="pv-l"><div class="pv-t">${esc(RITCS[p.cat] ? title(p) : pvTitle(p))}</div>
-        <div class="pv-m"><i class="sq" aria-hidden="true"></i>${esc(kind(p))}<span class="dot">•</span>${esc(when(p))}</div>
-        <div class="pv-r"></div></div>${rolesOf(p).length ? `<div class="pv-role">${esc(rolesOf(p).join(", "))}${(p.credits || []).map(([r, n]) => `<small>${esc(L.role(r))}: ${esc(n)}</small>`).join("")}</div>` : ""}</div>`;
+      <div class="pv-info"><div class="pv-t">${esc(p.gt ? p.gt + (p.gs ? ": " + p.gs : "") : RITCS[p.cat] ? title(p) : pvTitle(p))}</div>${rolesOf(p).length ? `<div class="pv-role">${esc(rolesOf(p).join(", "))}${(p.credits || []).map(([r, n]) => `<small>${esc(L.role(r))}: ${esc(n)}</small>`).join("")}</div>` : ""}
+        <div class="pv-m">${esc(when(p))}</div>
+        <div class="pv-tags">${tagsOf(p).slice().sort((a, b) => !!TAGC[b] - !!TAGC[a]).map(g => `<span class="pv-tag">${TAGC[g] ? `<i class="sq" style="background:var(--c-${g})"></i>` : ""}${esc(t("f." + g))}</span>`).join("")}</div>
+        <div class="pv-r"></div></div>`;
     const media = el.querySelector(".pv-media");
     // reuse the card's own, already decoded picture so the first frame is never empty
     const own = card.querySelector(".face img"), f = face(p), fi = f.querySelector("img");
@@ -518,7 +522,7 @@
           parts.querySelectorAll("button").forEach(x => x.removeAttribute("aria-current")); b.setAttribute("aria-current", "true");
           v.src = p.vids[[...parts.children].indexOf(b)].src; p._dur = 0; v.play().catch(() => {});
         });
-        media.closest(".pv").querySelector(".pv-l").appendChild(parts);
+        media.closest(".pv").querySelector(".pv-info").appendChild(parts);
       }
       v.addEventListener("playing", () => v.classList.add("on"));
       media.appendChild(v);
@@ -580,9 +584,8 @@
   // offers what still has results given the others, with the count; picking a context also sets its field.
   const VELD = {video:1, film:1, overig:1};
   const veldOf = p => VIDCAT[p.cat] ? "video" : RITCS[p.cat] ? "film" : "overig";
-  const ctxOf = p => VIDCAT[p.cat] ? p.cat : RITCS[p.cat] ? "ritcs" : "";
-  const CTX = {video:["event", "trouw", "promo"], film:["ritcs"], overig:[]};
-  const CTXC = {event:"event", trouw:"trouw", promo:"promo", ritcs:"ritcs"};
+  const CTX = {video:["event", "trouw", "promo"], film:["fictie", "docu", "ritcs", "iao"], overig:[]};
+  const CTXC = {event:"event", trouw:"trouw", promo:"promo", ritcs:"ritcs", iao:"iao"};     // tags without a colour get no block
   const yearsOf = p => { const a = +p.t0.slice(0, 4), b = +(p.t1 || p.t0).slice(0, 4), r = []; for(let y = b; y >= a; y--) r.push(String(y)); return r; };
   const LAYER = {alle:"home", video:"videografie", film:"ritcs", overig:"overig"};
   const TITLE = {alle:["wk.all.a", ""], video:["wk.video.a", "wk.video.b"], film:["wk.film.a", ""], overig:["wk.other.a", ""]};
@@ -592,7 +595,7 @@
   // (a context belongs to one field, so the field list ignores the context: switching field resets it)
   const hit = (p, skip) =>
     (skip === "veld" || st.veld === "alle" || veldOf(p) === st.veld) &&
-    (skip === "ctx" || skip === "veld" || st.ctx === "alle" || ctxOf(p) === st.ctx) &&
+    (skip === "ctx" || skip === "veld" || st.ctx === "alle" || tagsOf(p).includes(st.ctx)) &&
     (skip === "jaar" || st.jaar === "alle" || yearsOf(p).includes(st.jaar)) &&
     (skip === "rol" || st.rol === "alle" || (p.roles || []).includes(st.rol));
   // the choices of one filter, with how many projects each would show
@@ -600,19 +603,19 @@
     const pool = ALL.filter(p => hit(p, key)), n = f => pool.filter(f).length;
     let o;
     if(key === "veld") o = ["video", "film", "overig"].map(v => [v, n(p => veldOf(p) === v)]);
-    else if(key === "ctx") o = (st.veld === "alle" ? [...CTX.video, ...CTX.film] : CTX[st.veld]).map(c => [c, n(p => ctxOf(p) === c)]);
+    else if(key === "ctx") o = (st.veld === "alle" ? [...CTX.video, ...CTX.film] : CTX[st.veld]).map(c => [c, n(p => tagsOf(p).includes(c))]);
     else if(key === "jaar") o = [...new Set(ALL.flatMap(yearsOf))].sort((a, b) => b - a).map(y => [y, n(p => yearsOf(p).includes(y))]);
     else { const r = [...new Set(pool.flatMap(p => p.roles || []))]; const ord = ["Camera", "Montage", "Regie", "Script", "Concept", "Acteur"]; r.sort((a, b) => (ord.indexOf(a) + 99) % 99 - (ord.indexOf(b) + 99) % 99); o = r.map(x => [x, n(p => (p.roles || []).includes(x))]); }
     return [["alle", pool.length], ...o.filter(([v, c]) => c || v === st[key])];
   }
   const label = (key, v) => v === "alle" ? t("f.all") : key === "veld" ? t({video:"nav.video", film:"nav.ritcs", overig:"nav.other"}[v]) : key === "ctx" ? t("f." + v) : key === "rol" ? L.role(v) : v;
-  const sq = (key, v) => key === "ctx" && v !== "alle" ? `<i class="sq" style="background:var(--c-${CTXC[v]})"></i>` : "";
+  const sq = (key, v) => key === "ctx" && CTXC[v] ? `<i class="sq" style="background:var(--c-${CTXC[v]})"></i>` : "";
   const filtersEl = $("#filters"), grid = $("#wkGrid");
   // the contexts under each hero word (shown on hover)
   function drawDoorMenus(){
     document.querySelectorAll(".door-wrap").forEach(w => {
       const v = w.dataset.for;
-      w.querySelector(".door-menu").innerHTML = CTX[v].map(c => `<li><a href="#${v}?context=${c}" data-view="${v}"><i class="sq" style="background:var(--c-${CTXC[c]})"></i>${esc(label("ctx", c))}</a></li>`).join("");
+      w.querySelector(".door-menu").innerHTML = CTX[v].map(c => `<li><a href="#${v}?context=${c}" data-view="${v}">${sq("ctx", c)}${esc(label("ctx", c))}</a></li>`).join("");
     });
   }
   drawDoorMenus();
@@ -639,7 +642,7 @@
   addEventListener("keydown", e => { if(e.key === "Escape") closeFilters(); });
   function choose(key, v){
     st[key] = v;
-    if(key === "ctx" && v !== "alle") st.veld = CTX.video.includes(v) ? "video" : "film";     // a context belongs to one field
+    if(key === "ctx" && v !== "alle") st.veld = CTX.video.includes(v) ? "video" : "film";     // a tag belongs to one field
     if(key === "veld" && st.ctx !== "alle" && v !== "alle" && !CTX[v].includes(st.ctx)) st.ctx = "alle";
     // a choice the others no longer allow falls back to "all"
     for(const k of ["ctx", "jaar", "rol"]) if(st[k] !== "alle" && !options(k).some(([x, c]) => x === st[k] && c)) st[k] = "alle";
