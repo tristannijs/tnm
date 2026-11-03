@@ -591,7 +591,7 @@
   const TITLE = {alle:["wk.all.a", ""], video:["wk.video.a", "wk.video.b"], film:["wk.film.a", ""], overig:["wk.other.a", ""]};
   const SUB = {alle:"wk.all.s", video:"wk.video.s", film:"wk.film.s", overig:"wk.other.s"};
   const ALL = P.slice().sort((a, b) => D(b.t1 || b.t0) - D(a.t1 || a.t0));
-  const st = {veld:"alle", ctx:"alle", jaar:"alle", rol:"alle"};
+  const st = {veld:"alle", ctx:"alle", jaar:"alle", rol:"alle", album:"alle"};
   // (a context belongs to one field, so the field list ignores the context: switching field resets it)
   const hit = (p, skip) =>
     (skip === "veld" || st.veld === "alle" || veldOf(p) === st.veld) &&
@@ -599,7 +599,18 @@
     (skip === "jaar" || st.jaar === "alle" || yearsOf(p).includes(st.jaar)) &&
     (skip === "rol" || st.rol === "alle" || (p.roles || []).includes(st.rol));
   // the choices of one filter, with how many projects each would show
+  // under Overig: photos get Jaar and Album; biography, music and personal get no filters but the field
+  const photoMode = () => st.veld === "overig" && st.ctx === "foto";
+  const shownKeys = () => st.veld !== "overig" ? ["veld", "ctx", "jaar", "rol"] : st.ctx === "foto" ? ["veld", "ctx", "jaar", "album"] : st.ctx === "alle" ? ["veld", "ctx"] : ["veld"];
+  const phHit = (ph, skip) => (skip === "jaar" || st.jaar === "alle" || ph.year === st.jaar) && (skip === "album" || st.album === "alle" || ph.albums.includes(st.album));
   function options(key){
+    if(photoMode() && (key === "jaar" || key === "album")){
+      const pool = PH.filter(ph => phHit(ph, key));
+      const o = key === "jaar"
+        ? [...new Set(PH.map(ph => ph.year).filter(Boolean))].sort((a, b) => b - a).map(y => [y, pool.filter(ph => ph.year === y).length])
+        : ALBUMS.map(a => [a.id, pool.filter(ph => ph.albums.includes(a.id)).length]);
+      return [["alle", pool.length], ...o.filter(([v, c]) => c || v === st[key])];
+    }
     const pool = ALL.filter(p => hit(p, key)), n = f => pool.filter(f).length;
     let o;
     if(key === "veld") o = ["video", "film", "overig"].map(v => [v, n(p => veldOf(p) === v) + (v === "overig" && st.jaar === "alle" && st.rol === "alle" ? PH.length + 1 : 0)]);
@@ -610,7 +621,7 @@
     const keep = key === "ctx" && st.veld === "overig";
     return [["alle", pool.length + (key === "ctx" && st.veld === "overig" ? extra("bio") + extra("foto") : 0)], ...o.filter(([v, c]) => c || keep || v === st[key])];
   }
-  const label = (key, v) => v === "alle" ? t("f.all") : key === "veld" ? t({video:"nav.video", film:"nav.ritcs", overig:"nav.other"}[v]) : key === "ctx" ? t("f." + v) : key === "rol" ? L.role(v) : v;
+  const label = (key, v) => v === "alle" ? t("f.all") : key === "veld" ? t({video:"nav.video", film:"nav.ritcs", overig:"nav.other"}[v]) : key === "ctx" ? t("f." + v) : key === "rol" ? L.role(v) : key === "album" ? (ALBUMS.find(a => a.id === v) || {title:v}).title : v;
   const sq = (key, v) => key === "ctx" && CTXC[v] ? `<i class="sq" style="background:var(--c-${CTXC[v]})"></i>` : "";
   const filtersEl = $("#filters"), grid = $("#wkGrid");
   // the contexts under each hero word (shown on hover)
@@ -623,7 +634,7 @@
   drawDoorMenus();
   L.onChange(drawDoorMenus);
   function drawFilters(){
-    filtersEl.innerHTML = ["veld", "ctx", "jaar", "rol"].map(key => {
+    filtersEl.innerHTML = shownKeys().map(key => {
       const opts = options(key);
       return `<div class="flt" data-key="${key}"><span class="flt-l">${esc(t("f." + key))}</span>
         <button type="button" class="flt-v" aria-haspopup="listbox" aria-expanded="false">${sq(key, st[key])}<span>${esc(label(key, st[key]))}</span><svg viewBox="0 0 16 10" aria-hidden="true"><path d="M1 1.5l7 7 7-7" fill="none" stroke="currentColor" stroke-width="1.4"/></svg></button>
@@ -646,8 +657,10 @@
     st[key] = v;
     if(key === "ctx" && v !== "alle") st.veld = Object.keys(CTX).find(f => CTX[f].includes(v));     // a tag belongs to one field
     if(key === "veld" && st.ctx !== "alle" && v !== "alle" && !CTX[v].includes(st.ctx)) st.ctx = "alle";
+    // filters that aren't shown in this view don't apply
+    const keys = shownKeys(); for(const k of ["jaar", "rol", "album"]) if(!keys.includes(k)) st[k] = "alle";
     // a choice the others no longer allow falls back to "all"
-    for(const k of ["ctx", "jaar", "rol"]) if(st[k] !== "alle" && !options(k).some(([x, c]) => x === st[k] && (c || (k === "ctx" && st.veld === "overig")))) st[k] = "alle";
+    for(const k of ["ctx", "jaar", "rol", "album"].filter(k => keys.includes(k))) if(st[k] !== "alle" && !options(k).some(([x, c]) => x === st[k] && (c || (k === "ctx" && st.veld === "overig")))) st[k] = "alle";
     writeHash(); renderWork();
   }
   function writeHash(){
@@ -655,6 +668,7 @@
     if(st.ctx !== "alle") q.set("context", st.ctx);
     if(st.jaar !== "alle") q.set("jaar", st.jaar);
     if(st.rol !== "alle") q.set("rol", st.rol);
+    if(st.album !== "alle") q.set("album", st.album);
     const h = "#" + (st.veld === "alle" ? "werk" : st.veld) + (q.toString() ? "?" + q : "");
     if(location.hash !== h) history.replaceState(null, "", h);   // replaceState fires no hashchange
     routed = location.hash;
@@ -674,9 +688,8 @@
       b.addEventListener("click", () => { if(!pv || pv.card !== b) openPeek(b, wkCtx); });
       grid.appendChild(b);
     });
-    const free = st.veld === "overig" && st.jaar === "alle" && st.rol === "alle";
-    const photos = free && (st.ctx === "alle" || st.ctx === "foto") && PH.length > 0;
-    const bio = free && (st.ctx === "alle" || st.ctx === "bio");
+    const photos = st.veld === "overig" && (st.ctx === "alle" || st.ctx === "foto") && PH.length > 0;
+    const bio = st.veld === "overig" && (st.ctx === "alle" || st.ctx === "bio");
     $("#wkNone").hidden = list.length > 0 || photos || bio;
     drawBio(bio); drawPhotos(photos);
     requestAnimationFrame(() => grid.querySelectorAll(".wk-card").forEach(drawShadow));
@@ -693,26 +706,53 @@
     document.querySelectorAll("[data-view]").forEach(a => a.toggleAttribute("aria-current", a.dataset.view === (document.body.classList.contains("is-work") ? st.veld : "home")));
   }
   let lastVeld = null;
-  // ---- photos: the newest public photos from Flickr, read straight from its public feed, so a photo
-  // posted there shows up here without changing the site (the feed gives the 20 newest)
+  // ---- photos: read straight from Flickr's public feeds, so a photo posted there shows up here without
+  // changing the site. The account feed gives the 20 newest; each album's feed gives its photos, so
+  // together they cover everything that is in an album. A new album has to be added to ALBUMS.
   const FLICKR = "205114923@N07";
+  const ALBUMS = [
+    {id:"72177720336650772", title:"Portugal 2026"},
+    {id:"72177720336650162", title:"Spanje 2026"},
+    {id:"72177720336536931", title:"Rome 2026"},
+    {id:"72177720336650802", title:"Spanje 2025"},
+    {id:"72177720336833119", title:"Arlon"}
+  ];
   let PH = [];
+  const byId = new Map();
   const extra = c => st.jaar !== "alle" || st.rol !== "alle" ? 0 : c === "foto" ? PH.length : c === "bio" ? 1 : 0;
   const flickrSize = (u, s) => u.replace(/_[a-z]\.(jpg|png)$/, "_" + s + ".$1");
-  window.tnmFlickr = d => {
-    PH = (d.items || []).map(i => ({src:i.media.m, title:i.title, link:i.link}));
+  let phT = 0;
+  function takeFeed(d, album){
+    (d.items || []).forEach(i => {
+      const id = (i.link.match(/\/(\d+)\/?$/) || [])[1] || i.media.m;
+      const ph = byId.get(id) || {id, src:i.media.m, title:i.title, link:i.link, date:i.date_taken || i.published || "", albums:[]};
+      ph.year = ph.date.slice(0, 4);
+      if(album && !ph.albums.includes(album)) ph.albums.push(album);
+      byId.set(id, ph);
+    });
+    PH = [...byId.values()].sort((a, b) => (b.date > a.date) - (b.date < a.date));
+    clearTimeout(phT); phT = setTimeout(photosIn, 60);
+  }
+  function photosIn(){
     // the newest photo is the background behind OVERIG
     const ov = document.querySelector('.layer[data-key="overig"] img');
-    if(ov && PH[0]){ const im = new Image(); im.onload = () => { ov.src = im.src; }; im.src = flickrSize(PH[0].src, "b"); }
+    if(ov && PH[0] && !ov.dataset.ph){ ov.dataset.ph = 1; const im = new Image(); im.onload = () => { ov.src = im.src; }; im.src = flickrSize(PH[0].src, "b"); }
     if(document.body.classList.contains("is-work")) renderWork();
-  };
-  (() => { const sc = document.createElement("script"); sc.src = `https://www.flickr.com/services/feeds/photos_public.gne?id=${FLICKR}&format=json&jsoncallback=tnmFlickr`; sc.async = true; document.head.appendChild(sc); })();
+  }
+  [{album:null, url:`photos_public.gne?id=${FLICKR}`}, ...ALBUMS.map(a => ({album:a.id, url:`photoset.gne?set=${a.id}&nsid=${FLICKR}`}))].forEach((f, k) => {
+    window["tnmFlickr" + k] = d => takeFeed(d, f.album);
+    const sc = document.createElement("script"); sc.async = true;
+    sc.src = `https://www.flickr.com/services/feeds/${f.url}&lang=en-us&format=json&jsoncallback=tnmFlickr${k}`;
+    document.head.appendChild(sc);
+  });
   const phGrid = $("#phGrid");
+  let PHV = [];      // the photos the filters leave
   // eager, not lazy: Safari doesn't load lazy images in the later columns of a column layout
   function drawPhotos(show){
     phGrid.hidden = !show;
-    if(!show || phGrid.childElementCount === PH.length) return;
-    phGrid.innerHTML = PH.map((ph, i) => `<button type="button" class="ph" data-i="${i}"><img src="${esc(flickrSize(ph.src, "c"))}" alt="${esc(ph.title || "")}"></button>`).join("");
+    if(!show) return;
+    PHV = PH.filter(ph => phHit(ph));
+    phGrid.innerHTML = PHV.map((ph, i) => `<button type="button" class="ph" data-i="${i}"><img src="${esc(flickrSize(ph.src, "c"))}" alt="${esc(ph.title || "")}"></button>`).join("");
   }
   // the biography: the same text and photo as Over on the start page
   const bioEl = $("#wkBio");
@@ -721,7 +761,7 @@
     if(show && !bioEl.firstChild) bioEl.appendChild($(".about-body").cloneNode(true));
   }
   const lb = $("#lightbox"), lbImg = $("#lbImg"); let lbI = 0;
-  const lbShow = i => { lbI = (i + PH.length) % PH.length; lbImg.src = flickrSize(PH[lbI].src, "b"); lbImg.alt = PH[lbI].title || ""; };
+  const lbShow = i => { lbI = (i + PHV.length) % PHV.length; lbImg.src = flickrSize(PHV[lbI].src, "b"); lbImg.alt = PHV[lbI].title || ""; };
   phGrid.addEventListener("click", e => { const b = e.target.closest(".ph"); if(!b) return; lbShow(+b.dataset.i); lb.showModal(); });
   lb.addEventListener("click", e => {
     const n = e.target.closest(".lb-n"); if(n){ lbShow(lbI + +n.dataset.d); return; }
@@ -749,13 +789,14 @@
     const v = {video:"video", videografie:"video", film:"film", ritcs:"film", overig:"overig", werk:"alle"}[path.toLowerCase()];
     if(!v) return null;
     const q = new URLSearchParams(qs || "");
-    return {veld:v, ctx:q.get("context") || "alle", jaar:q.get("jaar") || "alle", rol:q.get("rol") || "alle"};
+    return {veld:v, ctx:q.get("context") || "alle", jaar:q.get("jaar") || "alle", rol:q.get("rol") || "alle", album:q.get("album") || "alle"};
   }
   function toWork(next, door){
     closePeek(true); closeFilters();
     const wasWork = document.body.classList.contains("is-work");
     Object.assign(st, next);
-    for(const k of ["ctx", "jaar", "rol"]) if(st[k] !== "alle" && !options(k).some(([x, c]) => x === st[k] && c)) st[k] = "alle";
+    { const keys = shownKeys(); for(const k of ["jaar", "rol", "album"]) if(!keys.includes(k)) st[k] = "alle"; }
+    for(const k of ["ctx", "jaar", "rol"]) if(st[k] !== "alle" && !options(k).some(([x, c]) => x === st[k] && (c || (k === "ctx" && st.veld === "overig")))) st[k] = "alle";
     // the hero word the visitor clicked, if it is in view: the title grows out of it
     const word = !wasWork && door && door.querySelector("span"), r0 = word && word.getBoundingClientRect();
     const fly = r0 && r0.bottom > 0 && r0.top < innerHeight;
