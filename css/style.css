@@ -435,8 +435,10 @@ body.is-work .foot{padding-top:clamp(70px,12.4vw,178px)}
 }
 
 /* ---------- photos (Overig): Flickr feed in columns, opened in a lightbox ---------- */
-.ph-grid{columns:3;column-gap:clamp(12px,1.3vw,19px);margin-top:clamp(56px,8.4vw,121px)}
-.ph{display:block;width:100%;margin:0 0 clamp(12px,1.3vw,19px);padding:0;border:0;background:#1c1c1c;cursor:zoom-in;break-inside:avoid}
+.ph-grid{display:flex;align-items:flex-start;gap:clamp(12px,1.3vw,19px);margin-top:clamp(56px,8.4vw,121px)}
+.ph{display:block;width:100%;margin:0 0 clamp(12px,1.3vw,19px);padding:0;border:0;background:#1c1c1c;cursor:zoom-in}
+.ph-grid[hidden]{display:none}
+.ph-col{flex:1;min-width:0}
 .ph img{display:block;width:100%;height:auto;transition:filter .3s}
 .ph:hover img{filter:brightness(1.07)}
 .lightbox{max-width:none;max-height:none;width:100vw;height:100dvh;margin:0;padding:0;border:0;background:rgba(0,0,0,.94);color:#fff}
@@ -447,12 +449,13 @@ body.is-work .foot{padding-top:clamp(70px,12.4vw,178px)}
 .lb-n{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:80px;border:0;background:none;color:#e8e8e8;cursor:pointer}
 .lb-n svg{width:20px;height:40px}
 .lb-n.prev{left:18px}.lb-n.next{right:18px}
-@media (max-width:900px){.ph-grid{columns:2}}
-@media (max-width:760px){.ph-grid{margin-top:44px;column-gap:10px}.ph{margin-bottom:10px}.lightbox img{max-width:100vw}.lb-n{display:none}}
+@media (max-width:760px){.ph-grid{margin-top:44px;gap:10px}.ph{margin-bottom:10px}.lightbox img{max-width:100vw}.lb-n{display:none}}
 .wk-grid:empty{display:none}
 .wk-bio{margin-top:clamp(56px,8.4vw,121px)}
 .wk-bio .about-body{padding:0}
 .wk-bio + .ph-grid{margin-top:clamp(48px,6vw,90px)}
-.ph-more{display:block;margin:clamp(28px,3vw,44px) auto 0;padding:12px 26px;border:1px solid rgba(255,255,255,.6);background:none;color:#fff;
+.ph-btns{display:flex;justify-content:center;gap:12px;margin-top:clamp(28px,3vw,44px)}
+.ph-btns .ph-more[hidden]{display:none}
+.ph-more{display:block;margin:0;padding:12px 26px;border:1px solid rgba(255,255,255,.6);background:none;color:#fff;
   font:inherit;font-size:14px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:background-color .2s,border-color .2s}
 .ph-more:hover{border-color:#fff;background:rgba(255,255,255,.06)}

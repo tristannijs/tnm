@@ -27,6 +27,7 @@
     "f.ctx":           {nl:"Context",              en:"Context",              fr:"Contexte"},
     "f.jaar":          {nl:"Jaar",                 en:"Year",                 fr:"Année"},
     "ph.more":         {nl:"Meer laden",           en:"Load more",            fr:"Voir plus"},
+    "ph.less":         {nl:"Minder tonen",         en:"Show less",            fr:"Voir moins"},
     "f.album":         {nl:"Album",                en:"Album",                fr:"Album"},
     "f.rol":           {nl:"Rol",                  en:"Role",                 fr:"Rôle"},
     "f.all":           {nl:"Alles",                en:"All",                  fr:"Tout"},

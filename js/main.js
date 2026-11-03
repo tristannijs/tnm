@@ -519,10 +519,17 @@
   document.addEventListener("click", e => { if(swallow){ swallow = false; e.preventDefault(); e.stopPropagation(); } }, true);
   // The preview is the player, as the old player window was: YouTube's own player with sound and its own
   // controls (or the video file with the browser's controls)
+  // our own video files: no download, speed or picture-in-picture menu (the ⋮ button then goes away), no right-click save
+  function noSave(v){
+    v.setAttribute("controlsList", "nodownload noplaybackrate noremoteplayback");
+    v.disablePictureInPicture = true; v.setAttribute("disablePictureInPicture", ""); v.disableRemotePlayback = true;
+    v.addEventListener("contextmenu", e => e.preventDefault());
+  }
   function startClip(p, media){
     if(p.vids){
       const v = document.createElement("video");
       Object.assign(v, {src:p.vids[0].src, autoplay:true, controls:true, playsInline:true});
+      noSave(v);
       if(p.ar && p.ar < 1) v.classList.add("tall");      // an upright video: whole, with black either side
       v.addEventListener("loadedmetadata", () => { p._dur = v.duration; if(p.hd == null) p._hd = v.videoHeight >= 720; refreshRow(p); });
       // a project made of several videos: numbered buttons to switch between them
@@ -749,7 +756,8 @@
       // the id from the image address (…/65535/<id>_<secret>_m.jpg): the same in every feed, unlike the link,
       // which in an album feed ends in /in/set-…/ (that made every album photo show twice)
       const id = (i.media.m.match(/\/(\d+)_[0-9a-f]+(?:_[a-z])?\.\w+$/) || i.link.match(/\/photos\/[^/]+\/(\d+)/) || [])[1] || i.media.m;
-      const ph = byId.get(id) || {id, src:i.media.m, title:i.title, link:i.link, date:i.date_taken || i.published || "", albums:[], rnd:Math.random()};
+      const wh = (i.description || "").match(/width="(\d+)" height="(\d+)"/);
+      const ph = byId.get(id) || {id, src:i.media.m, title:i.title, link:i.link, date:i.date_taken || i.published || "", albums:[], rnd:Math.random(), ar:wh ? wh[2] / wh[1] : 2/3};
       if(album && !ph.albums.includes(album)) ph.albums.push(album);
       // the year: from an album with a year in its name (film scans carry no date, so Flickr gives them
       // the upload date as "taken"), otherwise the date taken
@@ -778,16 +786,33 @@
   // eager, not lazy: Safari doesn't load lazy images in the later columns of a column layout
   const STEP = 18;
   let phShown = STEP, phKey = "";
+  // Columns filled in order, each photo into the shortest column (heights known from the feed), so loading
+  // more only adds to the bottom: the photos already there stay where they are
+  const phCols = () => innerWidth <= 900 ? 2 : 3;
+  let phN = 0;
   function drawPhotos(show){
-    phGrid.hidden = !show; $("#phMore").hidden = true;
+    phGrid.hidden = !show; $("#phMore").hidden = $("#phLess").hidden = true;
     if(!show) return;
     const key = st.jaar + "|" + st.album;
     if(key !== phKey){ phKey = key; phShown = STEP; }       // another filter: start again from the top
     PHV = PH.filter(ph => phHit(ph));
-    phGrid.innerHTML = PHV.slice(0, phShown).map((ph, i) => `<button type="button" class="ph" data-i="${i}"><img src="${esc(flickrSize(ph.src, "c"))}" alt="${esc(ph.title || "")}"></button>`).join("");
+    phN = phCols();
+    const cols = Array.from({length:phN}, () => ({h:0, html:""}));
+    PHV.slice(0, phShown).forEach((ph, i) => {
+      const c = cols.reduce((a, b) => b.h < a.h - 1e-6 ? b : a);
+      c.h += ph.ar + .04;
+      c.html += `<button type="button" class="ph" data-i="${i}"><img src="${esc(flickrSize(ph.src, "c"))}" alt="${esc(ph.title || "")}" width="800" height="${Math.round(800 * ph.ar)}"></button>`;
+    });
+    phGrid.innerHTML = cols.map(c => `<div class="ph-col">${c.html}</div>`).join("");
     $("#phMore").hidden = PHV.length <= phShown;
+    $("#phLess").hidden = phShown <= STEP;
   }
   $("#phMore").addEventListener("click", () => { phShown += STEP; drawPhotos(true); });
+  $("#phLess").addEventListener("click", () => {
+    phShown = STEP; drawPhotos(true);
+    if(phGrid.getBoundingClientRect().top < 0) phGrid.scrollIntoView({behavior:"smooth"});
+  });
+  addEventListener("resize", () => { if(!phGrid.hidden && phCols() !== phN) drawPhotos(true); });
   const lb = $("#lightbox"), lbImg = $("#lbImg"); let lbI = 0;
   const lbShow = i => { lbI = (i + PHV.length) % PHV.length; lbImg.src = flickrSize(PHV[lbI].src, "b"); lbImg.alt = PHV[lbI].title || ""; };
   phGrid.addEventListener("click", e => { const b = e.target.closest(".ph"); if(!b) return; lbShow(+b.dataset.i); lb.showModal(); });
@@ -907,7 +932,7 @@
   const ytFrame = (id,title) => `<iframe src="https://www.youtube-nocookie.com/embed/${id}?rel=0&autoplay=1" title="${esc(title)}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
   function show(p,k){
     const scr = $("#plScreen"), link = $("#plLink");
-    if(p.vids){ const v = p.vids[k]; scr.innerHTML = `<video src="${v.src}" poster="${v.poster}" controls autoplay playsinline></video>`; link.hidden = true; }
+    if(p.vids){ const v = p.vids[k]; scr.innerHTML = `<video src="${v.src}" poster="${v.poster}" controls autoplay playsinline></video>`; noSave(scr.querySelector("video")); link.hidden = true; }
     else if(p.ig){ scr.innerHTML = `<iframe src="https://www.instagram.com/p/${p.ig}/embed/" title="${esc(flat(lab(p)))}" style="width:400px;height:100%;margin:auto;display:block" allowfullscreen></iframe>`; link.hidden = false; link.href = "https://www.instagram.com/p/" + p.ig + "/"; }
     else { scr.innerHTML = ytFrame(p.yt, flat(lab(p))); link.hidden = false; link.href = "https://www.youtube.com/watch?v=" + p.yt; }
     $("#plParts").querySelectorAll("button").forEach((b,i) => b.setAttribute("aria-pressed", i === k));
