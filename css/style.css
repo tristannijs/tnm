@@ -29,7 +29,7 @@
   color-scheme:dark;
 }
 *{box-sizing:border-box}
-html{scroll-behavior:smooth;scroll-padding-top:80px;overflow-x:clip;overscroll-behavior-y:none}
+html{background:#000;scroll-behavior:smooth;scroll-padding-top:80px;overflow-x:clip;overscroll-behavior-y:none}
 body{overscroll-behavior-y:none}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 body{margin:0;background:#000;color:var(--fg);font-family:var(--f);-webkit-font-smoothing:antialiased}
@@ -71,7 +71,9 @@ img{display:block;max-width:100%}
 .drawer a:hover{color:var(--fg-2)}
 
 /* ---------- hero ---------- */
-.hero{position:relative;height:100svh;min-height:520px;max-height:1100px;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:flex-end}
+/* clip-path (unlike overflow) also clips the fixed background inside: it only ever shows within the hero,
+   never below the footer when a phone bounces past the end of the page */
+.hero{clip-path:inset(0);position:relative;height:100svh;min-height:520px;max-height:1100px;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:flex-end}
 .hero-bg{position:fixed;top:0;left:0;right:0;height:100vh;height:100lvh;z-index:0}
 .layer{position:absolute;inset:0;opacity:0;transition:opacity .6s ease;background:#1a1a1a}
 .layer.on{opacity:1}
