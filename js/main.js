@@ -512,6 +512,7 @@
     if(p.vids){
       const v = document.createElement("video");
       Object.assign(v, {src:p.vids[0].src, autoplay:true, controls:true, playsInline:true});
+      if(p.tall) v.classList.add("tall");      // an upright video: whole, with black either side
       v.addEventListener("loadedmetadata", () => { p._dur = v.duration; if(p.hd == null) p._hd = v.videoHeight >= 720; refreshRow(p); });
       // a project made of several videos: numbered buttons to switch between them
       if(p.vids.length > 1){
@@ -738,8 +739,11 @@
       // which in an album feed ends in /in/set-…/ (that made every album photo show twice)
       const id = (i.media.m.match(/\/(\d+)_[0-9a-f]+(?:_[a-z])?\.\w+$/) || i.link.match(/\/photos\/[^/]+\/(\d+)/) || [])[1] || i.media.m;
       const ph = byId.get(id) || {id, src:i.media.m, title:i.title, link:i.link, date:i.date_taken || i.published || "", albums:[], rnd:Math.random()};
-      ph.year = ph.date.slice(0, 4);
       if(album && !ph.albums.includes(album)) ph.albums.push(album);
+      // the year: from an album with a year in its name (film scans carry no date, so Flickr gives them
+      // the upload date as "taken"), otherwise the date taken
+      const ay = ph.albums.map(a => ((ALBUMS.find(x => x.id === a) || {}).title || "").match(/\b(19|20)\d\d\b/)).find(m => m);
+      ph.year = ay ? ay[0] : ph.date.slice(0, 4);
       byId.set(id, ph);
     });
     PH = [...byId.values()].sort((a, b) => a.rnd - b.rnd);      // a random order, new on every visit
