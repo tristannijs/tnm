@@ -526,6 +526,16 @@
       }
       v.addEventListener("playing", () => v.classList.add("on"));
       media.appendChild(v);
+    } else if(p.ig){
+      // a vertical Instagram video: Instagram's own embed, upright in the middle of the 16:9 box. The embed is
+      // laid out at a fixed size (it has a minimum width) and scaled to the box's height
+      const f = document.createElement("iframe");
+      f.src = `https://www.instagram.com/p/${p.ig}/embed/`; f.className = "ig"; f.title = pvTitle(p);
+      f.allow = "autoplay; encrypted-media; fullscreen; picture-in-picture"; f.allowFullscreen = true; f.scrolling = "no";
+      const fit = () => { const h = media.clientHeight; if(h) f.style.transform = `translate(-50%,0) scale(${(h / 820).toFixed(4)})`; };
+      fit(); f.addEventListener("load", () => f.classList.add("on"));
+      media.appendChild(f);
+      setTimeout(() => f.classList.add("on"), 2500);
     } else if(p.yt){
       const f = document.createElement("iframe");
       f.src = `https://www.youtube-nocookie.com/embed/${p.yt}?autoplay=1&rel=0&playsinline=1&modestbranding=1&iv_load_policy=3&enablejsapi=1&origin=${encodeURIComponent(location.origin)}`;
@@ -881,6 +891,7 @@
   function show(p,k){
     const scr = $("#plScreen"), link = $("#plLink");
     if(p.vids){ const v = p.vids[k]; scr.innerHTML = `<video src="${v.src}" poster="${v.poster}" controls autoplay playsinline></video>`; link.hidden = true; }
+    else if(p.ig){ scr.innerHTML = `<iframe src="https://www.instagram.com/p/${p.ig}/embed/" title="${esc(flat(lab(p)))}" style="width:400px;height:100%;margin:auto;display:block" allowfullscreen></iframe>`; link.hidden = false; link.href = "https://www.instagram.com/p/" + p.ig + "/"; }
     else { scr.innerHTML = ytFrame(p.yt, flat(lab(p))); link.hidden = false; link.href = "https://www.youtube.com/watch?v=" + p.yt; }
     $("#plParts").querySelectorAll("button").forEach((b,i) => b.setAttribute("aria-pressed", i === k));
   }

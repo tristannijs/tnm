@@ -199,6 +199,7 @@ canvas.drop{position:absolute;z-index:-2;pointer-events:none}
 .pv::before{content:"";position:absolute;inset:0;z-index:-1;box-shadow:0 26px 70px rgba(0,0,0,.65);opacity:0;transition:opacity .4s ease}
 .pv.open::before{opacity:1}
 .pv-media iframe,.pv-media video{position:absolute;inset:0;z-index:2;width:100%;height:100%;border:0;object-fit:cover;pointer-events:none;opacity:0;transition:opacity .6s ease}
+.pv-media iframe.ig{left:50%;right:auto;bottom:auto;width:400px;height:820px;transform-origin:50% 0;background:#000}
 .pv-media iframe.on,.pv-media video.on{opacity:1}
 /* the caption is drawn --k times larger, so once scaled down to the card it matches the card exactly */
 .pv .cap{margin:0 4% 6% 4%;transition:opacity .25s}
