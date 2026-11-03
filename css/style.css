@@ -393,6 +393,8 @@ body.is-work .hero-doors[style]{opacity:0;pointer-events:none;transition:opacity
 .flt-l{display:block;font-size:12px;font-weight:700;color:#fff;margin-bottom:9px}
 .flt-v{display:flex;align-items:center;width:100%;gap:6px;padding:0 0 3px;border:0;border-bottom:1px solid #fff;background:none;color:#fff;
   font:inherit;font-size:clamp(16px,1.32vw,19px);font-weight:300;text-align:left;cursor:pointer}
+.flt-v .sq{flex:none;width:.58em;height:.58em;margin:0 .1em 0 0}
+.flt-o .sq{width:.68em;height:.68em;margin-right:.45em}
 .flt-v span{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .flt-v svg{flex:none;width:15px;height:10px;transition:transform .2s}
 .flt.open .flt-v svg{transform:rotate(180deg)}
