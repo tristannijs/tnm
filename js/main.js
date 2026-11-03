@@ -734,7 +734,9 @@
   let phT = 0;
   function takeFeed(d, album){
     (d.items || []).forEach(i => {
-      const id = (i.link.match(/\/(\d+)\/?$/) || [])[1] || i.media.m;
+      // the id from the image address (…/65535/<id>_<secret>_m.jpg): the same in every feed, unlike the link,
+      // which in an album feed ends in /in/set-…/ (that made every album photo show twice)
+      const id = (i.media.m.match(/\/(\d+)_[0-9a-f]+(?:_[a-z])?\.\w+$/) || i.link.match(/\/photos\/[^/]+\/(\d+)/) || [])[1] || i.media.m;
       const ph = byId.get(id) || {id, src:i.media.m, title:i.title, link:i.link, date:i.date_taken || i.published || "", albums:[], rnd:Math.random()};
       ph.year = ph.date.slice(0, 4);
       if(album && !ph.albums.includes(album)) ph.albums.push(album);
