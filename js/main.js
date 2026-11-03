@@ -594,6 +594,15 @@
   const label = (key, v) => v === "alle" ? t("f.all") : key === "veld" ? t({video:"nav.video", film:"nav.ritcs", overig:"nav.other"}[v]) : key === "ctx" ? t("f." + v) : key === "rol" ? L.role(v) : v;
   const sq = (key, v) => key === "ctx" && v !== "alle" ? `<i class="sq" style="background:var(--c-${CTXC[v]})"></i>` : "";
   const filtersEl = $("#filters"), grid = $("#wkGrid");
+  // the contexts under each hero word (shown on hover)
+  function drawDoorMenus(){
+    document.querySelectorAll(".door-wrap").forEach(w => {
+      const v = w.dataset.for;
+      w.querySelector(".door-menu").innerHTML = CTX[v].map(c => `<li><a href="#${v}?context=${c}" data-view="${v}"><i class="sq" style="background:var(--c-${CTXC[c]})"></i>${esc(label("ctx", c))}</a></li>`).join("");
+    });
+  }
+  drawDoorMenus();
+  L.onChange(drawDoorMenus);
   function drawFilters(){
     filtersEl.innerHTML = ["veld", "ctx", "jaar", "rol"].map(key => {
       const opts = options(key);
@@ -726,7 +735,8 @@
   let pendingDoor = null;
   document.addEventListener("click", e => {
     const a = e.target.closest("a[data-view]"); if(!a) return;
-    pendingDoor = a.classList.contains("door") ? a : null;
+    const wrap = a.closest(".door-wrap");
+    pendingDoor = wrap ? wrap.querySelector(".door") : null;
     if(a.dataset.view === "home"){ e.preventDefault(); if(location.hash) history.pushState(null, "", location.pathname + location.search); toHome(); }
   });
   let routed = null;      // hashchange and popstate both fire for one click: handle it once

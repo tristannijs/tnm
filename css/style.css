@@ -41,7 +41,7 @@ img{display:block;max-width:100%}
   padding:env(safe-area-inset-top,0px) var(--gut) 0;background:transparent;transition:background-color .35s ease,height .35s ease}
 .bar.solid{background:var(--bar);--bar-h:76px}
 .logo-link img{height:40px;width:auto}
-.nav{display:flex;align-items:center;gap:14px;font-size:16px;font-weight:600;color:#9a9a9a;transition:color .35s}
+.nav{display:flex;align-items:center;gap:14px;font-size:16px;font-weight:600;color:#fff;transition:color .35s}
 .nav .lang:hover,.nav .menu-btn:hover{color:#fff}
 .bar.solid .nav{color:#fff}
 /* the links only show once the hero words have scrolled away (class set in main.js) */
@@ -69,7 +69,7 @@ img{display:block;max-width:100%}
 
 /* ---------- hero ---------- */
 .hero{position:relative;height:100svh;min-height:520px;max-height:1100px;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:flex-end}
-.hero-bg{position:fixed;inset:0;z-index:0}
+.hero-bg{position:fixed;top:0;left:0;right:0;height:100vh;height:100lvh;z-index:0}
 .layer{position:absolute;inset:0;opacity:0;transition:opacity .6s ease;background:#1a1a1a}
 .layer.on{opacity:1}
 .layer img,.layer video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
@@ -87,7 +87,19 @@ img{display:block;max-width:100%}
   color:#fff;padding:8px 2px;text-shadow:0 1px 14px rgba(0,0,0,.35);transition:opacity .2s}
 .door svg{width:.62em;height:.4em;flex:none;margin-top:.1em;overflow:visible}
 .hero-doors:hover .door{opacity:.6}
-.hero-doors .door:hover,.door:focus-visible{opacity:1}
+.hero-doors .door-wrap:hover .door,.door-wrap:focus-within .door,.door:focus-visible{opacity:1}
+/* hovering a hero word opens its contexts underneath */
+.door-wrap{position:relative}
+.door svg{transition:transform .2s}
+.door-wrap:hover .door svg,.door-wrap:focus-within .door svg{transform:rotate(180deg)}
+.door-menu{position:absolute;left:50%;top:100%;transform:translate(-50%,4px);margin:0;padding:6px 0 0;list-style:none;white-space:nowrap;
+  opacity:0;visibility:hidden;transition:opacity .18s,visibility .18s,transform .18s}
+.door-menu:empty{display:none}
+.door-wrap:hover .door-menu,.door-wrap:focus-within .door-menu{opacity:1;visibility:visible;transform:translate(-50%,0)}
+.door-menu a{display:flex;align-items:center;padding:5px 2px;font-size:clamp(14px,1.1vw,16px);font-weight:500;color:#fff;text-shadow:0 1px 10px rgba(0,0,0,.5);opacity:.8}
+.door-menu a:hover,.door-menu a:focus-visible{opacity:1}
+.door-menu .sq{display:inline-block;width:.7em;height:.7em;margin-right:.55em}
+@media (hover:none){.door-menu{display:none}}
 .hero-down{position:relative;z-index:2;color:var(--fg-2);margin-bottom:2.3vh;display:block;padding:6px}
 .hero-down svg{width:40px;height:20px;display:block}
 .hero-down:hover{color:var(--fg)}
