@@ -601,7 +601,7 @@
   // the choices of one filter, with how many projects each would show
   // under Overig: photos get Jaar and Album; biography, music and personal get no filters but the field
   const photoMode = () => st.veld === "overig" && st.ctx === "foto";
-  const shownKeys = () => st.veld !== "overig" ? ["veld", "ctx", "jaar", "rol"] : st.ctx === "foto" ? ["veld", "ctx", "jaar", "album"] : st.ctx === "alle" ? ["veld", "ctx"] : ["veld"];
+  const shownKeys = () => st.veld !== "overig" ? ["veld", "ctx", "jaar", "rol"] : st.ctx === "foto" ? ["veld", "ctx", "jaar", "album"] : ["veld", "ctx"];
   const phHit = (ph, skip) => (skip === "jaar" || st.jaar === "alle" || ph.year === st.jaar) && (skip === "album" || st.album === "alle" || ph.albums.includes(st.album));
   function options(key){
     if(photoMode() && (key === "jaar" || key === "album")){
@@ -689,9 +689,8 @@
       grid.appendChild(b);
     });
     const photos = st.veld === "overig" && (st.ctx === "alle" || st.ctx === "foto") && PH.length > 0;
-    const bio = st.veld === "overig" && (st.ctx === "alle" || st.ctx === "bio");
-    $("#wkNone").hidden = list.length > 0 || photos || bio;
-    drawBio(bio); drawPhotos(photos);
+    $("#wkNone").hidden = list.length > 0 || photos;
+    drawPhotos(photos);
     requestAnimationFrame(() => grid.querySelectorAll(".wk-card").forEach(drawShadow));
   }
   function drawTitle(){
@@ -720,7 +719,7 @@
   let PH = [];
   const byId = new Map();
   const OVERIG_BG = "";      // Flickr id of the photo behind OVERIG (left empty: the newest one)
-  const extra = c => st.jaar !== "alle" || st.rol !== "alle" ? 0 : c === "foto" ? PH.length : c === "bio" ? 1 : 0;
+  const extra = c => st.jaar !== "alle" || st.rol !== "alle" ? 0 : c === "foto" ? PH.length : 0;
   const flickrSize = (u, s) => u.replace(/_[a-z]\.(jpg|png)$/, "_" + s + ".$1");
   let phT = 0;
   function takeFeed(d, album){
@@ -762,12 +761,6 @@
     $("#phMore").hidden = PHV.length <= phShown;
   }
   $("#phMore").addEventListener("click", () => { phShown += STEP; drawPhotos(true); });
-  // the biography: the same text and photo as Over on the start page
-  const bioEl = $("#wkBio");
-  function drawBio(show){
-    bioEl.hidden = !show;
-    if(show && !bioEl.firstChild) bioEl.appendChild($(".about-body").cloneNode(true));
-  }
   const lb = $("#lightbox"), lbImg = $("#lbImg"); let lbI = 0;
   const lbShow = i => { lbI = (i + PHV.length) % PHV.length; lbImg.src = flickrSize(PHV[lbI].src, "b"); lbImg.alt = PHV[lbI].title || ""; };
   phGrid.addEventListener("click", e => { const b = e.target.closest(".ph"); if(!b) return; lbShow(+b.dataset.i); lb.showModal(); });
