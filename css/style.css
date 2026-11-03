@@ -85,7 +85,7 @@ img{display:block;max-width:100%}
     linear-gradient(180deg,rgba(17,17,17,0) 45%,rgba(17,17,17,.75) 82%,var(--bg) 100%)}
 /* one centred row, measured off Tristan's design at 1440 px: 219 px buttons, 23 px apart, 42 px tall */
 /* three words with a chevron, measured off Tristan's design at 1440 px: 25.5 px extra bold, 53 px apart */
-.hero-doors{position:relative;z-index:2;display:flex;justify-content:center;gap:0 clamp(28px,3.7vw,53px);margin-bottom:max(48px,11.8vh)}
+.hero-doors{position:relative;z-index:2;display:flex;justify-content:center;gap:0 clamp(28px,3.7vw,53px);margin-bottom:max(126px,14.6vh)}
 .door{display:inline-flex;align-items:center;gap:.22em;font-size:clamp(20px,1.77vw,25.5px);font-weight:800;letter-spacing:.005em;text-transform:uppercase;line-height:1;
   color:#fff;padding:8px 2px;text-shadow:0 1px 14px rgba(0,0,0,.35);transition:opacity .2s}
 .door svg{width:.62em;height:.4em;flex:none;margin-top:.1em;overflow:visible}
@@ -102,11 +102,11 @@ img{display:block;max-width:100%}
 .door-menu a{display:flex;align-items:center;padding:3px 2px;font-size:clamp(14px,1.1vw,16px);font-weight:500;color:#fff;text-shadow:0 1px 10px rgba(0,0,0,.5);opacity:.8}
 .door-menu a:hover,.door-menu a:focus-visible{opacity:1}
 .door-menu .sq{display:inline-block;width:.7em;height:.7em;margin-right:.55em}
-/* while a menu is open the arrow underneath steps aside, so the longest list (Film) has room */
-.hero-down{transition:opacity .18s}
-.hero:has(.door-wrap:hover) .hero-down,.hero:has(.door-wrap:focus-within) .hero-down{opacity:0;pointer-events:none}
 @media (hover:none){.door-menu{display:none}}
-.hero-down{position:relative;z-index:2;color:var(--fg-2);margin-bottom:2.3vh;display:block;padding:6px}
+.hero-down{position:relative;z-index:2;color:var(--fg-2);margin-bottom:1.4vh;display:block;padding:6px}
+/* after clicking a hero word the arrow hops a few times: there is more below */
+.hero-down.nudge{animation:nudge 1.1s ease-in-out 2}
+@keyframes nudge{0%,40%,100%{transform:none}20%{transform:translateY(12px)}30%{transform:translateY(4px)}}
 .hero-down svg{width:40px;height:20px;display:block}
 .hero-down:hover{color:var(--fg)}
 

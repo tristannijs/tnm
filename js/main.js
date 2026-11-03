@@ -739,6 +739,11 @@
       });
     }
     werk.classList.remove("in"); werk.getBoundingClientRect(); werk.classList.add("in");
+    if(!wasWork && scrollY < 40){          // a little hop of the arrow: there is more below
+      const dn = $(".hero-down"); dn.classList.remove("nudge");
+      setTimeout(() => { dn.getBoundingClientRect(); dn.classList.add("nudge"); }, 750);
+      dn.addEventListener("animationend", () => dn.classList.remove("nudge"), {once:true});
+    }
     routed = location.hash;
   }
   function toHome(){
