@@ -499,7 +499,7 @@ body.is-work .foot{padding-top:clamp(70px,12.4vw,178px)}
    has been scrolled), arrows at the ends, drag with the mouse. The fade masks the row itself, so nothing is
    laid over the pictures and nothing bands */
 .ov-rc{position:relative;margin:0 calc(-1 * var(--wpad))}
-.ov-list{--l:0;--r:1;display:flex;align-items:flex-start;gap:12px;overflow-x:auto;scrollbar-width:none;overscroll-behavior-x:contain;padding:60px 27px;margin:-60px 0;
+.ov-list{--l:0;--r:1;display:flex;align-items:flex-start;gap:12px;overflow-x:auto;scrollbar-width:none;overscroll-behavior-x:contain;padding:60px var(--wpad);margin:-60px 0;scroll-padding:0 var(--wpad);
   --fade:linear-gradient(90deg,rgba(0,0,0,calc(1 - var(--l))) 0,rgba(0,0,0,calc(1 - .8 * var(--l))) 4.2%,#000 14%,#000 86%,rgba(0,0,0,calc(1 - .8 * var(--r))) 95.8%,rgba(0,0,0,calc(1 - var(--r))) 100%);
   -webkit-mask-image:var(--fade);mask-image:var(--fade)}
 .ov-list::-webkit-scrollbar{display:none}
@@ -513,7 +513,6 @@ body.is-work .foot{padding-top:clamp(70px,12.4vw,178px)}
   .ov-bio{grid-template-columns:1fr}
   .ov-bio-fig{grid-column:1;grid-row:3;margin-top:48px}
   .ov-rc .arrow{display:none}
-  .ov-list{padding:60px var(--gut)}
   .ov-ph .ph{height:150px}
   .ov-mu .ov-list{gap:48px}
   .ov-mu .mu,.ov-pe .wk-card{width:min(66vw,320px)}
