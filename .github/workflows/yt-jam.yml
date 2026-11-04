@@ -1,0 +1,18 @@
+name: YouTube-info (eenmalig)
+on:
+  push:
+    branches: [yt-jam]
+    paths: [.github/workflows/yt-jam.yml]
+permissions:
+  contents: write
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          mkdir -p yt
+          curl -sSL "https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=BWKjtCglRUY&format=json" -o yt/jam.json -w '%{http_code}' > yt/jam.code || true
+          cat yt/jam.code yt/jam.json
+          git config user.name "github-actions[bot]"; git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm -q .github/workflows/yt-jam.yml; git add -A; git commit -m "jam info"; git push
