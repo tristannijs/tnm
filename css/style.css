@@ -463,7 +463,7 @@ body.is-work .foot{padding-top:clamp(70px,12.4vw,178px)}
 .ph-more:hover{border-color:#fff;background:rgba(255,255,255,.06)}
 
 /* music: cards with the genre as the title, the samples underneath, one shared player */
-.mu-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(36px,3.6vw,56px) clamp(40px,5.5vw,96px);margin-top:clamp(56px,8.4vw,121px)}
+.mu-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(64px,6.5vw,112px) clamp(56px,8vw,144px);margin-top:clamp(56px,8.4vw,121px)}
 .mu-grid[hidden]{display:none}
 .mu{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;column-gap:10px;row-gap:12px;align-content:start}
 .mu-play{grid-row:1;width:28px;height:28px;margin-left:-6px;border:0;background:none;color:#fff;cursor:pointer;display:grid;place-items:center;padding:0;opacity:.85;transition:opacity .2s}

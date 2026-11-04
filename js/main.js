@@ -634,7 +634,7 @@
   // music: each track's genre line ("Ambient HipHop/Trap") gives the genres it is filed under
   const MUSIC = window.MUSIC || [];
   const GENRES = [["filmscore", /film score/i], ["hiphop", /hip ?hop|\brap\b/i], ["trap", /trap/i], ["house", /house|edm/i], ["pop", /pop/i], ["ambient", /ambient/i]];
-  MUSIC.forEach(m => { m.genres = GENRES.filter(([, re]) => re.test(m.genre)).map(([g]) => g); });
+  MUSIC.forEach(m => { m.genres = GENRES.filter(([, re]) => re.test(m.genre)).map(([g]) => g).concat(m.extra || []); });
   const muHit = m => st.genre === "alle" || m.genres.includes(st.genre);
   const phHit = (ph, skip) => (skip === "jaar" || st.jaar === "alle" || ph.year === st.jaar) && (skip === "album" || st.album === "alle" || ph.albums.includes(st.album));
   function options(key){
