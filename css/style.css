@@ -74,7 +74,9 @@ img{display:block;max-width:100%}
 /* clip-path (unlike overflow) also clips the fixed background inside: it only ever shows within the hero,
    never below the footer when a phone bounces past the end of the page */
 .hero{clip-path:inset(0);position:relative;height:100svh;min-height:520px;max-height:1100px;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:flex-end}
-.hero-bg{position:fixed;top:0;left:0;right:0;height:100vh;height:100lvh;z-index:0}
+/* exactly as tall as the hero: at 100lvh it ran on under the phone's browser bars, so the picture was scaled up
+   to a taller frame than you see and its centre (a face) sat too low. The hero never outgrows 100svh, so this always covers it */
+.hero-bg{position:fixed;top:0;left:0;right:0;height:100vh;height:100svh;min-height:520px;max-height:1100px;z-index:0}
 .layer{position:absolute;inset:0;opacity:0;transition:opacity .6s ease;background:#1a1a1a}
 .layer.on{opacity:1}
 .layer img,.layer video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
@@ -357,7 +359,7 @@ dialog::backdrop{background:rgba(0,0,0,.88)}
 .foot-icons a[aria-label="YouTube"] svg{height:21px}
 .foot p{margin:clamp(14px,1.4vw,20px) 0 0;font-size:clamp(14px,1.2vw,17px);font-weight:400}
 @media (max-width:760px){
-  .hero-doors{gap:0 clamp(14px,4.6vw,24px)}
+  .hero-doors{gap:0 clamp(14px,4.6vw,24px);margin-bottom:max(56px,7svh)}
   .door{font-size:clamp(17px,5vw,20px)}
   .cf-item{width:80%}
   .cf{--sx:104;height:clamp(200px,60vw,440px)}
