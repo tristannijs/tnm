@@ -100,6 +100,7 @@
     "tl.zoom":         {nl:"Zoom",                 en:"Zoom",                 fr:"Zoom"},
     "type.event":      {nl:"Aftermovie",           en:"Aftermovie",           fr:"Aftermovie"},
     "type.trouw":      {nl:"Trouwfilm",            en:"Wedding film",         fr:"Film de mariage"},
+    "type.persoonlijk":{nl:"Persoonlijk",          en:"Personal",             fr:"Personnel"},
     "type.promo":      {nl:"Promotievideo",        en:"Promo video",          fr:"Vidéo promotionnelle"},
     "play":            {nl:"{t} afspelen",         en:"Play {t}",             fr:"Lire {t}"},
     "close":           {nl:"Sluiten",              en:"Close",                fr:"Fermer"},

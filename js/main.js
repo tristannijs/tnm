@@ -615,11 +615,11 @@
   const veldOf = p => VIDCAT[p.cat] ? "video" : RITCS[p.cat] ? "film" : "overig";
   const CTX = {video:["event", "trouw", "promo"], film:["fictie", "docu", "ritcs", "iao"], overig:["bio", "foto", "muziek", "persoonlijk"]};
   const CTXC = {event:"event", trouw:"trouw", promo:"promo", ritcs:"ritcs", iao:"iao", fictie:"fictie", docu:"docu"};
-  const yearsOf = p => { const a = +p.t0.slice(0, 4), b = +(p.t1 || p.t0).slice(0, 4), r = []; for(let y = b; y >= a; y--) r.push(String(y)); return r; };
+  const yearsOf = p => { if(!p.t0) return []; const a = +p.t0.slice(0, 4), b = +(p.t1 || p.t0).slice(0, 4), r = []; for(let y = b; y >= a; y--) r.push(String(y)); return r; };
   const LAYER = {alle:"home", video:"videografie", film:"ritcs", overig:"overig"};
   const TITLE = {alle:["wk.all.a", ""], video:["wk.video.a", "wk.video.b"], film:["wk.film.a", ""], overig:["wk.other.a", ""]};
   const SUB = {alle:"wk.all.s", video:"wk.video.s", film:"wk.film.s", overig:"wk.other.s"};
-  const ALL = P.slice().sort((a, b) => D(b.t1 || b.t0) - D(a.t1 || a.t0));
+  const ALL = P.slice().sort((a, b) => (D(b.t1 || b.t0) || 0) - (D(a.t1 || a.t0) || 0));
   const st = {veld:"alle", ctx:"alle", jaar:"alle", rol:"alle", album:"alle", genre:"alle"};
   // (a context belongs to one field, so the field list ignores the context: switching field resets it)
   const hit = (p, skip) =>
@@ -724,10 +724,14 @@
       b.addEventListener("click", () => { if(!pv || pv.card !== b) openPeek(b, wkCtx); });
       grid.appendChild(b);
     });
-    const photos = st.veld === "overig" && (st.ctx === "alle" || st.ctx === "foto") && PH.length > 0;
-    const music = st.veld === "overig" && (st.ctx === "alle" || st.ctx === "muziek") && MUSIC.length > 0;
-    $("#wkNone").hidden = list.length > 0 || photos || music;
-    drawMusic(music); drawPhotos(photos);
+    // Overig with every context, or Biografie: sections stacked, each a row that scrolls sideways
+    const ov = st.veld === "overig" && (st.ctx === "alle" || st.ctx === "bio") ? st.ctx : null;
+    if(ov) grid.innerHTML = "";
+    const photos = !ov && st.veld === "overig" && st.ctx === "foto" && PH.length > 0;
+    const music = !ov && st.veld === "overig" && st.ctx === "muziek" && MUSIC.length > 0;
+    $("#wkNone").hidden = !!ov || grid.children.length > 0 || photos || music;
+    drawOverview(ov); drawMusic(music); drawPhotos(photos);
+    if(!music && ov !== "alle" && !au.paused) au.pause();
     requestAnimationFrame(() => grid.querySelectorAll(".wk-card").forEach(drawShadow));
   }
   function drawTitle(){
@@ -828,19 +832,21 @@
   const mmssM = s => { s = Math.max(0, Math.round(s || 0)); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); };
   function drawMusic(show){
     muGrid.hidden = !show;
-    if(!show){ if(!au.paused) au.pause(); return; }
-    const list = MUSIC.filter(muHit);
-    muGrid.innerHTML = list.map(m => `<div class="mu${muCur === m.n ? " cur" + (au.paused ? "" : " on") : ""}" data-n="${m.n}">
+    if(!show){ muGrid.innerHTML = ""; return; }
+    muGrid.innerHTML = MUSIC.filter(muHit).map(muHTML).join("");
+  }
+  function muHTML(m){
+    return `<div class="mu${muCur === m.n ? " cur" + (au.paused ? "" : " on") : ""}" data-n="${m.n}">
       <button type="button" class="mu-play" aria-label="${esc(t("play", {t:m.genre}))}"><svg viewBox="0 0 20 20" aria-hidden="true"><path class="i-play" d="M6 3.8v12.4L16.2 10z"/><path class="i-pause" d="M5 3.5h3.6v13H5zM11.4 3.5H15v13h-3.6z"/></svg></button>
       <div class="mu-g">${esc(m.genre)}</div><div class="mu-t">${mmssM(m.dur)}</div>
       <div class="mu-bar"><i style="width:${muCur === m.n && au.duration ? au.currentTime / au.duration * 100 : 0}%"></i></div>
       ${m.credits.length ? `<ul class="mu-c">${m.credits.map(([l, w, h]) => `<li><span>${esc(t("mu." + l.replace(/ \d$/, "").toLowerCase()))}${/\d$/.test(l) ? " " + l.slice(-1) : ""}:</span> <a href="${esc(h)}" target="_blank" rel="noopener">${esc(w)}</a></li>`).join("")}</ul>` : ""}
-    </div>`).join("");
+    </div>`;
   }
-  const muCard = n => muGrid.querySelector(`.mu[data-n="${n}"]`);
-  const muState = () => { muGrid.querySelectorAll(".mu").forEach(c => { const me = +c.dataset.n === muCur; c.classList.toggle("cur", me); c.classList.toggle("on", me && !au.paused); }); };
-  muGrid.addEventListener("click", e => {
-    const c = e.target.closest(".mu"); if(!c || e.target.closest("a")) return;
+  const muCard = n => document.querySelector(`#muGrid .mu[data-n="${n}"], #ovAll .mu[data-n="${n}"]`);
+  const muState = () => { document.querySelectorAll("#muGrid .mu, #ovAll .mu").forEach(c => { const me = +c.dataset.n === muCur; c.classList.toggle("cur", me); c.classList.toggle("on", me && !au.paused); }); };
+  const muClick = e => {
+    const c = e.target.closest(".mu"); if(!c || e.target.closest("a") || dragged(c)) return;
     const n = +c.dataset.n, m = MUSIC.find(x => x.n === n);
     const bar = e.target.closest(".mu-bar");
     if(muCur !== n){ muCur = n; au.src = m.src; }
@@ -848,7 +854,8 @@
     else if(e.target.closest(".mu-play")) au.paused ? au.play().catch(() => {}) : au.pause();
     else return;
     muState();
-  });
+  };
+  muGrid.addEventListener("click", muClick);
   ["play", "pause", "ended"].forEach(ev => au.addEventListener(ev, muState));
   au.addEventListener("timeupdate", () => {
     const c = muCur && muCard(muCur); if(!c || !au.duration) return;
@@ -856,6 +863,63 @@
     c.querySelector(".mu-t").textContent = mmssM(au.currentTime) + " / " + mmssM(au.duration);
   });
   au.addEventListener("ended", () => { const c = muCard(muCur); if(c){ c.querySelector(".mu-bar i").style.width = "0%"; c.querySelector(".mu-t").textContent = mmssM(au.duration); } });
+  // ---- Overig, all contexts: Biografie, then Foto, Muziek and Persoonlijk as rows that scroll sideways
+  // (drag with the mouse, arrows at the ends, a trackpad or a finger scrolls them natively)
+  const ovEl = $("#ovAll");
+  let ovKey = "";
+  const dragged = el => { const l = el.closest(".ov-list"); return !!(l && l._moved); };
+  function ovRow(items, cls){
+    return `<div class="ov-rc ${cls}"><div class="ov-list">${items}</div>
+      <button class="arrow prev" type="button" data-dir="-1" aria-label="${esc(t("prev"))}" hidden><svg viewBox="0 0 20 40" aria-hidden="true"><path d="M19 1L1 20l18 19" fill="none" stroke="currentColor" stroke-width="1.2"/></svg></button>
+      <button class="arrow next" type="button" data-dir="1" aria-label="${esc(t("next"))}" hidden><svg viewBox="0 0 20 40" aria-hidden="true"><path d="M1 1l18 19L1 39" fill="none" stroke="currentColor" stroke-width="1.2"/></svg></button></div>`;
+  }
+  function ovRowInit(rc){
+    const list = rc.querySelector(".ov-list"), prev = rc.querySelector(".prev"), next = rc.querySelector(".next");
+    const state = () => { prev.hidden = list.scrollLeft <= 2; next.hidden = list.scrollLeft + list.clientWidth >= list.scrollWidth - 2; };
+    list.addEventListener("scroll", state, {passive:true}); new ResizeObserver(state).observe(list); state();
+    const step = () => Math.max(200, list.clientWidth * .8);
+    prev.addEventListener("click", () => list.scrollBy({left:-step(), behavior:"smooth"}));
+    next.addEventListener("click", () => list.scrollBy({left:step(), behavior:"smooth"}));
+    let on = false, x0 = 0, s0 = 0;
+    list.addEventListener("pointerdown", e => { if(e.pointerType !== "mouse" || e.button !== 0 || e.target.closest(".mu-bar,a")) return; on = true; x0 = e.clientX; s0 = list.scrollLeft; list._moved = false; });
+    addEventListener("pointermove", e => { if(!on) return; const dx = e.clientX - x0; if(!list._moved && Math.abs(dx) > 5) list._moved = true; if(list._moved) list.scrollLeft = s0 - dx; });
+    addEventListener("pointerup", () => { if(!on) return; on = false; setTimeout(() => list._moved = false, 0); });
+    list.addEventListener("dragstart", e => e.preventDefault());
+  }
+  function drawOverview(mode){
+    ovEl.hidden = !mode;
+    if(!mode){ if(ovEl.firstChild){ ovEl.innerHTML = ""; ovKey = ""; } return; }
+    const key = [mode, PH.length, L.lang, MUSIC.length].join("|");
+    if(key === ovKey) return;
+    ovKey = key;
+    const sec = (c, body) => `<section class="ov-s"><h3 class="ov-h">${esc(t("f." + c))}</h3>${body}</section>`;
+    const bio = $(".about-text").outerHTML;
+    // the portrait sits beside the heading and the text, the head rising above its frame
+    let h = `<section class="ov-s ov-bio"><h3 class="ov-h">${esc(t("f.bio"))}</h3>${bio}<div class="ov-bio-fig"><img src="assets/bio.webp" alt="Tristan Nijs" width="1200" height="900"></div></section>`;
+    if(mode === "alle"){
+      PHV = PH.slice();
+      h += sec("foto", PHV.length ? ovRow(PHV.map((ph, i) => `<button type="button" class="ph" data-i="${i}" style="--ar:${(1 / ph.ar).toFixed(4)}"><img src="${esc(flickrSize(ph.src, "c"))}" alt="${esc(ph.title || "")}" loading="lazy" width="800" height="${Math.round(800 * ph.ar)}"></button>`).join(""), "ov-ph") : `<p class="wk-none">${esc(t("f.none"))}</p>`);
+      h += sec("muziek", ovRow(MUSIC.map(muHTML).join(""), "ov-mu"));
+      const pers = ALL.filter(p => tagsOf(p).includes("persoonlijk"));
+      h += sec("persoonlijk", pers.length ? ovRow(pers.map(p => `<button type="button" class="wk-card" data-id="${esc(p.id)}"></button>`).join(""), "ov-pe") : `<p class="wk-none">${esc(t("f.none"))}</p>`);
+    }
+    ovEl.innerHTML = h;
+    ovEl.querySelectorAll(".ov-pe .wk-card").forEach(b => {
+      const p = BY[b.dataset.id]; b.style.setProperty("--c", COLOR(p.cat));
+      b.setAttribute("aria-label", cardTitle(p) + (p.gs ? ", " + p.gs : ""));
+      const c = document.createElement("div"); c.className = "cap";
+      c.innerHTML = `<b>${esc(cardTitle(p))}</b>${p.gs ? `<span>${esc(p.gs)}</span>` : ""}`;
+      b.append(face(p), c);
+      b.addEventListener("click", () => { if(!dragged(b) && (!pv || pv.card !== b)) openPeek(b, wkCtx); });
+    });
+    ovEl.querySelectorAll(".ov-rc").forEach(ovRowInit);
+    requestAnimationFrame(() => ovEl.querySelectorAll(".wk-card").forEach(drawShadow));
+    muState();
+  }
+  ovEl.addEventListener("click", e => {
+    const b = e.target.closest(".ph"); if(b){ if(!dragged(b)){ PHV = PH.slice(); lbShow(+b.dataset.i); lb.showModal(); } return; }
+    muClick(e);
+  });
   const lb = $("#lightbox"), lbImg = $("#lbImg"); let lbI = 0;
   const lbShow = i => { lbI = (i + PHV.length) % PHV.length; lbImg.src = flickrSize(PHV[lbI].src, "b"); lbImg.alt = PHV[lbI].title || ""; };
   phGrid.addEventListener("click", e => { const b = e.target.closest(".ph"); if(!b) return; lbShow(+b.dataset.i); lb.showModal(); });

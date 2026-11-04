@@ -484,3 +484,35 @@ body.is-work .foot{padding-top:clamp(70px,12.4vw,178px)}
 .mu-grid + .ph-grid{margin-top:clamp(72px,8vw,120px)}
 @media (max-width:900px){.mu-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:560px){.mu-grid{grid-template-columns:1fr;margin-top:44px}}
+
+/* Overig, all contexts: sections stacked; Foto, Muziek and Persoonlijk scroll sideways to the window edges */
+.ov{margin-top:clamp(56px,8.4vw,121px);--wpad:max(var(--gut),9.3vw)}
+.ov[hidden]{display:none}
+.ov-s + .ov-s{margin-top:clamp(88px,10vw,150px)}
+.ov-h{margin:0 0 clamp(32px,3.8vw,56px);font-size:19px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#fff}
+.ov-bio{display:grid;grid-template-columns:635fr 486fr;grid-template-rows:auto auto;column-gap:5.1vw;align-items:end}
+.ov-bio .ov-h{grid-column:1;grid-row:1;align-self:start}
+.ov-bio .about-text{grid-column:1;grid-row:2}
+.ov-bio-fig{grid-column:2;grid-row:1 / 3}
+.ov-bio-fig img{display:block;width:100%;height:auto}
+.ov-rc{position:relative;margin:0 calc(-1 * var(--wpad))}
+.ov-list{display:flex;align-items:flex-start;overflow-x:auto;scrollbar-width:none;overscroll-behavior-x:contain;padding:40px var(--wpad);margin:-40px 0;scroll-padding:0 var(--wpad)}
+.ov-list::-webkit-scrollbar{display:none}
+.ov-rc .arrow.prev{left:calc(var(--wpad) - 52px)}
+.ov-rc .arrow.next{right:calc(var(--wpad) - 52px)}
+.ov-ph .ov-list{gap:clamp(12px,1.3vw,19px)}
+.ov-ph .ph{flex:none;height:clamp(170px,19.5vw,290px);width:auto;aspect-ratio:var(--ar);margin:0}
+.ov-ph .ph img{width:100%;height:100%;object-fit:cover}
+.ov-mu .ov-list{gap:clamp(56px,8vw,144px)}
+.ov-mu .mu{flex:none;width:clamp(250px,26vw,400px)}
+.ov-pe .ov-list{gap:clamp(12px,1.3vw,19px)}
+.ov-pe .wk-card{flex:none;width:clamp(260px,29vw,440px)}
+@media (max-width:760px){
+  .ov{--wpad:22px;margin-top:44px}
+  .ov-bio{grid-template-columns:1fr}
+  .ov-bio-fig{grid-column:1;grid-row:3;margin-top:48px}
+  .ov-rc .arrow{display:none}
+  .ov-mu .ov-list{gap:48px}
+  .ov-mu .mu{width:min(78vw,320px)}
+  .ov-pe .wk-card{width:min(78vw,340px)}
+}
