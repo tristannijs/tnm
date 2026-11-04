@@ -463,15 +463,15 @@ body.is-work .foot{padding-top:clamp(70px,12.4vw,178px)}
 .ph-more:hover{border-color:#fff;background:rgba(255,255,255,.06)}
 
 /* music: cards with the genre as the title, the samples underneath, one shared player */
-.mu-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(28px,3vw,44px) clamp(12px,1.3vw,19px);margin-top:clamp(56px,8.4vw,121px)}
+.mu-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(36px,3.6vw,56px) clamp(40px,5.5vw,96px);margin-top:clamp(56px,8.4vw,121px)}
 .mu-grid[hidden]{display:none}
-.mu{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;column-gap:14px;row-gap:12px;align-content:start}
-.mu-play{grid-row:1;width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,.6);background:none;color:#fff;cursor:pointer;display:grid;place-items:center;padding:0;transition:background .2s,border-color .2s}
-.mu-play:hover{border-color:#fff;background:rgba(255,255,255,.06)}
-.mu-play svg{width:16px;height:16px;fill:currentColor}
+.mu{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;column-gap:10px;row-gap:12px;align-content:start}
+.mu-play{grid-row:1;width:28px;height:28px;margin-left:-6px;border:0;background:none;color:#fff;cursor:pointer;display:grid;place-items:center;padding:0;opacity:.85;transition:opacity .2s}
+.mu-play:hover{opacity:1}
+.mu-play svg{width:18px;height:18px;fill:currentColor}
 .mu-play .i-pause,.mu.on .mu-play .i-play{display:none}
 .mu.on .mu-play .i-pause{display:inline}
-.mu.on .mu-play{background:#fff;color:#111;border-color:#fff}
+.mu.on .mu-play{opacity:1}
 .mu-g{font-weight:700;text-transform:uppercase;font-size:clamp(14px,1.15vw,18px);line-height:1.15;letter-spacing:.01em}
 .mu-t{font-size:13px;color:rgba(255,255,255,.6);font-variant-numeric:tabular-nums;white-space:nowrap}
 .mu-bar{grid-column:1/-1;height:15px;cursor:pointer;position:relative}
