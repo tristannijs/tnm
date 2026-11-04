@@ -461,3 +461,26 @@ body.is-work .foot{padding-top:clamp(70px,12.4vw,178px)}
 .ph-more{display:block;margin:0;padding:12px 26px;border:1px solid rgba(255,255,255,.6);background:none;color:#fff;
   font:inherit;font-size:14px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:background-color .2s,border-color .2s}
 .ph-more:hover{border-color:#fff;background:rgba(255,255,255,.06)}
+
+/* music: cards with the genre as the title, the samples underneath, one shared player */
+.mu-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(28px,3vw,44px) clamp(12px,1.3vw,19px);margin-top:clamp(56px,8.4vw,121px)}
+.mu-grid[hidden]{display:none}
+.mu{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;column-gap:14px;row-gap:12px;align-content:start}
+.mu-play{grid-row:1;width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,.6);background:none;color:#fff;cursor:pointer;display:grid;place-items:center;padding:0;transition:background .2s,border-color .2s}
+.mu-play:hover{border-color:#fff;background:rgba(255,255,255,.06)}
+.mu-play svg{width:16px;height:16px;fill:currentColor}
+.mu-play .i-pause,.mu.on .mu-play .i-play{display:none}
+.mu.on .mu-play .i-pause{display:inline}
+.mu.on .mu-play{background:#fff;color:#111;border-color:#fff}
+.mu-g{font-weight:700;text-transform:uppercase;font-size:clamp(14px,1.15vw,18px);line-height:1.15;letter-spacing:.01em}
+.mu-t{font-size:13px;color:rgba(255,255,255,.6);font-variant-numeric:tabular-nums;white-space:nowrap}
+.mu-bar{grid-column:1/-1;height:15px;cursor:pointer;position:relative}
+.mu-bar::before,.mu-bar i{content:"";position:absolute;left:0;top:7px;height:1px;background:rgba(255,255,255,.22);width:100%}
+.mu-bar i{background:#fff;height:1px;width:0}
+.mu.cur .mu-bar::before{background:rgba(255,255,255,.35)}
+.mu-c{grid-column:1/-1;list-style:none;margin:-4px 0 0;padding:0;font-size:13px;line-height:1.5;color:rgba(255,255,255,.6)}
+.mu-c a{color:rgba(255,255,255,.85);text-decoration:underline;text-decoration-color:rgba(255,255,255,.3);text-underline-offset:2px}
+.mu-c a:hover{color:#fff;text-decoration-color:#fff}
+.mu-grid + .ph-grid{margin-top:clamp(72px,8vw,120px)}
+@media (max-width:900px){.mu-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.mu-grid{grid-template-columns:1fr;margin-top:44px}}

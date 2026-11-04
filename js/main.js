@@ -620,7 +620,7 @@
   const TITLE = {alle:["wk.all.a", ""], video:["wk.video.a", "wk.video.b"], film:["wk.film.a", ""], overig:["wk.other.a", ""]};
   const SUB = {alle:"wk.all.s", video:"wk.video.s", film:"wk.film.s", overig:"wk.other.s"};
   const ALL = P.slice().sort((a, b) => D(b.t1 || b.t0) - D(a.t1 || a.t0));
-  const st = {veld:"alle", ctx:"alle", jaar:"alle", rol:"alle", album:"alle"};
+  const st = {veld:"alle", ctx:"alle", jaar:"alle", rol:"alle", album:"alle", genre:"alle"};
   // (a context belongs to one field, so the field list ignores the context: switching field resets it)
   const hit = (p, skip) =>
     (skip === "veld" || st.veld === "alle" || veldOf(p) === st.veld) &&
@@ -630,9 +630,15 @@
   // the choices of one filter, with how many projects each would show
   // under Overig: photos get Jaar and Album; biography, music and personal get no filters but the field
   const photoMode = () => st.veld === "overig" && st.ctx === "foto";
-  const shownKeys = () => st.veld !== "overig" ? ["veld", "ctx", "jaar", "rol"] : st.ctx === "foto" ? ["veld", "ctx", "jaar", "album"] : ["veld", "ctx"];
+  const shownKeys = () => st.veld !== "overig" ? ["veld", "ctx", "jaar", "rol"] : st.ctx === "foto" ? ["veld", "ctx", "jaar", "album"] : st.ctx === "muziek" ? ["veld", "ctx", "genre"] : ["veld", "ctx"];
+  // music: each track's genre line ("Ambient HipHop/Trap") gives the genres it is filed under
+  const MUSIC = window.MUSIC || [];
+  const GENRES = [["filmscore", /film score/i], ["hiphop", /hip ?hop|\brap\b/i], ["trap", /trap/i], ["house", /house|edm/i], ["pop", /pop/i], ["ambient", /ambient/i]];
+  MUSIC.forEach(m => { m.genres = GENRES.filter(([, re]) => re.test(m.genre)).map(([g]) => g); });
+  const muHit = m => st.genre === "alle" || m.genres.includes(st.genre);
   const phHit = (ph, skip) => (skip === "jaar" || st.jaar === "alle" || ph.year === st.jaar) && (skip === "album" || st.album === "alle" || ph.albums.includes(st.album));
   function options(key){
+    if(key === "genre") return [["alle", MUSIC.length], ...GENRES.map(([g]) => [g, MUSIC.filter(m => m.genres.includes(g)).length]).filter(([v, c]) => c)];
     if(photoMode() && (key === "jaar" || key === "album")){
       const pool = PH.filter(ph => phHit(ph, key));
       const o = key === "jaar"
@@ -642,15 +648,15 @@
     }
     const pool = ALL.filter(p => hit(p, key)), n = f => pool.filter(f).length;
     let o;
-    if(key === "veld") o = ["video", "film", "overig"].map(v => [v, n(p => veldOf(p) === v) + (v === "overig" && st.jaar === "alle" && st.rol === "alle" ? PH.length + 1 : 0)]);
+    if(key === "veld") o = ["video", "film", "overig"].map(v => [v, n(p => veldOf(p) === v) + (v === "overig" && st.jaar === "alle" && st.rol === "alle" ? PH.length + MUSIC.length : 0)]);
     else if(key === "ctx") o = (st.veld === "alle" ? [...CTX.video, ...CTX.film] : CTX[st.veld]).map(c => [c, n(p => tagsOf(p).includes(c)) + extra(c)]);
     else if(key === "jaar") o = [...new Set(ALL.flatMap(yearsOf))].sort((a, b) => b - a).map(y => [y, n(p => yearsOf(p).includes(y))]);
     else { const r = [...new Set(pool.flatMap(p => p.roles || []))]; const ord = ["Camera", "Montage", "Regie", "Script", "Concept", "Acteur"]; r.sort((a, b) => (ord.indexOf(a) + 99) % 99 - (ord.indexOf(b) + 99) % 99); o = r.map(x => [x, n(p => (p.roles || []).includes(x))]); }
     // under Overig every context stays listed, also the ones still empty (music, personal)
     const keep = key === "ctx" && st.veld === "overig";
-    return [["alle", pool.length + (key === "ctx" && st.veld === "overig" ? extra("bio") + extra("foto") : 0)], ...o.filter(([v, c]) => c || keep || v === st[key])];
+    return [["alle", pool.length + (key === "ctx" && st.veld === "overig" ? extra("foto") + extra("muziek") : 0)], ...o.filter(([v, c]) => c || keep || v === st[key])];
   }
-  const label = (key, v) => v === "alle" ? t("f.all") : key === "veld" ? t({video:"nav.video", film:"nav.ritcs", overig:"nav.other"}[v]) : key === "ctx" ? t("f." + v) : key === "rol" ? L.role(v) : key === "album" ? (ALBUMS.find(a => a.id === v) || {title:v}).title : v;
+  const label = (key, v) => v === "alle" ? t("f.all") : key === "veld" ? t({video:"nav.video", film:"nav.ritcs", overig:"nav.other"}[v]) : key === "ctx" ? t("f." + v) : key === "rol" ? L.role(v) : key === "album" ? (ALBUMS.find(a => a.id === v) || {title:v}).title : key === "genre" ? t("g." + v) : v;
   const sq = (key, v) => key === "ctx" && CTXC[v] ? `<i class="sq" style="background:var(--c-${CTXC[v]})"></i>` : "";
   const filtersEl = $("#filters"), grid = $("#wkGrid");
   // the contexts under each hero word (shown on hover)
@@ -687,7 +693,7 @@
     if(key === "ctx" && v !== "alle") st.veld = Object.keys(CTX).find(f => CTX[f].includes(v));     // a tag belongs to one field
     if(key === "veld" && st.ctx !== "alle" && v !== "alle" && !CTX[v].includes(st.ctx)) st.ctx = "alle";
     // filters that aren't shown in this view don't apply
-    const keys = shownKeys(); for(const k of ["jaar", "rol", "album"]) if(!keys.includes(k)) st[k] = "alle";
+    const keys = shownKeys(); for(const k of ["jaar", "rol", "album", "genre"]) if(!keys.includes(k)) st[k] = "alle";
     // a choice the others no longer allow falls back to "all"
     for(const k of ["ctx", "jaar", "rol", "album"].filter(k => keys.includes(k))) if(st[k] !== "alle" && !options(k).some(([x, c]) => x === st[k] && (c || (k === "ctx" && st.veld === "overig")))) st[k] = "alle";
     writeHash(); renderWork();
@@ -698,6 +704,7 @@
     if(st.jaar !== "alle") q.set("jaar", st.jaar);
     if(st.rol !== "alle") q.set("rol", st.rol);
     if(st.album !== "alle") q.set("album", st.album);
+    if(st.genre !== "alle") q.set("genre", st.genre);
     const h = "#" + (st.veld === "alle" ? "werk" : st.veld) + (q.toString() ? "?" + q : "");
     if(location.hash !== h) history.replaceState(null, "", h);   // replaceState fires no hashchange
     routed = location.hash;
@@ -718,8 +725,9 @@
       grid.appendChild(b);
     });
     const photos = st.veld === "overig" && (st.ctx === "alle" || st.ctx === "foto") && PH.length > 0;
-    $("#wkNone").hidden = list.length > 0 || photos;
-    drawPhotos(photos);
+    const music = st.veld === "overig" && (st.ctx === "alle" || st.ctx === "muziek") && MUSIC.length > 0;
+    $("#wkNone").hidden = list.length > 0 || photos || music;
+    drawMusic(music); drawPhotos(photos);
     requestAnimationFrame(() => grid.querySelectorAll(".wk-card").forEach(drawShadow));
   }
   function drawTitle(){
@@ -748,7 +756,7 @@
   let PH = [];
   const byId = new Map();
   const OVERIG_BG = "";      // Flickr id of the photo behind OVERIG (left empty: the newest one)
-  const extra = c => st.jaar !== "alle" || st.rol !== "alle" ? 0 : c === "foto" ? PH.length : 0;
+  const extra = c => st.jaar !== "alle" || st.rol !== "alle" ? 0 : c === "foto" ? PH.length : c === "muziek" ? MUSIC.length : 0;
   const flickrSize = (u, s) => u.replace(/_[a-z]\.(jpg|png)$/, "_" + s + ".$1");
   let phT = 0;
   function takeFeed(d, album){
@@ -813,6 +821,41 @@
     if(phGrid.getBoundingClientRect().top < 0) phGrid.scrollIntoView({behavior:"smooth"});
   });
   addEventListener("resize", () => { if(!phGrid.hidden && phCols() !== phN) drawPhotos(true); });
+  // ---- music: the tracks from the old Muziek page, genre as the title and the samples underneath.
+  // One shared player; a card plays and pauses, its bar shows the progress and can be clicked to jump.
+  const muGrid = $("#muGrid"), au = new Audio(); au.preload = "none";
+  let muCur = null;
+  const mmssM = s => { s = Math.max(0, Math.round(s || 0)); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); };
+  function drawMusic(show){
+    muGrid.hidden = !show;
+    if(!show){ if(!au.paused) au.pause(); return; }
+    const list = MUSIC.filter(muHit);
+    muGrid.innerHTML = list.map(m => `<div class="mu${muCur === m.n ? " cur" + (au.paused ? "" : " on") : ""}" data-n="${m.n}">
+      <button type="button" class="mu-play" aria-label="${esc(t("play", {t:m.genre}))}"><svg viewBox="0 0 20 20" aria-hidden="true"><path class="i-play" d="M6 3.8v12.4L16.2 10z"/><path class="i-pause" d="M5 3.5h3.6v13H5zM11.4 3.5H15v13h-3.6z"/></svg></button>
+      <div class="mu-g">${esc(m.genre)}</div><div class="mu-t">${mmssM(m.dur)}</div>
+      <div class="mu-bar"><i style="width:${muCur === m.n && au.duration ? au.currentTime / au.duration * 100 : 0}%"></i></div>
+      ${m.credits.length ? `<ul class="mu-c">${m.credits.map(([l, w, h]) => `<li><span>${esc(t("mu." + l.replace(/ \d$/, "").toLowerCase()))}${/\d$/.test(l) ? " " + l.slice(-1) : ""}:</span> <a href="${esc(h)}" target="_blank" rel="noopener">${esc(w)}</a></li>`).join("")}</ul>` : ""}
+    </div>`).join("");
+  }
+  const muCard = n => muGrid.querySelector(`.mu[data-n="${n}"]`);
+  const muState = () => { muGrid.querySelectorAll(".mu").forEach(c => { const me = +c.dataset.n === muCur; c.classList.toggle("cur", me); c.classList.toggle("on", me && !au.paused); }); };
+  muGrid.addEventListener("click", e => {
+    const c = e.target.closest(".mu"); if(!c || e.target.closest("a")) return;
+    const n = +c.dataset.n, m = MUSIC.find(x => x.n === n);
+    const bar = e.target.closest(".mu-bar");
+    if(muCur !== n){ muCur = n; au.src = m.src; }
+    if(bar){ const r = bar.getBoundingClientRect(), f = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width)); const go = () => { au.currentTime = f * (au.duration || m.dur); }; au.readyState ? go() : au.addEventListener("loadedmetadata", go, {once:true}); au.play().catch(() => {}); }
+    else if(e.target.closest(".mu-play")) au.paused ? au.play().catch(() => {}) : au.pause();
+    else return;
+    muState();
+  });
+  ["play", "pause", "ended"].forEach(ev => au.addEventListener(ev, muState));
+  au.addEventListener("timeupdate", () => {
+    const c = muCur && muCard(muCur); if(!c || !au.duration) return;
+    c.querySelector(".mu-bar i").style.width = (au.currentTime / au.duration * 100) + "%";
+    c.querySelector(".mu-t").textContent = mmssM(au.currentTime) + " / " + mmssM(au.duration);
+  });
+  au.addEventListener("ended", () => { const c = muCard(muCur); if(c){ c.querySelector(".mu-bar i").style.width = "0%"; c.querySelector(".mu-t").textContent = mmssM(au.duration); } });
   const lb = $("#lightbox"), lbImg = $("#lbImg"); let lbI = 0;
   const lbShow = i => { lbI = (i + PHV.length) % PHV.length; lbImg.src = flickrSize(PHV[lbI].src, "b"); lbImg.alt = PHV[lbI].title || ""; };
   phGrid.addEventListener("click", e => { const b = e.target.closest(".ph"); if(!b) return; lbShow(+b.dataset.i); lb.showModal(); });
@@ -842,13 +885,13 @@
     const v = {video:"video", videografie:"video", film:"film", ritcs:"film", overig:"overig", werk:"alle"}[path.toLowerCase()];
     if(!v) return null;
     const q = new URLSearchParams(qs || "");
-    return {veld:v, ctx:q.get("context") || "alle", jaar:q.get("jaar") || "alle", rol:q.get("rol") || "alle", album:q.get("album") || "alle"};
+    return {veld:v, ctx:q.get("context") || "alle", jaar:q.get("jaar") || "alle", rol:q.get("rol") || "alle", album:q.get("album") || "alle", genre:q.get("genre") || "alle"};
   }
   function toWork(next, door){
     closePeek(true); closeFilters();
     const wasWork = document.body.classList.contains("is-work");
     Object.assign(st, next);
-    { const keys = shownKeys(); for(const k of ["jaar", "rol", "album"]) if(!keys.includes(k)) st[k] = "alle"; }
+    { const keys = shownKeys(); for(const k of ["jaar", "rol", "album", "genre"]) if(!keys.includes(k)) st[k] = "alle"; }
     for(const k of ["ctx", "jaar", "rol"]) if(st[k] !== "alle" && !options(k).some(([x, c]) => x === st[k] && (c || (k === "ctx" && st.veld === "overig")))) st[k] = "alle";
     // the hero word the visitor clicked, if it is in view: the title grows out of it
     const word = !wasWork && door && door.querySelector("span"), r0 = word && word.getBoundingClientRect();
