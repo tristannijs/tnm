@@ -1,0 +1,27 @@
+name: Flickr-foto's bekijken (eenmalig)
+on:
+  push:
+    branches: [flickr-look]
+    paths: [.github/workflows/flickr-look.yml]
+permissions:
+  contents: write
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          mkdir -p fl/img
+          F=205114923@N07
+          for u in "photos_public.gne?id=$F" photoset.gne?set=72177720336650772\&nsid=$F photoset.gne?set=72177720336650162\&nsid=$F photoset.gne?set=72177720336536931\&nsid=$F photoset.gne?set=72177720336650802\&nsid=$F photoset.gne?set=72177720336833119\&nsid=$F; do
+            curl -sSL "https://www.flickr.com/services/feeds/$u&lang=en-us&format=json&nojsoncallback=1" >> fl/feeds.txt; echo >> fl/feeds.txt
+          done
+          # also the profile page, which lists more photos than the feed
+          curl -sSL -A "Mozilla/5.0" "https://www.flickr.com/photos/$F/" -o fl/profile.html || true
+          grep -oE 'https://live\.staticflickr\.com/[0-9]+/[0-9]+_[0-9a-f]+_m\.jpg' fl/feeds.txt | sort -u > fl/urls.txt
+          grep -oE '(https:)?//live\.staticflickr\.com/[0-9]+/[0-9]+_[0-9a-f]+(_[a-z])?\.jpg' fl/profile.html | sed 's#^//#https://#' | sed -E 's/(_[a-z])?\.jpg$/_m.jpg/' | sort -u >> fl/urls.txt || true
+          sort -u fl/urls.txt -o fl/urls.txt; wc -l fl/urls.txt
+          while read -r u; do f=$(basename "$u"); curl -sSL "$u" -o "fl/img/$f"; done < fl/urls.txt
+          ls fl/img | wc -l
+          git config user.name "github-actions[bot]"; git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm -q .github/workflows/flickr-look.yml; git add -A; git commit -m "flickr look"; git push
