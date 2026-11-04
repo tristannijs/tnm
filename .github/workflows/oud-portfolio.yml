@@ -1,0 +1,36 @@
+name: Oude muziek ophalen (eenmalig)
+on:
+  push:
+    branches: [oud-portfolio]
+    paths: [.github/workflows/oud-portfolio.yml]
+permissions:
+  contents: write
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audio ophalen
+        run: |
+          mkdir -p oud/muziek; : > oud/muziek/log.txt
+          while read -r n id q; do
+            B="https://cdn-prod-ccv.adobe.com/$id/rend"
+            curl -fsSL "$B/master.m3u8?$q" -o "oud/muziek/$n.m3u8" || echo "$n m3u8 fail" >> oud/muziek/log.txt
+            # the best audio the stream offers, kept as it is (no re-encoding)
+            if ffmpeg -v error -y -i "$B/master.m3u8?$q" -vn -c:a copy "oud/muziek/$n-$id.m4a"; then
+              echo "$n $id ok hls $(stat -c%s oud/muziek/$n-$id.m4a)" >> oud/muziek/log.txt
+            else
+              curl -fsSL "$B/${id}_540.mp4?$q" -o /tmp/v.mp4 && ffmpeg -v error -y -i /tmp/v.mp4 -vn -c:a copy "oud/muziek/$n-$id.m4a" \
+                && echo "$n $id ok mp4 $(stat -c%s oud/muziek/$n-$id.m4a)" >> oud/muziek/log.txt || echo "$n $id FAIL" >> oud/muziek/log.txt
+            fi
+            ffprobe -v error -show_entries stream=codec_name,bit_rate,sample_rate,channels:format=duration -of compact "oud/muziek/$n-$id.m4a" >> oud/muziek/log.txt 2>&1 || true
+          done < oud/muziek-urls.txt
+          cat oud/muziek/log.txt
+      - name: Resultaat bewaren en deze workflow verwijderen
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm -q .github/workflows/oud-portfolio.yml
+          git add -A
+          git commit -m "Oude muziek: audio opgehaald"
+          git push
