@@ -1,0 +1,6 @@
+/about
+/music
+/muziek
+/muziekproductie
+/over
+/over-mij
