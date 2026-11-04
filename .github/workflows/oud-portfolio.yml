@@ -1,0 +1,43 @@
+name: Oud portfolio ophalen (eenmalig)
+on:
+  push:
+    branches: [oud-portfolio]
+    paths: [.github/workflows/oud-portfolio.yml]
+permissions:
+  contents: write
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Pagina's en audio ophalen
+        run: |
+          set -u
+          mkdir -p oud/pages oud/audio
+          BASE=https://tristannijsmedia.myportfolio.com
+          UA="Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126 Safari/537.36"
+          curl -fsSL -A "$UA" "$BASE/" -o oud/pages/index.html || echo "homepage failed"
+          # every page on the same site, plus a few likely names
+          { grep -oE 'href="(/[a-zA-Z0-9_./-]*|https://tristannijsmedia\.myportfolio\.com/[a-zA-Z0-9_./-]*)"' oud/pages/index.html 2>/dev/null | sed -E 's/^href="//; s/"$//; s#^https://tristannijsmedia\.myportfolio\.com##'
+            printf '%s\n' /muziek /music /muziekproductie /over /over-mij /about; } | sort -u > oud/links.txt
+          while read -r p; do
+            [ -z "$p" ] || [ "$p" = "/" ] && continue
+            n=$(echo "$p" | sed 's#^/##; s#/#_#g'); [ -z "$n" ] && continue
+            curl -fsSL -A "$UA" "$BASE$p" -o "oud/pages/$n.html" && echo "ok $p" || { echo "miss $p"; rm -f "oud/pages/$n.html"; }
+          done < oud/links.txt
+          # all media addresses that appear on any page
+          cat oud/pages/*.html | grep -oE 'https?:[^"'"'"' <>()]+' | sed 's/&amp;/\&/g; s/\\u0026/\&/g; s#\\/#/#g' \
+            | grep -iE '\.(mp3|m4a|wav|aac|ogg)|/audio/|ccv\.adobe|soundcloud|embed' | sort -u > oud/media-urls.txt
+          cat oud/media-urls.txt
+          i=0
+          grep -iE '\.(mp3|m4a|wav|aac|ogg)(\?|$)' oud/media-urls.txt | while read -r u; do
+            i=$((i+1)); f=$(basename "${u%%\?*}"); curl -fsSL -A "$UA" "$u" -o "oud/audio/$f" && ls -la "oud/audio/$f" || echo "fail $u"
+          done
+      - name: Resultaat bewaren en deze workflow verwijderen
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm -q .github/workflows/oud-portfolio.yml
+          git add -A
+          git commit -m "Oud portfolio: pagina's en audio opgehaald"
+          git push
