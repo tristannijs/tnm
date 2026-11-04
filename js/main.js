@@ -875,9 +875,13 @@
   }
   function ovRowInit(rc){
     const list = rc.querySelector(".ov-list"), prev = rc.querySelector(".prev"), next = rc.querySelector(".next");
-    const state = () => { prev.hidden = list.scrollLeft <= 2; next.hidden = list.scrollLeft + list.clientWidth >= list.scrollWidth - 2; };
+    const state = () => {
+      const a = list.scrollLeft <= 2, b = list.scrollLeft + list.clientWidth >= list.scrollWidth - 2;
+      prev.hidden = a; next.hidden = b; rc.classList.toggle("scrolled", !a); rc.classList.toggle("end", b);
+    };
     list.addEventListener("scroll", state, {passive:true}); new ResizeObserver(state).observe(list); state();
-    const step = () => Math.max(200, list.clientWidth * .8);
+    // a page at a time, keeping the last card in view (as Recent did)
+    const step = () => { const c = list.querySelector(".ph,.mu,.wk-card"); const w = c ? c.offsetWidth + parseFloat(getComputedStyle(list).columnGap || 12) : 300; return Math.max(w, Math.floor(list.clientWidth / w) * w - w); };
     prev.addEventListener("click", () => list.scrollBy({left:-step(), behavior:"smooth"}));
     next.addEventListener("click", () => list.scrollBy({left:step(), behavior:"smooth"}));
     let on = false, x0 = 0, s0 = 0;
