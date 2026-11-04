@@ -759,7 +759,7 @@
   ];
   let PH = [];
   const byId = new Map();
-  const OVERIG_BG = "";      // Flickr id of the photo behind OVERIG (left empty: the newest one)
+  const OVERIG_BG = "55628757102";      // Flickr id of the photo behind OVERIG (the eclipse; also in assets/hero/overig.jpg)
   const extra = c => st.jaar !== "alle" || st.rol !== "alle" ? 0 : c === "foto" ? PH.length : c === "muziek" ? MUSIC.length : 0;
   const flickrSize = (u, s) => u.replace(/_[a-z]\.(jpg|png)$/, "_" + s + ".$1");
   let phT = 0;

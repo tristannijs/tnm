@@ -14,8 +14,10 @@
 //   tags:["iao","ritcs","fictie"]  film tags (Context filter, labels in the preview); videography uses its cat
 window.PROJECTS = [
   // ----- videografie -----
-  {id:"film-emulation", cat:"persoonlijk", tags:["persoonlijk"], gt:"Film Emulation", gs:"Using Dehancer", label:"Film Emulation", sub:"Video-essay", date:"", t0:"", yt:"lYYR9HbSDsE", cover:"assets/covers/film-emulation.jpg"},
+  // Persoonlijk, in this order: High & Dry, Film Emulation, SFR Part
   {id:"high-dry", ar:4/3, cat:"persoonlijk", tags:["persoonlijk"], gt:"High & Dry", gs:"Cover", label:"High & Dry", sub:"Cover – gitaar, drums, viool", date:"", t0:"", yt:"BWKjtCglRUY", cover:"assets/covers/high-dry.jpg"},
+  {id:"film-emulation", cat:"persoonlijk", tags:["persoonlijk"], gt:"Film Emulation", gs:"Using Dehancer", label:"Film Emulation", sub:"Video-essay", date:"", t0:"", yt:"lYYR9HbSDsE", cover:"assets/covers/film-emulation.jpg"},
+  {id:"sfr-part", cat:"persoonlijk", tags:["persoonlijk"], gt:"SFR Part", gs:"2020", label:"SFR Part", sub:"Skatevideo", date:"2020", t0:"", yt:"IiNL64Zoiko", cover:"assets/covers/sfr-part.jpg"},
   {id:"noonzy-ab", roles:["Camera"], gt:"NOONZY @ AB CLUB", gs:"‘Plan Is Bad’ Release Concert", cat:"event", label:"NOONZY @ AB CLUB", sub:"‘Plan Is Bad’ Release Concert", date:"29 oktober 2026", t0:"2026-10-29", ar:9/16, vids:[{src:"assets/noonzy/noonzy-ab.mp4", poster:"assets/covers/noonzy-ab.jpg"}], cover:"assets/covers/noonzy-ab.jpg"},
   {id:"fall-drop", ar:4/3, roles:["Camera","Montage"], gt:"Docho Vintage", gs:"Fall Drop", cat:"promo", label:"Fall Drop\nAnnouncement", sub:"Docho Vintage", date:"3 november 2026", t0:"2026-11-03", yt:"coHUKUDSYqA", cover:"assets/covers/fall-drop.jpg"},
   {id:"dokfeesten-2026", roles:["Camera","Montage"], gt:"Dokfeesten", cat:"event", label:"Dokfeesten 2026", sub:"Aftermovie", date:"29 augustus 2026", t0:"2026-08-29", yt:"JdYwGTit_-c", cover:"assets/covers/dokfeesten.jpg", frames:["assets/frames/JdYwGTit_-c-1.jpg","assets/frames/JdYwGTit_-c-2.jpg","assets/frames/JdYwGTit_-c-3.jpg","assets/frames/JdYwGTit_-c-4.jpg","assets/frames/JdYwGTit_-c-5.jpg","assets/frames/JdYwGTit_-c-6.jpg","assets/frames/JdYwGTit_-c-7.jpg","assets/frames/JdYwGTit_-c-8.jpg"]},
