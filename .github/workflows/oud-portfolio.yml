@@ -1,0 +1,36 @@
+name: Oud portfolio ophalen (eenmalig, poging 2)
+on:
+  push:
+    branches: [oud-portfolio]
+    paths: [.github/workflows/oud-portfolio.yml]
+permissions:
+  contents: write
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Adressen proberen
+        run: |
+          mkdir -p oud/pages
+          UA="Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126 Safari/537.36"
+          : > oud/status.txt
+          for h in tristannijsmedia tristannijs tristan-nijs tristannijs-media tnm tristannijsfilm; do
+            for p in / /muziek /music /over /about; do
+              u="https://$h.myportfolio.com$p"
+              f="oud/pages/$h$(echo $p | tr / _).html"
+              code=$(curl -sSL -A "$UA" -o "$f" -w '%{http_code} %{url_effective}' "$u" 2>&1)
+              echo "$u -> $code ($(wc -c < "$f" 2>/dev/null) bytes)" | tee -a oud/status.txt
+              case "$code" in 200*) ;; *) rm -f "$f";; esac
+            done
+          done
+          cat oud/pages/*.html 2>/dev/null | grep -oE 'https?:[^"'"'"' <>()]+' | sed 's/&amp;/\&/g; s#\\/#/#g' \
+            | grep -iE '\.(mp3|m4a|wav|aac|ogg)|/audio|ccv\.adobe|soundcloud|embed|myportfolio\.com/[a-z]' | sort -u > oud/media-urls.txt || true
+      - name: Resultaat bewaren en deze workflow verwijderen
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm -q .github/workflows/oud-portfolio.yml
+          git add -A
+          git commit -m "Oud portfolio: poging 2"
+          git push
