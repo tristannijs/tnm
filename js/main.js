@@ -877,7 +877,11 @@
     const list = rc.querySelector(".ov-list"), prev = rc.querySelector(".prev"), next = rc.querySelector(".next");
     const state = () => {
       const a = list.scrollLeft <= 2, b = list.scrollLeft + list.clientWidth >= list.scrollWidth - 2;
-      prev.hidden = a; next.hidden = b; rc.classList.toggle("scrolled", !a); rc.classList.toggle("end", b);
+      prev.hidden = a; next.hidden = b;
+      // each side fades in over the first 200px scrolled towards it, so the fade grows instead of switching on
+      const end = list.scrollWidth - list.clientWidth - list.scrollLeft;
+      list.style.setProperty("--l", Math.min(1, list.scrollLeft / 200).toFixed(3));
+      list.style.setProperty("--r", Math.min(1, Math.max(0, end) / 200).toFixed(3));
     };
     list.addEventListener("scroll", state, {passive:true}); new ResizeObserver(state).observe(list); state();
     // a page at a time, keeping the last card in view (as Recent did)
