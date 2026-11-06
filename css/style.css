@@ -557,21 +557,17 @@ body.is-proj .wk-t{text-transform:none}
 }
 .hero-work.in{animation:werkIn .6s ease both}
 
-/* Biografie on its own: heading, then the first paragraphs beside the portrait (both starting together),
-   the rest across the full width */
-.ov-bio-long{grid-template-columns:1008fr 680fr;column-gap:3vw;grid-template-rows:auto auto auto;align-items:start}
-.ov-bio-long .ov-h{margin-bottom:clamp(56px,6.4vw,100px)}
-/* the portrait ends with the last line of the text beside it and rises from there (into the space under the
-   heading if it has to), so the text, not the photo, sets where the rest continues */
-.ov-bio-long .ov-bio-fig{grid-column:2;grid-row:2;align-self:stretch;position:relative;height:0;min-height:100%}
-.ov-bio-long .ov-bio-fig img{position:absolute;right:0;bottom:.25em;width:auto;height:auto;max-width:100%;max-height:calc(100% + 1.2em)}
-.ov-bio-long .ov-bio-rest{grid-column:1 / -1;grid-row:3;margin-top:1.2em}
+/* Biografie on its own: the whole text on the left, three portraits stacked on the right, each head rising
+   into the gap above it */
+.ov-bio-long{grid-template-columns:56fr 36fr;column-gap:7.7%;grid-template-rows:auto 1fr;align-items:start}
+.ov-bio-long .ov-h{grid-column:1;grid-row:1;margin-bottom:clamp(64px,7.4vw,120px)}
+.ov-bio-long .about-text{grid-column:1;grid-row:2;hyphens:auto;-webkit-hyphens:auto}
+.ov-bio-stack{grid-column:2;grid-row:1 / 3;margin-top:clamp(14px,1.6vw,26px)}
+.ov-bio-stack img{display:block;width:100%;height:auto}
+/* each picture's transparent top (its head) overlaps the one above, leaving a 5% gap between the frames */
+.ov-bio-stack img:nth-child(2){margin-top:-8.1%}
+.ov-bio-stack img:nth-child(3){margin-top:-16.1%}
 @media (max-width:760px){
   .ov-bio-long{grid-template-columns:1fr}
-  .ov-bio-long .ov-bio-fig{grid-column:1;grid-row:3;margin-top:40px;height:auto;min-height:0}
-  .ov-bio-long .ov-bio-fig img{position:static}
-  .ov-bio-long .ov-bio-rest{grid-row:4;margin-top:40px}
+  .ov-bio-stack{grid-column:1;grid-row:3;margin-top:48px}
 }
-.ov-bio-long .about-text{hyphens:auto;-webkit-hyphens:auto}
-/* the long biography scales with the window, so text and portrait keep the same proportions at any width */
-.ov-bio-long .about-text{font-size:max(17px,1.49vw)}

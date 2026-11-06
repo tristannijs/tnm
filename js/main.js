@@ -924,7 +924,8 @@
       "Sindsdien combineer ik de filmopleiding, mijn muzikale achtergrond met videografie: in film verdiep ik me in de taal, kunst en intentie van het beeld, in videografie leer ik de praktijk: klanten, deadlines, snel schakelen."];
     const ps = a => a.map(x => `<p>${esc(x)}</p>`).join("");
     let h = mode === "bio"
-      ? `<section class="ov-s ov-bio ov-bio-long" lang="nl"><h3 class="ov-h">${esc(t("f.bio"))}</h3><div class="about-text">${ps(BIO.slice(0, 2))}</div><div class="ov-bio-fig"><img src="assets/bio.webp" alt="Tristan Nijs" width="1200" height="900"></div><div class="about-text ov-bio-rest">${ps(BIO.slice(2))}</div></section>`
+      ? `<section class="ov-s ov-bio ov-bio-long" lang="nl"><h3 class="ov-h">${esc(t("f.bio"))}</h3><div class="about-text">${ps(BIO)}</div>
+          <div class="ov-bio-stack"><img src="assets/over.webp" alt="Tristan Nijs met camera" width="900" height="675"><img src="assets/bio-lift.webp" alt="Tristan Nijs met gimbal in een lift" width="1200" height="899" loading="lazy"><img src="assets/bio.webp" alt="Tristan Nijs" width="1200" height="900" loading="lazy"></div></section>`
       : `<section class="ov-s ov-bio"><h3 class="ov-h">${esc(t("f.bio"))}</h3>${bio}<div class="ov-bio-fig"><img src="assets/bio.webp" alt="Tristan Nijs" width="1200" height="900"></div></section>`;
     if(mode === "alle"){
       PHV = PH.slice();
