@@ -324,8 +324,9 @@
   const readSx = () => { sx = parseFloat(getComputedStyle(cf).getPropertyValue("--sx")) || 118; };
   function render(){
     const front = centerIdx();
-    // turning the carousel closes a preview that is open on it
-    if(pv && pv.ctx === cfCtx && Math.abs(offset - pv.off) > .01) closePeek();
+    // turning the carousel closes a preview that is open on it, once it has really turned (a sixth of a card);
+    // a nudge that snaps back leaves it open
+    if(pv && pv.ctx === cfCtx && Math.abs(offset - pv.off) > .16) closePeek(false, true);
     cfItems.forEach(({el, shade}, i) => {
       const p = n > 1 ? wrap(i - offset) : 0, a = Math.abs(p), sg = Math.sign(p);
       let X, Z, R, B, O;
@@ -364,9 +365,10 @@
   // sideways scroll (trackpad, shift + wheel) turns it as far and fast as you scroll;
   // plain up/down keeps scrolling the page. When the scrolling stops it settles on a card.
   let quiet = null;
+  // only a clearly sideways scroll turns it: a page scroll on a trackpad drifts a little sideways too
+  const sideways = e => { const dx = e.shiftKey && !e.deltaX ? e.deltaY : e.deltaX; return Math.abs(dx) > 2 * Math.abs(e.shiftKey ? 0 : e.deltaY) ? dx : 0; };
   cf.addEventListener("wheel", e => {
-    const dx = e.shiftKey && !e.deltaX ? e.deltaY : e.deltaX;
-    if(Math.abs(dx) <= Math.abs(e.shiftKey ? 0 : e.deltaY)) return;
+    const dx = sideways(e); if(!dx) return;
     e.preventDefault();
     const unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? cf.clientWidth : 1;
     goal += dx * unit / pxPerCard();
@@ -488,8 +490,7 @@
     refreshRow(p);
     // sideways scrolling over the open preview keeps turning the carousel underneath it
     el.addEventListener("wheel", e => {
-      const dx = e.shiftKey && !e.deltaX ? e.deltaY : e.deltaX;
-      if(Math.abs(dx) <= Math.abs(e.shiftKey ? 0 : e.deltaY)) return;
+      const dx = ctx === cfCtx ? sideways(e) : 0; if(!dx) return;
       e.preventDefault();
       const unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? innerWidth : 1;
       ctx.wheel(dx * unit);
@@ -568,7 +569,9 @@
       setTimeout(() => f.classList.add("on"), 2500);
     }
   }
-  function closePeek(now){
+  // fade: when the carousel turns away under it, the card it came from is moving, so it fades out in place
+  // instead of shrinking towards a target that keeps changing
+  function closePeek(now, fade){
     clearTimeout(peekTimer);
     if(!pv) return;
     const {el, card, shrunk, ctx} = pv; pv = null;
@@ -578,6 +581,11 @@
     if(now || el.style.visibility === "hidden"){ done(); return; }
     const m = el.querySelector("iframe,video"); if(m) m.remove();
     el.classList.remove("open");
+    if(fade){
+      el.style.transition = "opacity .22s ease"; el.style.opacity = "0";
+      el.addEventListener("transitionend", e => { if(e.target === el && e.propertyName === "opacity") done(); });
+      setTimeout(done, 320); return;
+    }
     el.style.transform = shrunk();
     el.addEventListener("transitionend", e => { if(e.target === el && e.propertyName === "transform") done(); });
     setTimeout(done, 520);
