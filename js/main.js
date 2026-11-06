@@ -885,7 +885,13 @@
     infoEl.innerHTML = `<div class="info-in">
       <button type="button" class="wk-back info-x"><svg viewBox="0 0 10 16" aria-hidden="true"><path d="M8.5 1L1.5 8l7 7" fill="none" stroke="currentColor" stroke-width="1.5"/></svg><span>${esc(t("wk.back"))}</span></button>
       <header class="info-head"><h2 id="infoT">${esc(cardTitle(p))}</h2><p>${esc(d.sub || "")}</p></header>
-      ${d.sections.map(s => `<section class="info-s${s.quote ? " quote" : ""}">${s.h ? `<h3 class="ov-h">${esc(s.h)}</h3>` : ""}${s.text ? `<div class="about-text info-text">${s.text.map(x => `<p>${x}</p>`).join("")}</div>` : ""}${fig(s) ? `<div class="info-fig">${fig(s)}</div>` : ""}</section>`).join("")}
+      ${d.sections.map(s => {
+        const h = s.h ? `<h3 class="ov-h">${esc(s.h)}</h3>` : "";
+        // as many paragraphs as frames: each paragraph beside its own frame, both starting on the same line
+        if(s.frames && s.text && s.text.length === s.frames.length)
+          return `<section class="info-s pairs">${h}${s.text.map((x, i) => `<div class="about-text info-text"><p>${x}</p></div><div class="info-fig">${fig({frames:[s.frames[i]]})}</div>`).join("")}</section>`;
+        return `<section class="info-s${s.quote ? " quote" : ""}">${h}${s.text ? `<div class="about-text info-text">${s.text.map(x => `<p>${x}</p>`).join("")}</div>` : `<div></div>`}${fig(s) ? `<div class="info-fig">${fig(s)}</div>` : ""}</section>`;
+      }).join("")}
     </div>`;
     infoEl.querySelectorAll("video").forEach(noSave);
     infoEl.querySelector(".info-x").addEventListener("click", () => infoEl.close());

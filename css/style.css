@@ -533,18 +533,18 @@ body.is-work .foot{padding-top:clamp(70px,12.4vw,178px)}
 .info-head{margin-bottom:clamp(56px,7vw,110px)}
 .info-head h2{margin:0;font-size:clamp(40px,6vw,92px);font-weight:700;line-height:.95;text-transform:uppercase;color:#fff;letter-spacing:-.01em}
 .info-head p{margin:.9em 0 0;font-size:clamp(14px,1.1vw,17px);color:rgba(255,255,255,.65)}
-.info-s{display:grid;grid-template-columns:635fr 486fr;grid-template-rows:auto 1fr;column-gap:5.1vw;align-items:start}
+.info-s{display:grid;grid-template-columns:635fr 486fr;column-gap:5.1vw;row-gap:clamp(36px,3.4vw,52px);align-items:start}
 .info-s + .info-s{margin-top:clamp(80px,9vw,140px)}
-.info-s .ov-h{grid-column:1}
+/* the heading on its own row; text and pictures start together on the row below */
+.info-s .ov-h{grid-column:1 / -1;margin:0}
 .info-text{grid-column:1;text-align-last:right;hyphens:auto;-webkit-hyphens:auto}
-.info-fig{grid-column:2;grid-row:1 / span 2;display:grid;gap:clamp(18px,2vw,28px)}
+.info-fig{grid-column:2;display:grid;gap:clamp(18px,2vw,28px)}
 .info-fig figure{margin:0}
 .info-fig img,.info-fig video{display:block;width:100%;height:auto;background:#000}
 .info-fig figcaption{margin-top:8px;font-size:13px;line-height:1.4;color:rgba(255,255,255,.6)}
 .info-fig figcaption b{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#fff;margin-bottom:2px}
 .info-s.quote .info-text{font-style:italic;color:rgba(255,255,255,.82)}
-.info-s:not(:has(.info-text)) .info-fig{grid-row:auto}
 @media (max-width:760px){
   .info-s{grid-template-columns:1fr}
-  .info-fig{grid-column:1;grid-row:auto;margin-top:36px}
+  .info-fig{grid-column:1}
 }
