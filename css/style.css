@@ -559,15 +559,17 @@ body.is-proj .wk-t{text-transform:none}
 
 /* Biografie on its own: the whole text on the left, three portraits stacked on the right, each head rising
    into the gap above it */
-.ov-bio-long{grid-template-columns:56fr 36fr;column-gap:7.7%;grid-template-rows:auto 1fr;align-items:start}
+.ov-bio-long{grid-template-columns:56fr 36fr;column-gap:7.7%;grid-template-rows:auto auto;align-items:start}
 .ov-bio-long .ov-h{grid-column:1;grid-row:1;margin-bottom:clamp(64px,7.4vw,120px)}
 .ov-bio-long .about-text{grid-column:1;grid-row:2;hyphens:auto;-webkit-hyphens:auto}
-.ov-bio-stack{grid-column:2;grid-row:1 / 3;margin-top:clamp(14px,1.6vw,26px)}
+.ov-bio-stack{grid-column:2;grid-row:2;justify-self:end;align-self:start}
 .ov-bio-stack img{display:block;width:100%;height:auto}
 /* each picture's transparent top (its head) overlaps the one above, leaving a 5% gap between the frames */
 .ov-bio-stack img:nth-child(2){margin-top:-8.1%}
 .ov-bio-stack img:nth-child(3){margin-top:-16.1%}
 @media (max-width:760px){
   .ov-bio-long{grid-template-columns:1fr}
-  .ov-bio-stack{grid-column:1;grid-row:3;margin-top:48px}
+  .ov-bio-stack{grid-column:1;grid-row:3;margin-top:48px !important;justify-self:stretch}
 }
+/* the long biography scales with the window, so text and photos keep their proportions on wide screens */
+.ov-bio-long .about-text{font-size:max(17px,1.49vw)}

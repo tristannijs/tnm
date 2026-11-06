@@ -907,6 +907,24 @@
     addEventListener("pointerup", () => { if(!on) return; on = false; setTimeout(() => list._moved = false, 0); });
     list.addEventListener("dragstart", e => e.preventDefault());
   }
+  // Biografie: the three portraits are sized so the first frame starts on the text's first line and the
+  // last one ends on its last line (the heads stick out above their frames)
+  const BIO_HEAD = .2267;    // the first picture's frame starts this far down, as a share of its width
+  function fitBio(){
+    const sec = ovEl.querySelector(".ov-bio-long"); if(!sec) return;
+    const txt = sec.querySelector(".about-text"), stk = sec.querySelector(".ov-bio-stack");
+    sec.style.gridTemplateColumns = stk.style.marginTop = "";
+    if(matchMedia("(max-width:760px)").matches) return;
+    // the photo column's width and the text's height depend on each other: settle them in a few rounds
+    const k = stk.getBoundingClientRect().height / stk.getBoundingClientRect().width, full = sec.getBoundingClientRect().width;
+    let W = stk.getBoundingClientRect().width;
+    for(let i = 0; i < 5; i++){
+      W = Math.max(full * .22, Math.min(full * .45, txt.getBoundingClientRect().height / (k - BIO_HEAD)));
+      sec.style.gridTemplateColumns = `minmax(0,1fr) ${W.toFixed(1)}px`;
+    }
+    stk.style.marginTop = (-BIO_HEAD * W) + "px";
+  }
+  addEventListener("resize", fitBio);
   function drawOverview(mode){
     ovEl.hidden = !mode;
     if(!mode){ if(ovEl.firstChild){ ovEl.innerHTML = ""; ovKey = ""; } return; }
@@ -935,6 +953,7 @@
       h += sec("persoonlijk", pers.length ? ovRow(pers.map(p => `<button type="button" class="wk-card" data-id="${esc(p.id)}"></button>`).join(""), "ov-pe") : `<p class="wk-none">${esc(t("f.none"))}</p>`);
     }
     ovEl.innerHTML = h;
+    fitBio(); ovEl.querySelectorAll(".ov-bio-stack img").forEach(i => i.addEventListener("load", fitBio, {once:true}));
     ovEl.querySelectorAll(".ov-pe .wk-card").forEach(b => {
       const p = BY[b.dataset.id]; b.style.setProperty("--c", COLOR(p.cat));
       b.setAttribute("aria-label", cardTitle(p) + (p.gs ? ", " + p.gs : ""));
