@@ -573,3 +573,5 @@ body.is-proj .wk-t{text-transform:none}
   .ov-bio-long .ov-bio-rest{grid-row:4;margin-top:40px}
 }
 .ov-bio-long .about-text{hyphens:auto;-webkit-hyphens:auto}
+/* the long biography scales with the window, so text and portrait keep the same proportions at any width */
+.ov-bio-long .about-text{font-size:max(17px,1.49vw)}
