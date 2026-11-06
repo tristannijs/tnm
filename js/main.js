@@ -473,15 +473,17 @@
     if(odd){ media.style.aspectRatio = String(ar); media.append(f); } else media.append(f, cap(p));
     // the preview is laid out once at its final size; growing is a pure scale from the card,
     // which the graphics card animates without the page having to re-lay out every frame
-    el.style.left = L + "px"; el.style.top = (T + scrollY) + "px"; el.style.width = W + "px";
+    const top0 = T + scrollY;
+    el.style.left = L + "px"; el.style.top = top0 + "px"; el.style.width = W + "px";
     el.style.fontSize = Math.min(24, Math.max(W, 300) / 375 * 16) + "px";
     el.style.setProperty("--k", (W / r.width).toFixed(4));
     ctx.begin();
     // shrunk onto the card (16:9): its picture fits inside the card, centred, as the card's own cover shows it
     const shrunk = () => {
       const q = ctx.home(card), dx = ctx.shift(), k = ar < 16/9 ? q.height / H : q.width / W;
-      const x = q.left + q.width/2 - W*k/2, y = q.top + q.height/2 - H*k/2;
-      return `translate(${(x - L - dx).toFixed(2)}px,${(y - T).toFixed(2)}px) scale(${k.toFixed(4)})`;
+      // in page coordinates: the preview sits in the page, so after a scroll the card is somewhere else in the window
+      const x = q.left + q.width/2 - W*k/2, y = q.top + scrollY + q.height/2 - H*k/2;
+      return `translate(${(x - L - dx).toFixed(2)}px,${(y - top0).toFixed(2)}px) scale(${k.toFixed(4)})`;
     };
     el.style.transform = shrunk();
     el.style.visibility = "hidden";
