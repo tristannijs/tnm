@@ -561,11 +561,15 @@ body.is-proj .wk-t{text-transform:none}
    the rest across the full width */
 .ov-bio-long{grid-template-columns:1008fr 680fr;column-gap:3vw;grid-template-rows:auto auto auto;align-items:start}
 .ov-bio-long .ov-h{margin-bottom:clamp(56px,6.4vw,100px)}
-.ov-bio-long .ov-bio-fig{grid-column:2;grid-row:2;margin-top:-1.6em}
+/* the portrait ends with the last line of the text beside it and rises from there (into the space under the
+   heading if it has to), so the text, not the photo, sets where the rest continues */
+.ov-bio-long .ov-bio-fig{grid-column:2;grid-row:2;align-self:stretch;position:relative;height:0;min-height:100%}
+.ov-bio-long .ov-bio-fig img{position:absolute;right:0;bottom:.25em;width:auto;height:auto;max-width:100%;max-height:calc(100% + 1.2em)}
 .ov-bio-long .ov-bio-rest{grid-column:1 / -1;grid-row:3;margin-top:1.2em}
 @media (max-width:760px){
   .ov-bio-long{grid-template-columns:1fr}
-  .ov-bio-long .ov-bio-fig{grid-column:1;grid-row:3;margin-top:40px}
+  .ov-bio-long .ov-bio-fig{grid-column:1;grid-row:3;margin-top:40px;height:auto;min-height:0}
+  .ov-bio-long .ov-bio-fig img{position:static}
   .ov-bio-long .ov-bio-rest{grid-row:4;margin-top:40px}
 }
 .ov-bio-long .about-text{hyphens:auto;-webkit-hyphens:auto}
