@@ -935,14 +935,25 @@
     const bio = $(".about-text").outerHTML;
     // the portrait sits beside the heading and the text, the head rising above its frame
     // Biografie on its own: the long biography, its first two paragraphs beside the portrait, the rest across
-    const BIO = [
+    const BIOS = {nl:[
       "Ik ben Tristan Nijs, geboren en getogen in Gent. Ik studeer montage aan het RITCS en werk daarnaast als freelance videograaf. Ik hou me daarin bezig met aftermovies van evenementen, trouwfilms of creatief promotiewerk.",
       "Op het RITCS koos ik voor montage omdat ik merk dat ik daar het meest openbloei en het meeste voldoening uit haal. De keuze voor het RITCS heeft een enorme impact op mij als persoon gelaten; ik ben film niet alleen meer als entertainment gaan zien, maar als kunst, als een manier om iets wezenlijks te zeggen. Ook mijn appreciatie voor montage als een kunst is enorm gegroeid. Dankzij het RITCS denk ik in al mijn projecten na over intentie, ethiek en mijn positie als filmmaker en kunstenaar.",
       "Muziek zit daarnaast aan de basis van hoe ik monteer. Ik kom uit een muzikale familie en speelde jarenlang viool; later ontdekte ik muziekproductie via FL Studio. Die achtergrond hoor je terug in mijn werk: muziek bepaalt het ritme en de ademhaling van een edit, niet achteraf toegevoegd maar vanaf het begin het uitgangspunt.",
-      "Sindsdien combineer ik de filmopleiding, mijn muzikale achtergrond met videografie: in film verdiep ik me in de taal, kunst en intentie van het beeld, in videografie leer ik de praktijk: klanten, deadlines, snel schakelen."];
+      "Sindsdien combineer ik de filmopleiding, mijn muzikale achtergrond met videografie: in film verdiep ik me in de taal, kunst en intentie van het beeld, in videografie leer ik de praktijk: klanten, deadlines, snel schakelen."],
+    en:[
+      "I'm Tristan Nijs, born and raised in Ghent. I study editing at RITCS and also work as a freelance videographer, making aftermovies of events, wedding films and creative promotional work.",
+      "At RITCS I chose editing because that is where I flourish most and find the most fulfilment. Choosing RITCS has had an enormous impact on me as a person: I no longer see film only as entertainment, but as art, as a way of saying something that matters. My appreciation for editing as an art form has grown enormously too. Thanks to RITCS, in every project I think about intention, ethics and my position as a filmmaker and artist.",
+      "Music is also at the root of how I edit. I come from a musical family and played the violin for years; later I discovered music production through FL Studio. You can hear that background in my work: music sets the rhythm and the breathing of an edit, not added afterwards but the starting point from the very beginning.",
+      "Since then I combine film school and my musical background with videography: in film I immerse myself in the language, art and intention of the image; in videography I learn the practice: clients, deadlines, switching fast."],
+    fr:[
+      "Je suis Tristan Nijs, né et élevé à Gand. J'étudie le montage au RITCS et je travaille en parallèle comme vidéaste indépendant : aftermovies d'événements, films de mariage et projets promotionnels créatifs.",
+      "Au RITCS, j'ai choisi le montage parce que c'est là que je m'épanouis le plus et que je trouve le plus de satisfaction. Le choix du RITCS a eu un impact énorme sur moi : je ne vois plus le cinéma seulement comme un divertissement, mais comme un art, une façon de dire quelque chose d'essentiel. Mon regard sur le montage en tant qu'art a lui aussi beaucoup évolué. Grâce au RITCS, je réfléchis dans chaque projet à l'intention, à l'éthique et à ma position de cinéaste et d'artiste.",
+      "La musique est par ailleurs à la base de ma façon de monter. Je viens d'une famille de musiciens et j'ai joué du violon pendant des années ; plus tard, j'ai découvert la production musicale avec FL Studio. Cela s'entend dans mon travail : la musique donne le rythme et la respiration d'un montage, non pas ajoutée après coup, mais point de départ dès le début.",
+      "Depuis, je combine l'école de cinéma et mon parcours musical avec la vidéographie : en cinéma, j'approfondis le langage, l'art et l'intention de l'image ; en vidéographie, j'apprends la pratique : les clients, les délais, savoir réagir vite."]};
+    const BIO = BIOS[L.lang] || BIOS.nl;
     const ps = a => a.map(x => `<p>${esc(x)}</p>`).join("");
     let h = mode === "bio"
-      ? `<section class="ov-s ov-bio ov-bio-long" lang="nl"><h3 class="ov-h">${esc(t("f.bio"))}</h3><div class="about-text">${ps(BIO)}</div>
+      ? `<section class="ov-s ov-bio ov-bio-long" lang="${L.lang}"><h3 class="ov-h">${esc(t("f.bio"))}</h3><div class="about-text">${ps(BIO)}</div>
           <div class="ov-bio-stack"><img src="assets/over.webp" alt="Tristan Nijs met camera" width="900" height="675"><img src="assets/bio-lift.webp" alt="Tristan Nijs met gimbal in een lift" width="1200" height="899" loading="lazy"><img src="assets/bio.webp" alt="Tristan Nijs" width="1200" height="900" loading="lazy"></div></section>`
       : `<section class="ov-s ov-bio"><h3 class="ov-h">${esc(t("f.bio"))}</h3>${bio}<div class="ov-bio-fig"><img src="assets/bio.webp" alt="Tristan Nijs" width="1200" height="900"></div></section>`;
     if(mode === "alle"){
