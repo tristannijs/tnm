@@ -55,6 +55,7 @@
     "f.iao.p":         {nl:"IAO",                  en:"IAO",                  fr:"IAO"},
     "f.fictie.p":      {nl:"Fictie",               en:"Fiction",              fr:"Fiction"},
     "f.docu.p":        {nl:"Documentaire",         en:"Documentary",          fr:"Documentaire"},
+    "more":            {nl:"Meer info",            en:"More info",            fr:"Plus d’infos"},
     "wk.back":         {nl:"Terug",                en:"Back",                 fr:"Retour"},
     "f.bio":           {nl:"Biografie",            en:"Biography",            fr:"Biographie"},
     "f.foto":          {nl:"Foto",                 en:"Photo",                fr:"Photo"},

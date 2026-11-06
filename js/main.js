@@ -465,7 +465,8 @@
       <div class="pv-info"><div class="pv-t">${esc(p.gt ? p.gt + (p.gs ? ": " + p.gs : "") : RITCS[p.cat] ? title(p) : pvTitle(p))}</div>${rolesOf(p).length ? `<div class="pv-role">${esc(rolesOf(p).join(", "))}${(p.credits || []).map(([r, n]) => `<small>${esc(L.role(r))}: ${esc(n)}</small>`).join("")}</div>` : ""}
         <div class="pv-m">${esc(when(p))}</div>
         <div class="pv-tags">${tagsOf(p).slice().sort((a, b) => !!TAGC[b] - !!TAGC[a]).map(g => `<span class="pv-tag">${TAGC[g] ? `<i class="sq" style="background:var(--c-${g})"></i>` : ""}${esc(t("f." + g))}</span>`).join("")}</div>
-        <div class="pv-r"></div></div>`;
+        <div class="pv-r"></div>${p.page ? `<a class="pv-more" href="${esc(p.page)}">${esc(t("more"))}<svg viewBox="0 0 16 10" aria-hidden="true"><path d="M1 5h13M10 1l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></a>` : ""}</div>`;
+    { const more = el.querySelector(".pv-more"); if(more) more.addEventListener("click", e => e.stopPropagation()); }
     const media = el.querySelector(".pv-media");
     // reuse the card's own, already decoded picture so the first frame is never empty
     const own = card.querySelector(".face img"), f = face(p), fi = f.querySelector("img");

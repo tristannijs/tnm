@@ -520,3 +520,8 @@ body.is-work .foot{padding-top:clamp(70px,12.4vw,178px)}
   .ov-mu .ov-list{gap:48px}
   .ov-mu .mu,.ov-pe .wk-card{width:min(66vw,320px)}
 }
+
+/* Meer info in a preview: to the film's own page */
+.pv-more{display:inline-flex;align-items:center;gap:.45em;margin-top:.9em;color:#fff;font-size:.78em;font-weight:500;opacity:.85;grid-column:1 / -1;justify-self:start;text-decoration:none}
+.pv-more:hover{opacity:1}
+.pv-more svg{width:1em;height:.65em}
