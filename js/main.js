@@ -916,7 +916,16 @@
     const sec = (c, body) => `<section class="ov-s"><h3 class="ov-h">${esc(t("f." + c))}</h3>${body}</section>`;
     const bio = $(".about-text").outerHTML;
     // the portrait sits beside the heading and the text, the head rising above its frame
-    let h = `<section class="ov-s ov-bio"><h3 class="ov-h">${esc(t("f.bio"))}</h3>${bio}<div class="ov-bio-fig"><img src="assets/bio.webp" alt="Tristan Nijs" width="1200" height="900"></div></section>`;
+    // Biografie on its own: the long biography, its first two paragraphs beside the portrait, the rest across
+    const BIO = [
+      "Ik ben Tristan Nijs, geboren en getogen in Gent. Ik studeer montage aan het RITCS en werk daarnaast als freelance videograaf. Ik hou me daarin bezig met aftermovies van evenementen, trouwfilms of creatief promotiewerk.",
+      "Op het RITCS koos ik voor montage omdat ik merk dat ik daar het meest openbloei en het meeste voldoening uit haal. De keuze voor het RITCS heeft een enorme impact op mij als persoon gelaten; ik ben film niet alleen meer als entertainment gaan zien, maar als kunst, als een manier om iets wezenlijks te zeggen. Ook mijn appreciatie voor montage als een kunst is enorm gegroeid. Dankzij het RITCS denk ik in al mijn projecten na over intentie, ethiek en mijn positie als filmmaker en kunstenaar.",
+      "Muziek zit daarnaast aan de basis van hoe ik monteer. Ik kom uit een muzikale familie en speelde jarenlang viool; later ontdekte ik muziekproductie via FL Studio. Die achtergrond hoor je terug in mijn werk: muziek bepaalt het ritme en de ademhaling van een edit, niet achteraf toegevoegd maar vanaf het begin het uitgangspunt.",
+      "Sindsdien combineer ik de filmopleiding, mijn muzikale achtergrond met videografie: in film verdiep ik me in de taal, kunst en intentie van het beeld, in videografie leer ik de praktijk: klanten, deadlines, snel schakelen."];
+    const ps = a => a.map(x => `<p>${esc(x)}</p>`).join("");
+    let h = mode === "bio"
+      ? `<section class="ov-s ov-bio ov-bio-long" lang="nl"><h3 class="ov-h">${esc(t("f.bio"))}</h3><div class="about-text">${ps(BIO.slice(0, 2))}</div><div class="ov-bio-fig"><img src="assets/bio.webp" alt="Tristan Nijs" width="1200" height="900"></div><div class="about-text ov-bio-rest">${ps(BIO.slice(2))}</div></section>`
+      : `<section class="ov-s ov-bio"><h3 class="ov-h">${esc(t("f.bio"))}</h3>${bio}<div class="ov-bio-fig"><img src="assets/bio.webp" alt="Tristan Nijs" width="1200" height="900"></div></section>`;
     if(mode === "alle"){
       PHV = PH.slice();
       h += sec("foto", PHV.length ? ovRow(PHV.map((ph, i) => `<button type="button" class="ph" data-i="${i}" style="--ar:${(1 / ph.ar).toFixed(4)}"><img src="${esc(flickrSize(ph.src, "c"))}" alt="${esc(ph.title || "")}" loading="lazy" width="800" height="${Math.round(800 * ph.ar)}"></button>`).join(""), "ov-ph") : `<p class="wk-none">${esc(t("f.none"))}</p>`);

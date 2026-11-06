@@ -556,3 +556,16 @@ body.is-proj .wk-t{text-transform:none}
   .pj-frames figure{width:31%}
 }
 .hero-work.in{animation:werkIn .6s ease both}
+
+/* Biografie on its own: heading, then the first paragraphs beside the portrait (both starting together),
+   the rest across the full width */
+.ov-bio-long{grid-template-columns:1008fr 680fr;column-gap:3vw;grid-template-rows:auto auto auto;align-items:start}
+.ov-bio-long .ov-h{margin-bottom:clamp(56px,6.4vw,100px)}
+.ov-bio-long .ov-bio-fig{grid-column:2;grid-row:2;margin-top:-1.6em}
+.ov-bio-long .ov-bio-rest{grid-column:1 / -1;grid-row:3;margin-top:1.2em}
+@media (max-width:760px){
+  .ov-bio-long{grid-template-columns:1fr}
+  .ov-bio-long .ov-bio-fig{grid-column:1;grid-row:3;margin-top:40px}
+  .ov-bio-long .ov-bio-rest{grid-row:4;margin-top:40px}
+}
+.ov-bio-long .about-text{hyphens:auto;-webkit-hyphens:auto}
