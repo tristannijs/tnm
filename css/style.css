@@ -544,7 +544,15 @@ body.is-work .foot{padding-top:clamp(70px,12.4vw,178px)}
 .info-fig figcaption{margin-top:8px;font-size:13px;line-height:1.4;color:rgba(255,255,255,.6)}
 .info-fig figcaption b{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#fff;margin-bottom:2px}
 .info-s.quote .info-text{font-style:italic;color:rgba(255,255,255,.82)}
+/* beside text the pictures follow the text: never taller than the paragraph next to them (the picture
+   doesn't count towards the row's height, it fills it), left aligned, caption underneath */
+.info-text + .info-fig{height:0;min-height:100%;display:flex;flex-direction:column}
+.info-text + .info-fig figure{flex:1 1 0;min-height:0;display:flex;flex-direction:column}
+.info-text + .info-fig img{flex:1 1 0;min-height:0;width:auto;max-width:100%;height:auto;object-fit:contain;object-position:left top;align-self:flex-start;background:none}
 @media (max-width:760px){
   .info-s{grid-template-columns:1fr}
   .info-fig{grid-column:1}
+  .info-text + .info-fig{height:auto;min-height:0}
+  .info-text + .info-fig figure,.info-text + .info-fig img{flex:none}
+  .info-text + .info-fig img{width:100%}
 }
