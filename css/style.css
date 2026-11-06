@@ -525,3 +525,34 @@ body.is-work .foot{padding-top:clamp(70px,12.4vw,178px)}
 .pv-more{display:inline-flex;align-items:center;gap:.45em;margin-top:.9em;color:#fff;font-size:.78em;font-weight:500;opacity:.85;grid-column:1 / -1;justify-self:start;text-decoration:none}
 .pv-more:hover{opacity:1}
 .pv-more svg{width:1em;height:.65em}
+
+/* a film's own page (#film/ten-anker): the work hero with its title as written, then the page */
+body.is-proj .wk-t{text-transform:none}
+.pj{padding:clamp(48px,8.2vw,118px) max(var(--gut),9.3vw) 0}
+.pj[hidden]{display:none}
+.pj.in{animation:werkIn .6s ease .2s both}
+.pj > .pj-film:first-child{margin-top:0}
+.pj-film{position:relative;aspect-ratio:2.344;background:#000}
+.pj-film iframe,.pj-film video{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;background:#000}
+.pj-s{margin-top:clamp(64px,7vw,110px)}
+.pj-h{margin:0 0 clamp(28px,3.2vw,48px);font-size:19px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#fff}
+.pj-text{font-weight:300;font-size:clamp(17px,1.49vw,21.5px);line-height:1.2;text-align:justify;text-align-last:left;hyphens:auto;-webkit-hyphens:auto;color:var(--fg)}
+.pj-text p{margin:0 0 1.2em}
+.pj-text p:last-child{margin:0}
+.pj-quote .pj-text{font-style:italic}
+/* the three frames: small, centred, the label over one word */
+.pj-frames{display:flex;justify-content:center;gap:clamp(18px,3.4vw,56px);margin-top:clamp(56px,6vw,96px)}
+.pj-frames figure{margin:0;width:clamp(96px,17vw,250px);text-align:center}
+.pj-frames img{display:block;width:100%;aspect-ratio:600/358;object-fit:cover}
+.pj-frames figcaption{margin-top:12px;font-size:clamp(12px,1vw,15px);line-height:1.35;color:var(--fg)}
+.pj-frames figcaption b{display:block;font-weight:700;text-transform:uppercase;letter-spacing:.03em;color:#fff}
+/* Proces: the first paragraph beside the film score */
+.pj-split{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);column-gap:clamp(28px,4vw,64px);align-items:start;margin-bottom:1.2em}
+.pj-split .mu{margin-top:.1em}
+.pj-mu{min-width:0}
+@media (max-width:760px){
+  .pj-split{grid-template-columns:1fr;row-gap:36px}
+  .pj-frames{gap:12px}
+  .pj-frames figure{width:31%}
+}
+.hero-work.in{animation:werkIn .6s ease both}

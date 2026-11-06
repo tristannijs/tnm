@@ -117,7 +117,9 @@
     // data-clips="all": every category's clips in one pool (the background when no button is hovered)
     // data-skip leaves out projects by name, e.g. data-skip="jonathan nelson"
     const skip = (l.dataset.skip || "").toLowerCase().split(/\s+/).filter(Boolean);
-    const list = (l.dataset.clips === "all" ? Object.values(C).flat() : C[l.dataset.clips] || []).filter(c => !skip.includes(c.project));
+    // data-only keeps one project's clips, e.g. data-only="tenanker" behind that film's own page
+    const only = l.dataset.only;
+    const list = (l.dataset.clips === "all" ? Object.values(C).flat() : C[l.dataset.clips] || []).filter(c => !skip.includes(c.project) && (!only || c.project === only));
     if(!list.length) return null;
     const vids = [0, 1].map(() => {
       const v = document.createElement("video");
@@ -465,7 +467,7 @@
       <div class="pv-info"><div class="pv-t">${esc(p.gt ? p.gt + (p.gs ? ": " + p.gs : "") : RITCS[p.cat] ? title(p) : pvTitle(p))}</div>${rolesOf(p).length ? `<div class="pv-role">${esc(rolesOf(p).join(", "))}${(p.credits || []).map(([r, n]) => `<small>${esc(L.role(r))}: ${esc(n)}</small>`).join("")}</div>` : ""}
         <div class="pv-m">${esc(when(p))}</div>
         <div class="pv-tags">${tagsOf(p).slice().sort((a, b) => !!TAGC[b] - !!TAGC[a]).map(g => `<span class="pv-tag">${TAGC[g] ? `<i class="sq" style="background:var(--c-${g})"></i>` : ""}${esc(t("f." + g))}</span>`).join("")}</div>
-        <div class="pv-r"></div>${p.page ? `<a class="pv-more" href="${esc(p.page)}">${esc(t("more"))}<svg viewBox="0 0 16 10" aria-hidden="true"><path d="M1 5h13M10 1l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></a>` : ""}</div>`;
+        <div class="pv-r"></div>${p.page ? `<a class="pv-more" href="#${esc(veldOf(p))}/${esc(p.id)}">${esc(t("more"))}<svg viewBox="0 0 16 10" aria-hidden="true"><path d="M1 5h13M10 1l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></a>` : ""}</div>`;
     { const more = el.querySelector(".pv-more"); if(more) more.addEventListener("click", e => e.stopPropagation()); }
     const media = el.querySelector(".pv-media");
     // reuse the card's own, already decoded picture so the first frame is never empty
@@ -854,8 +856,8 @@
       ${m.credits.length ? `<ul class="mu-c">${m.credits.map(([l, w, h]) => `<li><span>${esc(t("mu." + l.replace(/ \d$/, "").toLowerCase()))}${/\d$/.test(l) ? " " + l.slice(-1) : ""}:</span> <a href="${esc(h)}" target="_blank" rel="noopener">${esc(w)}</a></li>`).join("")}</ul>` : ""}
     </div>`;
   }
-  const muCard = n => document.querySelector(`#muGrid .mu[data-n="${n}"], #ovAll .mu[data-n="${n}"]`);
-  const muState = () => { document.querySelectorAll("#muGrid .mu, #ovAll .mu").forEach(c => { const me = +c.dataset.n === muCur; c.classList.toggle("cur", me); c.classList.toggle("on", me && !au.paused); }); };
+  const muCard = n => document.querySelector(`#muGrid .mu[data-n="${n}"], #ovAll .mu[data-n="${n}"], #proj .mu[data-n="${n}"]`);
+  const muState = () => { document.querySelectorAll("#muGrid .mu, #ovAll .mu, #proj .mu").forEach(c => { const me = +c.dataset.n === muCur; c.classList.toggle("cur", me); c.classList.toggle("on", me && !au.paused); }); };
   const muClick = e => {
     const c = e.target.closest(".mu"); if(!c || e.target.closest("a") || dragged(c)) return;
     const n = +c.dataset.n, m = MUSIC.find(x => x.n === n);
@@ -964,13 +966,47 @@
   const hero = $("#hero"), heroWork = $("#heroWork"), werk = $("#werk");
   const homeParts = [$("#uitgelicht"), $("#over")];
   function readHash(){
-    const h = decodeURIComponent(location.hash.slice(1)), [path, qs] = h.split("?");
+    const h = decodeURIComponent(location.hash.slice(1)), [path0, qs] = h.split("?");
+    const [path, pid] = path0.split("/");
     const v = {video:"video", videografie:"video", film:"film", ritcs:"film", overig:"overig", werk:"alle"}[path.toLowerCase()];
     if(!v) return null;
+    if(pid && BY[pid] && BY[pid].page) return {veld:v, proj:pid};
     const q = new URLSearchParams(qs || "");
     return {veld:v, ctx:q.get("context") || "alle", jaar:q.get("jaar") || "alle", rol:q.get("rol") || "alle", album:q.get("album") || "alle", genre:q.get("genre") || "alle"};
   }
+  // ---- a film's own page: the work page's hero with that film's clips behind its title, the text below ----
+  const proj = $("#proj");
+  function leaveProj(){
+    if(!document.body.classList.contains("is-proj")) return;
+    document.body.classList.remove("is-proj"); proj.hidden = true;
+    proj.querySelectorAll("iframe").forEach(f => f.removeAttribute("src"));
+    proj.querySelectorAll("video").forEach(v => v.pause());
+    lastVeld = null;
+  }
+  function toProj(id){
+    closePeek(true); closeFilters();
+    const p = BY[id], was = document.body.classList.contains("is-work");
+    document.body.classList.add("is-work", "is-proj");
+    heroWork.hidden = false; werk.hidden = true; homeParts.forEach(x => x.hidden = true); proj.hidden = false;
+    $("#wkT .a").textContent = cardTitle(p); $("#wkT .b").textContent = ""; $("#wkS").textContent = p.pageSub || "";
+    $("#wkBack").setAttribute("href", "#" + veldOf(p));
+    document.title = cardTitle(p) + " — Tristan Nijs Media";
+    document.querySelectorAll("[data-view]").forEach(a => a.toggleAttribute("aria-current", a.dataset.view === veldOf(p)));
+    proj.querySelectorAll("iframe[data-src]").forEach(f => { if(!f.src) f.src = f.dataset.src; });
+    proj.querySelectorAll(".pj-mu").forEach(c => { if(!c.firstChild){ const m = MUSIC.find(x => x.n === +c.dataset.n); if(m) c.innerHTML = muHTML(m); } });
+    proj.querySelectorAll("video").forEach(v => noSave(v));
+    showLayer(p.id); lastVeld = null;
+    scrollTo({top:0, behavior:"instant"});
+    heroWork.classList.remove("in"); heroWork.getBoundingClientRect(); heroWork.classList.add("in");
+    proj.classList.remove("in"); proj.getBoundingClientRect(); proj.classList.add("in");
+    onScroll(); muState();
+    routed = location.hash;
+  }
+  proj.addEventListener("click", muClick);
   function toWork(next, door){
+    if(next.proj){ toProj(next.proj); return; }
+    leaveProj();
+    $("#wkBack").setAttribute("href", "#");
     closePeek(true); closeFilters();
     const wasWork = document.body.classList.contains("is-work");
     Object.assign(st, next);
@@ -1012,6 +1048,7 @@
   function toHome(){
     if(!document.body.classList.contains("is-work")) return;
     closePeek(true); closeFilters();
+    leaveProj(); $("#wkBack").setAttribute("href", "#");
     document.body.classList.remove("is-work");
     heroWork.hidden = true; werk.hidden = true; homeParts.forEach(x => x.hidden = false);
     doors.classList.remove("back"); doors.getBoundingClientRect(); doors.classList.add("back");
@@ -1047,10 +1084,15 @@
     e.preventDefault(); e.stopPropagation();
     choose(a.dataset.f, a.dataset.f === "ctx" && st.ctx === a.dataset.v ? "alle" : a.dataset.v);   // clicking the active one again clears it
   }, true);
-  $("#wkBack").addEventListener("click", e => { e.preventDefault(); if(location.hash) history.pushState(null, "", location.pathname + location.search); toHome(); });
+  $("#wkBack").addEventListener("click", e => {
+    e.preventDefault();
+    // on a film's own page: back to its field (Film); elsewhere back to the start page
+    if(document.body.classList.contains("is-proj")){ const h = $("#wkBack").getAttribute("href"); history.pushState(null, "", h); route(); return; }
+    if(location.hash) history.pushState(null, "", location.pathname + location.search); toHome();
+  });
   // the arrow under the title: down to the grid
-  $(".hero-down").addEventListener("click", e => { if(document.body.classList.contains("is-work")){ e.preventDefault(); werk.scrollIntoView({behavior:"smooth"}); } });
-  L.onChange(() => { if(document.body.classList.contains("is-work")) renderWork(); });
+  $(".hero-down").addEventListener("click", e => { if(document.body.classList.contains("is-work")){ e.preventDefault(); (document.body.classList.contains("is-proj") ? proj : werk).scrollIntoView({behavior:"smooth"}); } });
+  L.onChange(() => { if(document.body.classList.contains("is-work") && !document.body.classList.contains("is-proj")) renderWork(); });
   { const start = readHash(); if(start) toWork(start, null); }
 
   // ---------- player ----------
