@@ -932,7 +932,7 @@
     if(key === ovKey) return;
     ovKey = key;
     const sec = (c, body) => `<section class="ov-s"><h3 class="ov-h">${esc(t("f." + c))}</h3>${body}</section>`;
-    const bio = $(".about-text").outerHTML;
+    const bio = $("#over .about-text").outerHTML;      // the short one from the start page
     // the portrait sits beside the heading and the text, the head rising above its frame
     // Biografie on its own: the long biography, its first two paragraphs beside the portrait, the rest across
     const BIOS = {nl:[
