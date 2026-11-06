@@ -465,7 +465,9 @@
       <div class="pv-info"><div class="pv-t">${esc(p.gt ? p.gt + (p.gs ? ": " + p.gs : "") : RITCS[p.cat] ? title(p) : pvTitle(p))}</div>${rolesOf(p).length ? `<div class="pv-role">${esc(rolesOf(p).join(", "))}${(p.credits || []).map(([r, n]) => `<small>${esc(L.role(r))}: ${esc(n)}</small>`).join("")}</div>` : ""}
         <div class="pv-m">${esc(when(p))}</div>
         <div class="pv-tags">${tagsOf(p).slice().sort((a, b) => !!TAGC[b] - !!TAGC[a]).map(g => `<span class="pv-tag">${TAGC[g] ? `<i class="sq" style="background:var(--c-${g})"></i>` : ""}${esc(t("f." + g))}</span>`).join("")}</div>
-        <div class="pv-r"></div></div>`;
+        <div class="pv-r"></div>${(window.INFO || {})[p.id] ? `<button type="button" class="pv-more">${esc(t("more"))}<svg viewBox="0 0 16 10" aria-hidden="true"><path d="M1 5h13M10 1l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></button>` : ""}</div>`;
+    const more = el.querySelector(".pv-more");
+    if(more) more.addEventListener("click", e => { e.stopPropagation(); closePeek(true); openInfo(p); });
     const media = el.querySelector(".pv-media");
     // reuse the card's own, already decoded picture so the first frame is never empty
     const own = card.querySelector(".face img"), f = face(p), fi = f.querySelector("img");
@@ -873,6 +875,24 @@
     c.querySelector(".mu-t").textContent = mmssM(au.currentTime) + " / " + mmssM(au.duration);
   });
   au.addEventListener("ended", () => { const c = muCard(muCur); if(c){ c.querySelector(".mu-bar i").style.width = "0%"; c.querySelector(".mu-t").textContent = mmssM(au.duration); } });
+  // ---- Meer info: a project's own page, laid out like the biography (text left, pictures right)
+  const infoEl = $("#info");
+  function openInfo(p){
+    const d = window.INFO[p.id]; if(!d) return;
+    const fig = s => s.frames ? s.frames.map(([src, alt, lab, c]) => `<figure><img src="${esc(src)}" alt="${esc(alt)}" loading="lazy"><figcaption><b>${esc(lab)}</b>${esc(c)}</figcaption></figure>`).join("")
+      : s.img ? `<figure><img src="${esc(s.img[0])}" alt="${esc(s.img[1])}" loading="lazy"></figure>`
+      : s.video ? `<figure><video src="${esc(s.video[0])}" poster="${esc(s.video[1])}" controls playsinline preload="none"></video></figure>` : "";
+    infoEl.innerHTML = `<div class="info-in">
+      <button type="button" class="wk-back info-x"><svg viewBox="0 0 10 16" aria-hidden="true"><path d="M8.5 1L1.5 8l7 7" fill="none" stroke="currentColor" stroke-width="1.5"/></svg><span>${esc(t("wk.back"))}</span></button>
+      <header class="info-head"><h2 id="infoT">${esc(cardTitle(p))}</h2><p>${esc(d.sub || "")}</p></header>
+      ${d.sections.map(s => `<section class="info-s${s.quote ? " quote" : ""}">${s.h ? `<h3 class="ov-h">${esc(s.h)}</h3>` : ""}${s.text ? `<div class="about-text info-text">${s.text.map(x => `<p>${x}</p>`).join("")}</div>` : ""}${fig(s) ? `<div class="info-fig">${fig(s)}</div>` : ""}</section>`).join("")}
+    </div>`;
+    infoEl.querySelectorAll("video").forEach(noSave);
+    infoEl.querySelector(".info-x").addEventListener("click", () => infoEl.close());
+    infoEl.showModal(); infoEl.scrollTop = 0;
+  }
+  infoEl.addEventListener("close", () => { infoEl.querySelectorAll("video").forEach(v => v.pause()); });
+
   // ---- Overig, all contexts: Biografie, then Foto, Muziek and Persoonlijk as rows that scroll sideways
   // (drag with the mouse, arrows at the ends, a trackpad or a finger scrolls them natively)
   const ovEl = $("#ovAll");
