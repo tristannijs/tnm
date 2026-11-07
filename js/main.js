@@ -1137,6 +1137,23 @@
   L.onChange(() => { if(document.body.classList.contains("is-work") && !document.body.classList.contains("is-proj")) renderWork(); });
   { const start = readHash(); if(start) toWork(start, null); }
 
+  // ---------- contact: a pop-up form over the page ----------
+  const ct = $("#contact"), ctForm = $("#ctForm");
+  document.addEventListener("click", e => {
+    const a = e.target.closest("[data-contact]"); if(!a) return;
+    e.preventDefault(); ct.showModal(); setTimeout(() => ctForm.querySelector("input").focus({preventScroll:true}), 250);
+  });
+  $("#ctX").addEventListener("click", () => ct.close());
+  ct.addEventListener("click", e => { if(e.target === ct) ct.close(); });
+  // for now the form opens the visitor's mail app with everything filled in
+  ctForm.addEventListener("submit", e => {
+    e.preventDefault();
+    if(!ctForm.reportValidity()) return;
+    const f = new FormData(ctForm);
+    const body = `${f.get("bericht")}\n\n— ${f.get("naam")} (${f.get("email")})`;
+    location.href = `mailto:tristannijs.media@gmail.com?subject=${encodeURIComponent(f.get("soort") + " – " + f.get("naam"))}&body=${encodeURIComponent(body)}`;
+  });
+
   // ---------- player ----------
   const dlg = $("#player");
   const ytFrame = (id,title) => `<iframe src="https://www.youtube-nocookie.com/embed/${id}?rel=0&autoplay=1" title="${esc(title)}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`;

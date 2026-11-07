@@ -49,7 +49,9 @@ img{display:block;max-width:100%}
 .bar.solid .nav{color:#fff}
 /* the links only show once the hero words have scrolled away (class set in main.js) */
 .nav .nav-link{transition:opacity .35s,visibility .35s}
-.bar:not(.links) .nav .nav-link{opacity:0;visibility:hidden}
+.bar:not(.links) .nav .nav-link:not([data-contact]){opacity:0;visibility:hidden}
+/* Contact has no hero word, so it is always in the bar */
+.nav .nav-link[data-contact]{margin-left:.6em}
 @media (max-width:760px){.nav-link{display:none}}
 .nav a{opacity:.95}
 .nav a:hover{opacity:1;text-decoration:underline;text-underline-offset:5px;text-decoration-thickness:1px}
@@ -580,3 +582,32 @@ body.is-proj .wk-t{text-transform:none}
   .ov-bio:not(.ov-bio-long) .ov-h{margin-bottom:clamp(32px,3.8vw,56px)}
   .ov-bio:not(.ov-bio-long) .ov-bio-fig{grid-row:3;width:100%;margin-top:calc(24px + 21%)}
 }
+
+/* contact: a pop-up over the page, in the style of the filters */
+.contact{width:min(640px,calc(100vw - 32px));max-height:calc(100dvh - 32px);margin:auto;padding:0;border:0;background:#111;color:#fff;box-shadow:0 30px 90px rgba(0,0,0,.7);overflow:auto}
+.contact::backdrop{background:rgba(0,0,0,.72);backdrop-filter:blur(3px)}
+.contact[open]{animation:ctIn .35s cubic-bezier(.22,.7,.2,1)}
+@keyframes ctIn{from{opacity:0;transform:translateY(16px)}}
+.ct{position:relative;padding:clamp(28px,4vw,48px)}
+.ct-x{position:absolute;top:18px;right:18px;width:36px;height:36px;padding:8px;border:0;background:none;color:#fff;cursor:pointer;opacity:.75}
+.ct-x:hover{opacity:1}
+.ct-x svg{width:100%;height:100%;display:block}
+.ct-t{margin:0;font-size:clamp(28px,3vw,40px);font-weight:800;text-transform:uppercase;line-height:1}
+.ct-s{margin:.7em 0 clamp(28px,3vw,40px);font-size:15px;color:#cfcfcf}
+.ct-row{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+.ct-f{display:block;margin-bottom:26px}
+.ct-f > span{display:block;font-size:12px;font-weight:700;margin-bottom:9px}
+.ct-f input,.ct-f textarea{display:block;width:100%;padding:0 0 6px;border:0;border-bottom:1px solid rgba(255,255,255,.6);border-radius:0;background:none;color:#fff;font:inherit;font-size:16px;font-weight:300;outline:none;resize:vertical}
+.ct-f textarea{border:1px solid rgba(255,255,255,.35);padding:10px 12px;min-height:120px}
+.ct-f input:focus,.ct-f textarea:focus{border-color:#fff}
+.ct-kind{display:flex;flex-wrap:wrap;gap:8px}
+.ct-kind label{cursor:pointer}
+.ct-kind input{position:absolute;opacity:0;pointer-events:none}
+.ct-kind i{display:block;font-style:normal;font-size:14px;padding:7px 12px;border:1px solid rgba(255,255,255,.35);transition:border-color .2s,background-color .2s,color .2s}
+.ct-kind label:hover i{border-color:#fff}
+.ct-kind input:checked + i{background:#fff;color:#111;border-color:#fff}
+.ct-kind input:focus-visible + i{outline:1px solid #fff;outline-offset:2px}
+.ct-foot{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:8px}
+.ct-alt{font-size:13px;color:#9a9a9a;text-decoration:none}
+.ct-alt:hover{color:#fff}
+@media (max-width:560px){.ct-row{grid-template-columns:1fr;gap:0}}
