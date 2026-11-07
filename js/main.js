@@ -254,12 +254,14 @@
   const doors = $("#doors");
   // hovering a door previews its background (only on the start page)
   const onHome = () => !document.body.classList.contains("is-work");
+  // only with a real mouse: on a phone the first tap would otherwise count as hovering (iOS then swallows
+  // the click, so the page didn't open until the second tap)
   doors.querySelectorAll(".door").forEach(d => {
-    d.addEventListener("mouseenter", () => { if(onHome()) showLayer(d.dataset.bg); });
-    d.addEventListener("focus", () => { if(onHome()) showLayer(d.dataset.bg); });
+    d.addEventListener("pointerenter", e => { if(e.pointerType === "mouse" && onHome()) showLayer(d.dataset.bg); });
+    d.addEventListener("focus", () => { if(onHome() && d.matches(":focus-visible")) showLayer(d.dataset.bg); });
     d.addEventListener("blur", () => { if(onHome()) showLayer("home"); });
   });
-  doors.addEventListener("mouseleave", () => { if(onHome()) showLayer("home"); });
+  doors.addEventListener("pointerleave", e => { if(e.pointerType === "mouse" && onHome()) showLayer("home"); });
 
   // ---------- Uitgelicht: cards on a turntable that follows your fingers ----------
   const cf = $("#cf"), track = $("#cfTrack");
