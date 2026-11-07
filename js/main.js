@@ -1156,14 +1156,20 @@
     if(f.get("_honey")) return;
     const data = {naam:f.get("naam"), email:f.get("email"), soort:f.get("soort"), bericht:f.get("bericht"),
       _subject:`Website: ${f.get("soort")} – ${f.get("naam")}`, _replyto:f.get("email"), _template:"table", _captcha:"false"};
-    ctBtn.disabled = true; ctSay("ct.sending");
-    try{
-      const r = await fetch("https://formsubmit.co/ajax/tristannijs.media@gmail.com", {method:"POST", headers:{"Content-Type":"application/json", Accept:"application/json"}, body:JSON.stringify(data)});
-      const j = await r.json().catch(() => ({}));
-      if(!r.ok || j.success === "false" || j.success === false) throw new Error(j.message || r.status);
-      ctForm.reset(); ctSay("ct.sent");
-    }catch(err){ ctSay("ct.fail", true); }
-    ctBtn.disabled = false;
+    // FormSubmit can take several seconds to answer: the message is handed over at once (keepalive, so it also
+    // goes through if the pop-up is closed or the page left) and the visitor sees it as sent; only an actual
+    // failure, if it comes, is shown
+    ctBtn.disabled = true;
+    const saved = {...data};
+    fetch("https://formsubmit.co/ajax/tristannijs.media@gmail.com", {method:"POST", keepalive:true, headers:{"Content-Type":"application/json", Accept:"application/json"}, body:JSON.stringify(data)})
+      .then(async r => { const j = await r.json().catch(() => ({})); if(!r.ok || j.success === "false" || j.success === false) throw 0; })
+      .catch(() => {
+        // put the message back so nothing is lost, and say so
+        for(const [k, v] of Object.entries(saved)) if(ctForm.elements[k] && k !== "soort") ctForm.elements[k].value = v;
+        if(!ct.open) ct.showModal();
+        ctSay("ct.fail", true);
+      });
+    setTimeout(() => { ctForm.reset(); ctSay("ct.sent"); ctBtn.disabled = false; }, 450);
   });
   ct.addEventListener("close", () => { ctMsg.hidden = true; });
 
