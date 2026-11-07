@@ -1145,14 +1145,27 @@
   });
   $("#ctX").addEventListener("click", () => ct.close());
   ct.addEventListener("click", e => { if(e.target === ct) ct.close(); });
-  // for now the form opens the visitor's mail app with everything filled in
-  ctForm.addEventListener("submit", e => {
+  // sent from the page itself through FormSubmit (no account: the first message asks Tristan to confirm the
+  // address once by mail); a hidden "_honey" field catches bots
+  const ctMsg = $("#ctMsg"), ctBtn = ctForm.querySelector("[type=submit]");
+  const ctSay = (k, bad) => { ctMsg.textContent = t(k); ctMsg.hidden = false; ctMsg.classList.toggle("bad", !!bad); };
+  ctForm.addEventListener("submit", async e => {
     e.preventDefault();
     if(!ctForm.reportValidity()) return;
     const f = new FormData(ctForm);
-    const body = `${f.get("bericht")}\n\n— ${f.get("naam")} (${f.get("email")})`;
-    location.href = `mailto:tristannijs.media@gmail.com?subject=${encodeURIComponent(f.get("soort") + " – " + f.get("naam"))}&body=${encodeURIComponent(body)}`;
+    if(f.get("_honey")) return;
+    const data = {naam:f.get("naam"), email:f.get("email"), soort:f.get("soort"), bericht:f.get("bericht"),
+      _subject:`Website: ${f.get("soort")} – ${f.get("naam")}`, _replyto:f.get("email"), _template:"table", _captcha:"false"};
+    ctBtn.disabled = true; ctSay("ct.sending");
+    try{
+      const r = await fetch("https://formsubmit.co/ajax/tristannijs.media@gmail.com", {method:"POST", headers:{"Content-Type":"application/json", Accept:"application/json"}, body:JSON.stringify(data)});
+      const j = await r.json().catch(() => ({}));
+      if(!r.ok || j.success === "false" || j.success === false) throw new Error(j.message || r.status);
+      ctForm.reset(); ctSay("ct.sent");
+    }catch(err){ ctSay("ct.fail", true); }
+    ctBtn.disabled = false;
   });
+  ct.addEventListener("close", () => { ctMsg.hidden = true; });
 
   // ---------- player ----------
   const dlg = $("#player");

@@ -601,8 +601,8 @@ body.is-proj .wk-t{text-transform:none}
 .ct-f textarea{border:1px solid rgba(255,255,255,.35);padding:10px 12px;min-height:120px}
 .ct-f input:focus,.ct-f textarea:focus{border-color:#fff}
 .ct-kind{display:flex;flex-wrap:wrap;gap:8px}
-.ct-kind label{cursor:pointer}
-.ct-kind input{position:absolute;opacity:0;pointer-events:none}
+.ct-kind label{cursor:pointer;position:relative}
+.ct-kind input{position:absolute;left:0;top:0;width:1px;height:1px;margin:0;opacity:0;pointer-events:none}
 .ct-kind i{display:block;font-style:normal;font-size:14px;padding:7px 12px;border:1px solid rgba(255,255,255,.35);transition:border-color .2s,background-color .2s,color .2s}
 .ct-kind label:hover i{border-color:#fff}
 .ct-kind input:checked + i{background:#fff;color:#111;border-color:#fff}
@@ -611,3 +611,10 @@ body.is-proj .wk-t{text-transform:none}
 .ct-alt{font-size:13px;color:#9a9a9a;text-decoration:none}
 .ct-alt:hover{color:#fff}
 @media (max-width:560px){.ct-row{grid-template-columns:1fr;gap:0}}
+.contact{overflow-x:hidden}
+.contact *,.contact *::before,.contact *::after{box-sizing:border-box}
+.ct-row > *,.ct-f{min-width:0}
+.ct-honey{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+.ct-msg{margin:0 0 18px;font-size:14px;color:#cfcfcf}
+.ct-msg.bad{color:#ff9a8a}
+.ct-foot .ph-more:disabled{opacity:.5;cursor:default}
