@@ -573,3 +573,12 @@ body.is-proj .wk-t{text-transform:none}
 }
 /* the long biography scales with the window, so text and photos keep their proportions on wide screens */
 .ov-bio-long .about-text{font-size:max(17px,1.49vw)}
+/* Overig, all: a smaller portrait, the text centred on its frame (the head rises above the frame) */
+.ov-bio:not(.ov-bio-long){align-items:center}
+.ov-bio:not(.ov-bio-long) .ov-h{margin-bottom:clamp(84px,9.4vw,136px)}
+.ov-bio:not(.ov-bio-long) .ov-bio-fig{grid-row:2;width:78%;justify-self:end}
+.ov-bio:not(.ov-bio-long) .ov-bio-fig img{margin-top:-21.08%}
+@media (max-width:760px){
+  .ov-bio:not(.ov-bio-long) .ov-h{margin-bottom:clamp(32px,3.8vw,56px)}
+  .ov-bio:not(.ov-bio-long) .ov-bio-fig{grid-row:3;width:100%;margin-top:calc(24px + 21%)}
+}
