@@ -571,8 +571,6 @@ body.is-proj .wk-t{text-transform:none}
   .ov-bio-long{grid-template-columns:1fr}
   .ov-bio-stack{grid-column:1;grid-row:3;margin-top:48px !important;justify-self:stretch}
 }
-/* the long biography scales with the window, so text and photos keep their proportions on wide screens */
-.ov-bio-long .about-text{font-size:max(17px,1.49vw)}
 /* Overig, all: a smaller portrait, the text centred on its frame (the head rises above the frame) */
 .ov-bio:not(.ov-bio-long){align-items:center}
 .ov-bio:not(.ov-bio-long) .ov-h{margin-bottom:clamp(84px,9.4vw,136px)}

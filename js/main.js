@@ -919,7 +919,7 @@
     const k = stk.getBoundingClientRect().height / stk.getBoundingClientRect().width, full = sec.getBoundingClientRect().width;
     let W = stk.getBoundingClientRect().width;
     for(let i = 0; i < 5; i++){
-      W = Math.max(full * .22, Math.min(full * .45, txt.getBoundingClientRect().height / (k - BIO_HEAD)));
+      W = Math.max(full * .08, Math.min(full * .45, txt.getBoundingClientRect().height / (k - BIO_HEAD)));
       sec.style.gridTemplateColumns = `minmax(0,1fr) ${W.toFixed(1)}px`;
     }
     stk.style.marginTop = (-BIO_HEAD * W) + "px";
