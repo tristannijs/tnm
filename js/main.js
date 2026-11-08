@@ -1145,8 +1145,9 @@
   });
   $("#ctX").addEventListener("click", () => ct.close());
   ct.addEventListener("click", e => { if(e.target === ct) ct.close(); });
-  // sent from the page itself through FormSubmit (no account: the first message asks Tristan to confirm the
-  // address once by mail); a hidden "_honey" field catches bots
+  // sent from the page itself through Web3Forms (the access key is meant to be public); the hidden
+  // "_honey" field catches bots
+  const W3F = "60a154af-3604-416d-95fd-a40dd07668a2";
   const ctMsg = $("#ctMsg"), ctBtn = ctForm.querySelector("[type=submit]");
   const ctSay = (k, bad) => { ctMsg.textContent = t(k); ctMsg.hidden = false; ctMsg.classList.toggle("bad", !!bad); };
   ctForm.addEventListener("submit", async e => {
@@ -1154,22 +1155,16 @@
     if(!ctForm.reportValidity()) return;
     const f = new FormData(ctForm);
     if(f.get("_honey")) return;
-    const data = {naam:f.get("naam"), email:f.get("email"), soort:f.get("soort"), bericht:f.get("bericht"),
-      _subject:`Website: ${f.get("soort")} – ${f.get("naam")}`, _replyto:f.get("email"), _template:"table", _captcha:"false"};
-    // FormSubmit can take several seconds to answer: the message is handed over at once (keepalive, so it also
-    // goes through if the pop-up is closed or the page left) and the visitor sees it as sent; only an actual
-    // failure, if it comes, is shown
-    ctBtn.disabled = true;
-    const saved = {...data};
-    fetch("https://formsubmit.co/ajax/tristannijs.media@gmail.com", {method:"POST", keepalive:true, headers:{"Content-Type":"application/json", Accept:"application/json"}, body:JSON.stringify(data)})
-      .then(async r => { const j = await r.json().catch(() => ({})); if(!r.ok || j.success === "false" || j.success === false) throw 0; })
-      .catch(() => {
-        // put the message back so nothing is lost, and say so
-        for(const [k, v] of Object.entries(saved)) if(ctForm.elements[k] && k !== "soort") ctForm.elements[k].value = v;
-        if(!ct.open) ct.showModal();
-        ctSay("ct.fail", true);
-      });
-    setTimeout(() => { ctForm.reset(); ctSay("ct.sent"); ctBtn.disabled = false; }, 450);
+    const data = {access_key:W3F, subject:`Website: ${f.get("soort")} – ${f.get("naam")}`, from_name:"tristannijs.media",
+      name:f.get("naam"), email:f.get("email"), replyto:f.get("email"), soort:f.get("soort"), message:f.get("bericht")};
+    ctBtn.disabled = true; ctSay("ct.sending");
+    try{
+      const r = await fetch("https://api.web3forms.com/submit", {method:"POST", headers:{"Content-Type":"application/json", Accept:"application/json"}, body:JSON.stringify(data)});
+      const j = await r.json().catch(() => ({}));
+      if(!r.ok || !j.success) throw 0;
+      ctForm.reset(); ctSay("ct.sent");
+    }catch(err){ ctSay("ct.fail", true); }
+    ctBtn.disabled = false;
   });
   ct.addEventListener("close", () => { ctMsg.hidden = true; });
 
