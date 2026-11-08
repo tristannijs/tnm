@@ -1,0 +1,20 @@
+name: FormSubmit-test (eenmalig)
+on:
+  push:
+    branches: [fs-test]
+    paths: [.github/workflows/fs-test.yml]
+permissions:
+  contents: write
+jobs:
+  t:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          mkdir -p fs
+          curl -sS -m 60 -w '\nHTTP %{http_code} in %{time_total}s\n' -X POST https://formsubmit.co/ajax/tristannijs.media@gmail.com \
+            -H 'Content-Type: application/json' -H 'Accept: application/json' -H 'Origin: https://tristannijs.media' -H 'Referer: https://tristannijs.media/' \
+            -d '{"naam":"Test via site","email":"tristannijs.media@gmail.com","soort":"Test","bericht":"Testbericht van het contactformulier","_subject":"Website: test"}' > fs/out.txt 2>&1 || true
+          cat fs/out.txt
+          git config user.name "github-actions[bot]"; git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm -q .github/workflows/fs-test.yml; git add -A; git commit -m "fs result"; git push
