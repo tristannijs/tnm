@@ -799,7 +799,7 @@
     // the newest photo is the background behind OVERIG
     const ov = document.querySelector('.layer[data-key="overig"] img');
     const bg = byId.get(OVERIG_BG) || [...byId.values()].sort((a, b) => (b.date > a.date) - (b.date < a.date))[0];
-    if(ov && bg && ov.dataset.ph !== bg.id){ ov.dataset.ph = bg.id; const im = new Image(); im.onload = () => { ov.src = im.src; }; im.src = flickrSize(bg.src, "b"); }
+    if(ov && bg && bg.id === OVERIG_BG && ov.dataset.ph !== bg.id){ ov.dataset.ph = bg.id; const im = new Image(); im.onload = () => { ov.src = im.src; }; im.src = flickrSize(bg.src, "b"); }
     if(document.body.classList.contains("is-work")) renderWork();
   }
   [{album:null, url:`photos_public.gne?id=${FLICKR}`}, ...ALBUMS.map(a => ({album:a.id, url:`photoset.gne?set=${a.id}&nsid=${FLICKR}`}))].forEach((f, k) => {
@@ -808,6 +808,10 @@
     sc.src = `https://www.flickr.com/services/feeds/${f.url}&lang=en-us&format=json&jsoncallback=tnmFlickr${k}`;
     document.head.appendChild(sc);
   });
+  // the eclipse is in no album and no longer among the 20 newest, so no feed carries it: added by hand
+  // (if the photo is replaced on Flickr, its address changes: update the secret after the id here)
+  takeFeed({items:[{media:{m:"https://live.staticflickr.com/65535/55628757102_180d703cce_m.jpg"}, title:"eclipse_overlay",
+    link:`https://www.flickr.com/photos/${FLICKR}/55628757102/`, date_taken:"2026-08-12T00:00:00", description:'width="240" height="159"'}]}, null);
   const phGrid = $("#phGrid");
   let PHV = [];      // the photos the filters leave
   // eager, not lazy: Safari doesn't load lazy images in the later columns of a column layout
