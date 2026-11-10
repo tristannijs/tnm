@@ -1,5 +1,3 @@
-// written by tools/clips.py — the background clips per hero button, with each clip's point of interest
-// clips with "manual": true were framed by hand in crop.html; tools/clips.py keeps them as they are
 window.CLIPS = {
  "ritcs": [
   {

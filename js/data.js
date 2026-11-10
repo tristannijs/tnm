@@ -1,20 +1,4 @@
-// All projects. `label` and `sub` are the two lines shown on the cards.
-// `frames` are stills shown in the timeline when its tracks are expanded.
-// t0 / t1 are start and end dates (ISO); they drive "Recent" order and the timeline.
-// Details shown in the Recent hover preview (all optional):
-//   ar:4/3       the video's own shape (left out: 16:9); the opened preview takes this shape
-//   dur:"0:57"   running time   (left out: read from the video itself)
-//   hd:true      shows the HD badge (left out: worked out from the video when possible)
-//   lang:"NL"    spoken language (left out: not shown)
-//   subs:"EN"    subtitle language (left out: not shown)
-//   title / type override the preview's title line and type
-//   roles:["Camera","Montage"]   what Tristan did (shown in the preview, used by the Rol filter)
-//   credits:[["Montage","Naam"]] others who worked on it, shown small under the roles
-//   gt / gs   title and second line on the work page cards (left out: the short title)
-//   tags:["iao","ritcs","fictie"]  film tags (Context filter, labels in the preview); videography uses its cat
 window.PROJECTS = [
-  // ----- videografie -----
-  // Persoonlijk, in this order: High & Dry, Film Emulation, SFR Part
   {id:"high-dry", ar:4/3, cat:"persoonlijk", tags:["persoonlijk"], gt:"High & Dry", gs:"Cover", label:"High & Dry", sub:"Cover – gitaar, drums, viool", date:"", t0:"", yt:"BWKjtCglRUY", cover:"assets/covers/high-dry.jpg"},
   {id:"film-emulation", cat:"persoonlijk", tags:["persoonlijk"], gt:"Film Emulation", gs:"Using Dehancer", label:"Film Emulation", sub:"Video-essay", date:"", t0:"", yt:"lYYR9HbSDsE", cover:"assets/covers/film-emulation.jpg"},
   {id:"sfr-part", cat:"persoonlijk", tags:["persoonlijk"], gt:"SFR Part", gs:"2020", label:"SFR Part", sub:"Skatevideo", date:"2020", t0:"", yt:"IiNL64Zoiko", cover:"assets/covers/sfr-part.jpg"},
@@ -31,7 +15,6 @@ window.PROJECTS = [
   {id:"icds-7", ar:1.896, roles:["Camera","Montage"], gt:"International Conference of Dalcroze Studies 7", cat:"event", label:"ICDS 7", sub:"Aftermovie", date:"28–31 juli 2025", t0:"2025-07-28", t1:"2025-07-31", yt:"laxZ4am0Qrw", cover:"assets/covers/icds-7.jpg", frames:["assets/frames/laxZ4am0Qrw-1.jpg","assets/frames/laxZ4am0Qrw-2.jpg","assets/frames/laxZ4am0Qrw-3.jpg","assets/frames/laxZ4am0Qrw-4.jpg","assets/frames/laxZ4am0Qrw-5.jpg","assets/frames/laxZ4am0Qrw-6.jpg","assets/frames/laxZ4am0Qrw-7.jpg","assets/frames/laxZ4am0Qrw-8.jpg"]},
   {id:"mens-sana-2025", ar:1.896, roles:["Camera","Montage"], gt:"Mens Sana", cat:"event", label:"Mens Sana 2025", sub:"Aftermovie", date:"3 mei 2025", t0:"2025-05-03", yt:"cd96lB5AD2k", cover:"assets/covers/mens-sana.jpg", frames:["assets/frames/cd96lB5AD2k-1.jpg","assets/frames/cd96lB5AD2k-2.jpg","assets/frames/cd96lB5AD2k-3.jpg","assets/frames/cd96lB5AD2k-5.jpg","assets/frames/cd96lB5AD2k-6.jpg","assets/frames/cd96lB5AD2k-7.jpg"]},
 
-  // ----- RITCS -----
   {id:"nieuw-gent", tags:["docu","ritcs"], roles:["Montage"], cat:"docu", name:"Nieuw Gent", label:"Atelier Docu: Nieuw Gent", sub:"BA2 Editing", date:"Maart – april 2026", t0:"2026-03-01", t1:"2026-04-30", yt:"TKK0UC2sbbE", frames:["assets/frames/TKK0UC2sbbE-1.jpg","assets/frames/TKK0UC2sbbE-2.jpg","assets/frames/TKK0UC2sbbE-3.jpg","assets/frames/TKK0UC2sbbE-4.jpg","assets/frames/TKK0UC2sbbE-5.jpg","assets/frames/TKK0UC2sbbE-6.jpg","assets/frames/TKK0UC2sbbE-7.jpg","assets/frames/TKK0UC2sbbE-8.jpg"]},
   {id:"87-seconds", tags:["docu","ritcs"], roles:["Montage"], cat:"docu", name:"87 Seconds", label:"Atelier Docu: 87 Seconds", sub:"BA2 Editing", date:"Maart – april 2026", t0:"2026-03-01", t1:"2026-04-30", yt:"rhwQRYKQXOY", frames:["assets/frames/rhwQRYKQXOY-1.jpg","assets/frames/rhwQRYKQXOY-2.jpg","assets/frames/rhwQRYKQXOY-3.jpg","assets/frames/rhwQRYKQXOY-4.jpg","assets/frames/rhwQRYKQXOY-5.jpg","assets/frames/rhwQRYKQXOY-6.jpg","assets/frames/rhwQRYKQXOY-7.jpg","assets/frames/rhwQRYKQXOY-8.jpg"]},
   {id:"filippenzen", tags:["docu","ritcs"], roles:["Montage"], cat:"docu", name:"Filippenzen 3:13", label:"Workshop Docu:\nFilippenzen 3:13", sub:"BA2 Editing", date:"Oktober – november 2025", t0:"2025-10-01", t1:"2025-11-30", yt:"WrqVQPR2veo", frames:["assets/frames/WrqVQPR2veo-1.jpg","assets/frames/WrqVQPR2veo-2.jpg","assets/frames/WrqVQPR2veo-3.jpg","assets/frames/WrqVQPR2veo-4.jpg","assets/frames/WrqVQPR2veo-5.jpg","assets/frames/WrqVQPR2veo-6.jpg","assets/frames/WrqVQPR2veo-7.jpg","assets/frames/WrqVQPR2veo-8.jpg"]},
@@ -42,6 +25,4 @@ window.PROJECTS = [
   {id:"de-koffer", tags:["fictie","ritcs"], roles:["Concept","Acteur","Montage"], cat:"fictie", name:"De Koffer", label:"Atelier Fictie: De Koffer", sub:"BA1 Editing", date:"December 2024", t0:"2024-12-01", t1:"2024-12-31", yt:"pkkMk5IcIpE", cover:"assets/covers/de-koffer.jpg"}
 ];
 
-// "Uitgelicht": the projects that turn on the carousel, in order. The first starts in the middle,
-// the second on the right, the last on the left; any others wait behind the middle one.
 window.FEATURED = ["nieuw-gent", "ten-anker", "fairtrade", "icds-7"];

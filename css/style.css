@@ -1,4 +1,3 @@
-/* Geist (Vercel, SIL Open Font License) */
 @font-face{font-family:"Geist";src:url(../assets/fonts/Geist-Light.woff2) format("woff2");font-weight:300;font-style:normal;font-display:swap}
 @font-face{font-family:"Geist";src:url(../assets/fonts/Geist-Regular.woff2) format("woff2");font-weight:400;font-style:normal;font-display:swap}
 @font-face{font-family:"Geist";src:url(../assets/fonts/Geist-Medium.woff2) format("woff2");font-weight:500;font-style:normal;font-display:swap}
@@ -39,7 +38,6 @@ img{display:block;max-width:100%}
 [hidden]{display:none!important}
 :focus-visible{outline:2px solid var(--fg);outline-offset:2px}
 
-/* ---------- top bar: transparent over the hero, black once you scroll ---------- */
 .bar{position:fixed;inset:0 0 auto;z-index:50;height:var(--bar-h);display:flex;align-items:center;justify-content:space-between;
   padding:env(safe-area-inset-top,0px) var(--gut) 0;background:transparent;transition:background-color .35s ease,height .35s ease}
 .bar.solid{background:var(--bar);--bar-h:76px}
@@ -47,7 +45,6 @@ img{display:block;max-width:100%}
 .nav{display:flex;align-items:center;gap:14px;font-size:16px;font-weight:600;color:#fff;transition:color .35s}
 .nav .lang:hover,.nav .menu-btn:hover{color:#fff}
 .bar.solid .nav{color:#fff}
-/* the links only show once the hero words have scrolled away (class set in main.js) */
 .nav .nav-link{transition:opacity .35s,visibility .35s}
 .bar:not(.links) .nav .nav-link:not([data-contact]){opacity:0;visibility:hidden}
 @media (max-width:760px){.nav-link{display:none}}
@@ -78,32 +75,23 @@ img{display:block;max-width:100%}
 .dr-sub a{display:flex;align-items:center;padding:6px 0;font-size:17px;font-weight:500;text-transform:none;color:#d6d6d6}
 .dr-sub .sq{display:inline-block;width:.7em;height:.7em;margin-right:.6em;flex:none}
 
-/* ---------- hero ---------- */
-/* clip-path (unlike overflow) also clips the fixed background inside: it only ever shows within the hero,
-   never below the footer when a phone bounces past the end of the page */
 .hero{clip-path:inset(0);position:relative;height:100svh;min-height:520px;max-height:1100px;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:flex-end}
-/* exactly as tall as the hero: at 100lvh it ran on under the phone's browser bars, so the picture was scaled up
-   to a taller frame than you see and its centre (a face) sat too low. The hero never outgrows 100svh, so this always covers it */
 .hero-bg{position:fixed;top:0;left:0;right:0;height:100vh;height:100svh;min-height:520px;max-height:1100px;z-index:0}
 .layer{position:absolute;inset:0;opacity:0;transition:opacity .6s ease;background:#1a1a1a}
 .layer.on{opacity:1}
 .layer img,.layer video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .layer video.clip{visibility:hidden}.layer video.clip.cur{visibility:visible}
-/* frames painted with their own crop (main.js); shown once the first one is in, the video plays underneath */
 .layer .clip-canvas{position:absolute;inset:0;width:100%;height:100%;opacity:0}.layer.painted .clip-canvas{opacity:1}
 .hero-shade{position:absolute;inset:0;pointer-events:none;
   background:
     linear-gradient(180deg,rgba(0,0,0,.55) 0,rgba(0,0,0,0) 22%),
     linear-gradient(180deg,rgba(17,17,17,0) 45%,rgba(17,17,17,.75) 82%,var(--bg) 100%)}
-/* one centred row, measured off Tristan's design at 1440 px: 219 px buttons, 23 px apart, 42 px tall */
-/* three words with a chevron, measured off Tristan's design at 1440 px: 25.5 px extra bold, 53 px apart */
 .hero-doors{position:relative;z-index:2;display:flex;justify-content:center;gap:0 clamp(28px,3.7vw,53px);margin-bottom:max(126px,14.6vh)}
 .door{display:inline-flex;align-items:center;gap:.22em;font-size:clamp(20px,1.77vw,25.5px);font-weight:800;letter-spacing:.005em;text-transform:uppercase;line-height:1;
   color:#fff;padding:8px 2px;text-shadow:0 1px 14px rgba(0,0,0,.35);transition:opacity .2s}
 .door svg{width:.62em;height:.4em;flex:none;margin-top:.1em;overflow:visible}
 @media (hover:hover){.hero-doors:hover .door{opacity:.6}}
 @media (hover:hover){.hero-doors .door-wrap:hover .door,.door-wrap:focus-within .door,.door:focus-visible{opacity:1}}
-/* hovering a hero word opens its contexts underneath */
 .door-wrap{position:relative}
 .door svg{transition:transform .2s}
 @media (hover:hover){.door-wrap:hover .door svg,.door-wrap:focus-within .door svg{transform:rotate(180deg)}}
@@ -114,31 +102,24 @@ img{display:block;max-width:100%}
 .door-menu a{display:flex;align-items:center;padding:3px 2px;font-size:clamp(14px,1.1vw,16px);font-weight:500;color:#fff;text-shadow:0 1px 10px rgba(0,0,0,.5);opacity:.8}
 .door-menu a:hover,.door-menu a:focus-visible{opacity:1}
 .door-menu .sq{display:inline-block;width:.7em;height:.7em;margin-right:.55em}
-/* on a phone the hero words are plain buttons: no menu and no chevron */
 @media (hover:none),(max-width:760px){.door-menu,.door svg{display:none}}
 .hero-down{position:relative;z-index:2;color:var(--fg-2);margin-bottom:1.4vh;display:block;padding:6px}
 .hero-down svg{width:40px;height:20px;display:block}
 .hero-down:hover{color:var(--fg)}
 
-/* ---------- section heading ---------- */
 .sec{padding-top:56px}
-/* below the hero (which scrolls over the fixed background): Uitgelicht on #111, then a fade to black */
-.after-hero{position:relative;z-index:1;background:var(--bg);overflow:hidden}   /* phones ignore overflow on <html>: the carousel's side cards must not widen the page */
-/* flat #111 where the carousel fades reach down, then an eased fade to black */
+.after-hero{position:relative;z-index:1;background:var(--bg);overflow:hidden}
 .to-black{background:linear-gradient(180deg,#111 0,#111 14%,rgb(16.67,16.67,16.67) 21.2%,rgb(15.74,15.74,15.74) 28.3%,rgb(14.34,14.34,14.34) 35.5%,rgb(12.59,12.59,12.59) 42.7%,rgb(10.61,10.61,10.61) 49.8%,rgb(8.50,8.50,8.50) 57.0%,rgb(6.39,6.39,6.39) 64.2%,rgb(4.41,4.41,4.41) 71.3%,rgb(2.66,2.66,2.66) 78.5%,rgb(1.26,1.26,1.26) 85.7%,rgb(0.33,0.33,0.33) 92.8%,rgb(0.00,0.00,0.00) 100.0%)}
 .sh{position:relative;z-index:6}
 .sh{margin:0;padding:0 max(var(--gut),7.7vw) 0 max(var(--gut),9.3vw);text-align:left;font-size:19px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#fff}
 .sh sup{font-size:.48em;font-weight:600;letter-spacing:.06em;margin-left:.35em;vertical-align:.95em}
 
-/* ---------- Over: measured off Tristan's design at 1440 px: 635 px text, 74 px gap, 486 px photo, 21.5 px Geist
-   Light; the photo's rectangle (not his head above it) is centred on the text ---------- */
 .about{padding-top:clamp(44px,4.2vw,61px)}
 .about-body{display:grid;grid-template-columns:635fr 486fr;gap:5.1vw;align-items:center;
   padding:clamp(28px,2.4vw,35px) max(var(--gut),7.7vw) 0 max(var(--gut),9.3vw)}
 .about-text{font-weight:300;font-size:clamp(17px,1.49vw,21.5px);line-height:1.2;text-align:justify;text-align-last:left;color:var(--fg)}
 .about-text p{margin:0 0 1.2em}
 .about-text p:last-child{margin:0}
-/* the box is just the rectangle of the photo (900 x 471 of the 900 x 675 file); the head sticks out above it */
 .about-fig{position:relative;aspect-ratio:900/471}
 .about-img{position:absolute;left:0;bottom:0;width:100%;height:auto}
 @media (max-width:760px){
@@ -147,14 +128,12 @@ img{display:block;max-width:100%}
   .about-fig{width:100%;max-width:448px;justify-self:center}
 }
 
-/* ---------- arrows (shared) ---------- */
 .arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:5;background:none;border:0;padding:10px;cursor:pointer;color:#e8e8e8;opacity:.9;transition:opacity .2s}
 .arrow:hover{opacity:1;color:#fff}
 .arrow svg{width:20px;height:40px;display:block}
 .arrow.prev{left:calc(var(--gut) - 22px)}
 .arrow.next{right:calc(var(--gut) - 22px)}
 
-/* ---------- card face (shared by Uitgelicht and Recent) ---------- */
 .face{position:absolute;inset:0;overflow:hidden;background:#1c1c1c}
 .face img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .face::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 50%,rgba(0,0,0,.55) 100%)}
@@ -162,18 +141,12 @@ img{display:block;max-width:100%}
 .cap b{font-weight:800}
 .cap span{font-weight:400}
 
-/* ---------- Uitgelicht: three cards on a turntable ---------- */
 .cf{--sx:118;position:relative;margin-top:clamp(-23px,-1.6vw,-6px);height:clamp(240px,37vw,640px);clip-path:inset(-160px 0 -160px 0);outline:none;touch-action:pan-y;user-select:none}
-/* The sides fade out by masking the cards themselves instead of laying a #111 gradient over them: the empty
-   page underneath is never painted over, so the fade can't show bands there. The track reaches 120 px above
-   and below so the card shadows stay inside the mask. A masked layer is drawn flat, so the depth comes from
-   the perspective on the track and the stacking order from z-index (main.js). */
 .cf-track{position:absolute;inset:-120px 0;perspective:1500px;-webkit-mask-image:linear-gradient(90deg,transparent 0,rgba(0,0,0,.15) 7%,#000 20%,#000 80%,rgba(0,0,0,.15) 93%,transparent 100%);mask-image:linear-gradient(90deg,transparent 0,rgba(0,0,0,.15) 7%,#000 20%,#000 80%,rgba(0,0,0,.15) 93%,transparent 100%)}
 .cf-item{position:absolute;left:50%;top:50%;width:45.6%;aspect-ratio:16/9;border:0;padding:0;background:none;cursor:pointer;
   will-change:transform,opacity;backface-visibility:hidden;isolation:isolate}
 .cf-item::before,.cf-item::after{content:"";position:absolute;pointer-events:none}
 .cf-item::before{content:none}
-/* the drop shadow is a canvas drawn in main.js (dithered, so it has no rings) */
 canvas.drop{position:absolute;z-index:-2;pointer-events:none}
 .cf-item::after{content:none}
 .cf-item .cap{margin:0 6% 4.8% 6%}
@@ -183,9 +156,7 @@ canvas.drop{position:absolute;z-index:-2;pointer-events:none}
 .cf-item .shade{position:absolute;inset:0;z-index:2;background:#000;opacity:0;pointer-events:none}
 .cf-item .cap b{font-size:clamp(14px,2.05vw,36px);line-height:1.05}
 .cf-item .cap span{font-size:clamp(11px,1.5vw,26px);margin-top:3px}
-/* the black fade at both sides */
 
-/* ---------- Recent: newest left ---------- */
 .rc{position:relative;margin-top:clamp(28px,4.5vw,70px)}
 .rc-list{display:flex;gap:12px;overflow-x:auto;padding:60px 27px;margin:-60px 0;scrollbar-width:none;overscroll-behavior-x:contain}
 .rc-list::-webkit-scrollbar{display:none}
@@ -194,7 +165,6 @@ canvas.drop{position:absolute;z-index:-2;pointer-events:none}
 .rc-card .cap b{font-size:clamp(12px,1.15vw,19px)}
 .rc-card .cap span{font-size:clamp(9px,.8vw,13px);margin-top:2px}
 .rc-card:hover img{filter:brightness(1.08)}
-/* hover preview: the card opens up into a playing clip with its details */
 .rc-card{transition:transform .6s cubic-bezier(.22,.7,.2,1)}
 .rc-card{will-change:transform}
 .rc-card.lifted{opacity:0}
@@ -205,7 +175,6 @@ canvas.drop{position:absolute;z-index:-2;pointer-events:none}
   transition:transform .55s cubic-bezier(.22,.7,.2,1)}
 .pv.open{transition-duration:.55s}
 .pv:not(.open){transition-duration:.45s}
-/* the drop shadow is drawn once and only faded, instead of being recalculated every frame */
 .pv-media{position:relative;aspect-ratio:16/9;overflow:hidden;background:#1c1c1c}
 .pv::before{content:"";position:absolute;inset:0;z-index:-1;box-shadow:0 26px 70px rgba(0,0,0,.65);opacity:0;transition:opacity .4s ease}
 .pv.open::before{opacity:1}
@@ -213,7 +182,6 @@ canvas.drop{position:absolute;z-index:-2;pointer-events:none}
 .pv-media iframe.ig{left:50%;right:auto;bottom:auto;width:400px;height:820px;transform-origin:50% 0;background:#000}
 .pv-media video.tall{object-fit:contain;background:#000}
 .pv-media iframe.on,.pv-media video.on{opacity:1}
-/* the caption is drawn --k times larger, so once scaled down to the card it matches the card exactly */
 .pv .cap{margin:0 4% 6% 4%;transition:opacity .25s}
 .pv .cap b{font-size:calc(clamp(12px,1.15vw,19px) * var(--k,1))}
 .pv .cap span{font-size:calc(clamp(9px,.8vw,13px) * var(--k,1));margin-top:calc(2px * var(--k,1))}
@@ -221,18 +189,14 @@ canvas.drop{position:absolute;z-index:-2;pointer-events:none}
 .pv-cf .cap{margin:0 6% 4.8% 6%}
 .pv-cf .cap b{font-size:calc(clamp(14px,2.05vw,36px) * var(--k,1));line-height:1.05}
 .pv-cf .cap span{font-size:calc(clamp(11px,1.5vw,26px) * var(--k,1));margin-top:calc(3px * var(--k,1))}
-/* the details sit under the clip at full size the whole time and only fade, so nothing re-lays out */
-/* the details under a preview: title / roles, date, tags / HD + running time (two columns, rows lined up) */
 .pv-info{display:grid;grid-template-columns:minmax(0,1fr) fit-content(42%);column-gap:1.5em;align-items:baseline;background:#000;padding:.85em 1.4em 1em;opacity:0;transition:opacity .12s ease}
 .pv.open .pv-info{opacity:1;transition:opacity .3s ease .4s}
 .pv-l{min-width:0}
-/* what Tristan did, on the right, in italics */
 .pv-role{grid-column:2;grid-row:1/span 2;align-self:start;padding-top:.28em;text-align:right;font-style:italic;font-weight:400;font-size:.86em;line-height:1.35;color:#d9d9d9}
 .pv-tags{grid-column:1;display:flex;flex-wrap:wrap;gap:.4em;margin-top:.75em;align-self:center}
 .pv-tag{display:inline-flex;align-items:center;padding:.3em .6em .25em;border:1px solid #444;font-size:.62em;letter-spacing:.06em;text-transform:uppercase;line-height:1.2}
 .pv-tag .sq{display:inline-block;width:.85em;height:.85em;margin-right:.5em}
 .pv{cursor:default}
-/* the player takes clicks straight away, even while the cover still shows over it */
 .pv-media iframe,.pv-media video{pointer-events:auto}
 .pv-t{font-size:1.19em;font-weight:800;text-transform:uppercase;line-height:1.15;letter-spacing:.005em}
 .pv-m{grid-column:1;margin-top:.4em;font-size:.82em;text-transform:uppercase;letter-spacing:.02em}
@@ -252,8 +216,6 @@ canvas.drop{position:absolute;z-index:-2;pointer-events:none}
 .rc.scrolled::before{opacity:1}
 #recent{padding-bottom:clamp(20px,3vw,50px)}
 
-/* ---------- Tijdlijn ----------
-   Measured off Tristan's 1440px design: #111 fades to black, then a minimal black timeline. */
 #recent{padding-bottom:87px}
 .tl-sec{--tl-rule:#999;--gap:18px;border-top:1px solid var(--line);padding:221px 0 53px;background:linear-gradient(180deg,var(--bg) 35px,#000 183px)}
 html:has(.tl-sec){background:#000}
@@ -286,13 +248,11 @@ html:has(.tl-sec){background:#000}
 .tick{position:absolute;top:0;bottom:0;border-left:1px solid #4a4a4a;font-size:10.5px;color:var(--muted);padding:4px 0 0 5px;white-space:nowrap}
 .tick.y{border-left-color:#666;color:var(--fg);font-weight:600}
 .trk{position:relative;height:38px}
-/* the black fades at both ends of the track area, and the group lines that sit above them */
 .fade{position:absolute;top:0;bottom:0;width:68px;pointer-events:none;z-index:6}
 .fade.l{left:138px;background:linear-gradient(90deg,#000,rgba(0,0,0,0))}
 .fade.r{right:0;background:linear-gradient(270deg,#000,rgba(0,0,0,0))}
 .sep{position:absolute;left:calc(138px + var(--gap));right:var(--gap);height:1px;background:var(--tl-rule);pointer-events:none;z-index:7}
 
-/* clips: collapsed they're the coloured bar; expanded they show a filmstrip with the name in a bar underneath */
 .clip{position:absolute;top:4px;height:30px;border:1px solid color-mix(in srgb,var(--c) 55%,#000);
   background:linear-gradient(180deg,color-mix(in srgb,var(--c) 88%,#fff) 0,var(--c) 45%,color-mix(in srgb,var(--c) 78%,#000) 100%);
   padding:0;font-family:var(--f);font-size:11.5px;font-weight:700;color:#111;text-align:left;cursor:pointer;min-width:6px;overflow:hidden;display:block}
@@ -318,7 +278,6 @@ html:has(.tl-sec){background:#000}
 .hthumb span{font-size:11px;color:var(--fg-2)}
 @media (hover:none){.hthumb{display:none}}
 
-/* ---------- player ---------- */
 dialog{background:var(--bg);color:var(--fg);border:1px solid #2a2a2a;padding:0;width:min(1060px,calc(100% - 32px));max-height:calc(100% - 32px)}
 dialog::backdrop{background:rgba(0,0,0,.88)}
 .pl-screen{position:relative;aspect-ratio:16/9;background:#000}
@@ -334,7 +293,6 @@ dialog::backdrop{background:rgba(0,0,0,.88)}
 .btn{background:none;border:1px solid rgba(255,255,255,.6);color:var(--fg);padding:8px 14px;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap;text-transform:uppercase}
 .btn:hover{border-color:#fff}
 
-/* ---------- smaller screens ---------- */
 @media (max-width:900px){
   :root{--gut:max(22px,env(safe-area-inset-left,0px));--bar-h:72px}
   .bar.solid{--bar-h:60px}
@@ -359,7 +317,6 @@ dialog::backdrop{background:rgba(0,0,0,.88)}
   .nm-l{display:none} .nm-s{display:inline}
 }
 
-/* ---------- footer ---------- */
 .foot{padding:clamp(80px,14vw,206px) 0 clamp(60px,8vw,110px);text-align:center;color:#9a9a9a}
 .foot-icons{display:flex;justify-content:center;align-items:center;gap:clamp(26px,2.6vw,37px)}
 .foot-icons a{display:block;color:#bdbdbd;transition:color .2s}
@@ -382,7 +339,6 @@ dialog::backdrop{background:rgba(0,0,0,.88)}
   .sh sup{font-size:.45em}
 }
 
-/* ---------- work page (Video / Film / Overig): measured off Tristan's design at 1440 px ---------- */
 .hero-work{position:relative;z-index:2;text-align:center;margin-bottom:max(30px,7.4vh)}
 .wk-t{margin:0;font-size:clamp(34px,4.3vw,62px);font-weight:800;letter-spacing:.005em;line-height:1;text-transform:uppercase;
   text-shadow:0 2px 24px rgba(0,0,0,.35);transition:transform .7s cubic-bezier(.22,.8,.22,1)}
@@ -446,7 +402,6 @@ body.is-work .foot{padding-top:clamp(70px,12.4vw,178px)}
   .flt.open:nth-child(even) .flt-o{margin:0 -14px 0 0}
 }
 
-/* ---------- photos (Overig): Flickr feed in columns, opened in a lightbox ---------- */
 .ph-grid{display:flex;align-items:flex-start;gap:clamp(12px,1.3vw,19px);margin-top:clamp(56px,8.4vw,121px)}
 .ph{display:block;width:100%;margin:0 0 clamp(12px,1.3vw,19px);padding:0;border:0;background:#1c1c1c;cursor:zoom-in}
 .ph-grid[hidden]{display:none}
@@ -472,7 +427,6 @@ body.is-work .foot{padding-top:clamp(70px,12.4vw,178px)}
   font:inherit;font-size:14px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:background-color .2s,border-color .2s}
 .ph-more:hover{border-color:#fff;background:rgba(255,255,255,.06)}
 
-/* music: cards with the genre as the title, the samples underneath, one shared player */
 .mu-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(64px,6.5vw,112px) clamp(56px,8vw,144px);margin-top:clamp(56px,8.4vw,121px)}
 .mu-grid[hidden]{display:none}
 .mu{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;column-gap:10px;row-gap:12px;align-content:start}
@@ -495,7 +449,6 @@ body.is-work .foot{padding-top:clamp(70px,12.4vw,178px)}
 @media (max-width:900px){.mu-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:560px){.mu-grid{grid-template-columns:1fr;margin-top:44px}}
 
-/* Overig, all contexts: sections stacked; Foto, Muziek and Persoonlijk scroll sideways to the window edges */
 .ov{margin-top:clamp(56px,8.4vw,121px);--wpad:max(var(--gut),9.3vw)}
 .ov[hidden]{display:none}
 .ov-s + .ov-s{margin-top:clamp(88px,10vw,150px)}
@@ -507,9 +460,6 @@ body.is-work .foot{padding-top:clamp(70px,12.4vw,178px)}
 .ov-bio .about-text{grid-column:1;grid-row:2}
 .ov-bio-fig{grid-column:2;grid-row:1 / 3}
 .ov-bio-fig img{display:block;width:100%;height:auto}
-/* the rows work like Recent did, within the same width as the biography: the sides fade out (the left one only once the row
-   has been scrolled), arrows at the ends, drag with the mouse. The fade masks the row itself, so nothing is
-   laid over the pictures and nothing bands */
 .ov-rc{position:relative}
 .ov-list{--l:0;--r:1;display:flex;align-items:flex-start;gap:12px;overflow-x:auto;scrollbar-width:none;overscroll-behavior-x:contain;padding:60px 0;margin:-60px 0;
   --fade:linear-gradient(90deg,rgba(0,0,0,calc(1 - var(--l))) 0,rgba(0,0,0,calc(1 - .8 * var(--l))) 4.2%,#000 14%,#000 86%,rgba(0,0,0,calc(1 - .8 * var(--r))) 95.8%,rgba(0,0,0,calc(1 - var(--r))) 100%);
@@ -532,12 +482,10 @@ body.is-work .foot{padding-top:clamp(70px,12.4vw,178px)}
   .ov-mu .mu,.ov-pe .wk-card{width:min(66vw,320px)}
 }
 
-/* Meer info in a preview: to the film's own page */
 .pv-more{display:inline-flex;align-items:center;gap:.45em;margin-top:.9em;color:#fff;font-size:.78em;font-weight:500;opacity:.85;grid-column:1 / -1;justify-self:start;text-decoration:none}
 .pv-more:hover{opacity:1}
 .pv-more svg{width:1em;height:.65em}
 
-/* a film's own page (#film/ten-anker): the work hero with its title as written, then the page */
 body.is-proj .wk-t{text-transform:none}
 .pj{padding:clamp(48px,8.2vw,118px) max(var(--gut),9.3vw) 0}
 .pj[hidden]{display:none}
@@ -551,13 +499,11 @@ body.is-proj .wk-t{text-transform:none}
 .pj-text p{margin:0 0 1.2em}
 .pj-text p:last-child{margin:0}
 .pj-quote .pj-text{font-style:italic}
-/* the three frames: small, centred, the label over one word */
 .pj-frames{display:flex;justify-content:center;gap:clamp(18px,3.4vw,56px);margin-top:clamp(56px,6vw,96px)}
 .pj-frames figure{margin:0;width:clamp(96px,17vw,250px);text-align:center}
 .pj-frames img{display:block;width:100%;aspect-ratio:600/358;object-fit:cover}
 .pj-frames figcaption{margin-top:12px;font-size:clamp(12px,1vw,15px);line-height:1.35;color:var(--fg)}
 .pj-frames figcaption b{display:block;font-weight:700;text-transform:uppercase;letter-spacing:.03em;color:#fff}
-/* Proces: the first paragraph beside the film score */
 .pj-split{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);column-gap:clamp(28px,4vw,64px);align-items:start;margin-bottom:1.2em}
 .pj-split .mu{margin-top:.1em}
 .pj-mu{min-width:0}
@@ -568,21 +514,17 @@ body.is-proj .wk-t{text-transform:none}
 }
 .hero-work.in{animation:werkIn .6s ease both}
 
-/* Biografie on its own: the whole text on the left, three portraits stacked on the right, each head rising
-   into the gap above it */
 .ov-bio-long{grid-template-columns:56fr 36fr;column-gap:7.7%;grid-template-rows:auto auto;align-items:start}
 .ov-bio-long .ov-h{grid-column:1;grid-row:1;margin-bottom:clamp(64px,7.4vw,120px)}
 .ov-bio-long .about-text{grid-column:1;grid-row:2;hyphens:auto;-webkit-hyphens:auto}
 .ov-bio-stack{grid-column:2;grid-row:2;justify-self:end;align-self:start}
 .ov-bio-stack img{display:block;width:100%;height:auto}
-/* each picture's transparent top (its head) overlaps the one above, leaving a 5% gap between the frames */
 .ov-bio-stack img:nth-child(2){margin-top:-8.1%}
 .ov-bio-stack img:nth-child(3){margin-top:-16.1%}
 @media (max-width:760px){
   .ov-bio-long{grid-template-columns:1fr}
   .ov-bio-stack{grid-column:1;grid-row:3;margin-top:48px !important;justify-self:stretch}
 }
-/* Overig, all: a smaller portrait, the text centred on its frame (the head rises above the frame) */
 .ov-bio:not(.ov-bio-long){align-items:center}
 .ov-bio:not(.ov-bio-long) .ov-h{margin-bottom:clamp(84px,9.4vw,136px)}
 .ov-bio:not(.ov-bio-long) .ov-bio-fig{grid-row:2;width:78%;justify-self:end}
@@ -592,7 +534,6 @@ body.is-proj .wk-t{text-transform:none}
   .ov-bio:not(.ov-bio-long) .ov-bio-fig{grid-row:3;width:100%;margin-top:calc(24px + 21%)}
 }
 
-/* contact: a pop-up over the page, in the style of the filters */
 .contact{width:min(640px,calc(100vw - 32px));max-height:calc(100dvh - 32px);margin:auto;padding:0;border:0;background:#111;color:#fff;box-shadow:0 30px 90px rgba(0,0,0,.7);overflow:auto}
 .contact::backdrop{background:rgba(0,0,0,.72);backdrop-filter:blur(3px)}
 .contact[open]{animation:ctIn .35s cubic-bezier(.22,.7,.2,1)}

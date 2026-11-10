@@ -1,6 +1,3 @@
-# Tristan Nijs Media — no AI training on this site.
-# Normal search engines may index the site; crawlers that collect material to train AI models may not.
-
 User-agent: GPTBot
 User-agent: ClaudeBot
 User-agent: anthropic-ai

@@ -302,7 +302,6 @@ def main():
             for k in ("x", "y", "focus", "cuts", "manual"):
                 if k in o: c[k] = o[k]
     with open(listing, "w") as fh:
-        fh.write("// written by tools/clips.py — the background clips per hero button, with each clip's point of interest\n")
         fh.write("window.CLIPS = " + json.dumps(data, indent=1) + ";\n")
     review(cat, items)
 

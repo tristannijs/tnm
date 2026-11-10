@@ -89,18 +89,17 @@ kbd{font:12px "Geist";background:#262626;border:1px solid #3a3a3a;padding:1px 5p
     </p>
   </main>
 </div>
-<script src="assets/clips/clips.js?v=20261110105440"></script>
+<script src="assets/clips/clips.js?v=20261110113144"></script>
 <script>
 (() => {
   const $ = s => document.querySelector(s);
-  const FPS = 25, VA = 16 / 9, PA = 390 / 844, VIS = PA / VA;   // share of the frame a portrait phone shows
+  const FPS = 25, VA = 16 / 9, PA = 390 / 844, VIS = PA / VA;
   const STORE = "tnm-crop-v1";
   const ORIG = JSON.parse(JSON.stringify(window.CLIPS || {}));
   let saved = {}; try{ saved = JSON.parse(localStorage.getItem(STORE) || "{}"); }catch(e){}
   const v = $("#v"), ph = $("#ph"), g = ph.getContext("2d");
   let clip = null, M = null, playing = false;
 
-  // ---- model ----
   function at(f, x, y, t){
     if(!f) return [x, y];
     let i = 0; while(i < f.length - 1 && f[i + 1][0] <= t + .001) i++;
@@ -108,8 +107,6 @@ kbd{font:12px "Geist";background:#262626;border:1px solid #3a3a3a;padding:1px 5p
     const [t0, x0, y0] = f[i], [t1, x1, y1] = f[i + 1], k = Math.min(1, Math.max(0, (t - t0) / (t1 - t0)));
     return [x0 + (x1 - x0) * k, y0 + (y1 - y0) * k];
   }
-  // a clip = cuts + per shot a list of keyframes {t, x, y}; the first one sits on the shot's first frame.
-  // Between keyframes of one shot the crop slides; from the last one it stays put until the next cut.
   function fromClip(c){
     const dur = c.dur, f = c.focus;
     let cuts = (c.cuts || []).slice();
@@ -130,7 +127,7 @@ kbd{font:12px "Geist";background:#262626;border:1px solid #3a3a3a;padding:1px 5p
       s.keys.sort((p, q) => p.t - q.t).forEach((k, j) => {
         const g = j < s.keys.length - 1 ? 1 : 0, key = [+k.t.toFixed(3), +k.x.toFixed(3), +k.y.toFixed(3), g];
         const p = out[out.length - 1];
-        if(p && !p[3] && !g && j === 0 && p[1] === key[1] && p[2] === key[2]) return;   // same framing as the shot before
+        if(p && !p[3] && !g && j === 0 && p[1] === key[1] && p[2] === key[2]) return;
         out.push(key);
       });
     });
@@ -145,14 +142,12 @@ kbd{font:12px "Geist";background:#262626;border:1px solid #3a3a3a;padding:1px 5p
     try{ localStorage.setItem(STORE, JSON.stringify(saved)); }catch(e){}
     drawList(); drawTl(); show();
   }
-  // edits from earlier sessions in this browser
   Object.values(window.CLIPS).flat().forEach(c => {
     const s = saved[c.src]; if(!s) return;
     c.x = s.x; c.y = s.y; c.cuts = s.cuts; c.manual = true;
     if(s.focus) c.focus = s.focus; else delete c.focus;
   });
 
-  // ---- list ----
   const NAMES = {ritcs:"RITCS", videografie:"Videografie"};
   function drawList(){
     $("#list").innerHTML = Object.entries(window.CLIPS).map(([cat, l]) =>
@@ -166,7 +161,6 @@ kbd{font:12px "Geist";background:#262626;border:1px solid #3a3a3a;padding:1px 5p
     drawList(); drawTl(); show();
   }
 
-  // ---- timeline ----
   function drawTl(){
     const b = [0, ...M.cuts, clip.dur], cur = shotAt(v.currentTime);
     $("#tl").innerHTML = M.shots.map((s, i) => `<div class="shot${i === cur ? " sel" : ""}" style="left:${b[i] / clip.dur * 100}%;width:${(b[i + 1] - b[i]) / clip.dur * 100}%"><b>${i + 1}</b></div>`).join("")
@@ -182,7 +176,6 @@ kbd{font:12px "Geist";background:#262626;border:1px solid #3a3a3a;padding:1px 5p
   $("#tl").addEventListener("pointermove", e => { if(scrub) seekTo(e); });
   $("#tl").addEventListener("pointerup", () => { scrub = false; if(playing) v.play(); });
 
-  // ---- what the phone sees, and the window on the full frame ----
   function show(){
     if(!clip) return;
     const t = v.currentTime, [x, y] = at(toFocus(M, clip.dur), 0, 0, t);
@@ -199,7 +192,6 @@ kbd{font:12px "Geist";background:#262626;border:1px solid #3a3a3a;padding:1px 5p
     $("#target").innerHTML = `Shot ${i + 1} van ${M.shots.length} · keyframe <span class="target">${ak + 1} van ${s.keys.length}</span>` + (s.keys.length > 1 ? " · de uitsnede schuift tussen de keyframes van deze shot" : "");
   }
   const bounds = i => { const b = [0, ...M.cuts, clip.dur]; return [b[i], b[i + 1]]; };
-  // the keyframe a click changes: the one on this frame, else the last one before the playhead
   const active = t => { const ks = M.shots[shotAt(t)].keys; let k = 0; ks.forEach((q, j) => { if(q.t <= t + .5 / FPS) k = j; }); return k; };
   const frameT = () => +(Math.round(v.currentTime * FPS) / FPS).toFixed(3);
   const loop = () => { show(); "requestVideoFrameCallback" in v ? v.requestVideoFrameCallback(loop) : requestAnimationFrame(loop); };
@@ -207,7 +199,6 @@ kbd{font:12px "Geist";background:#262626;border:1px solid #3a3a3a;padding:1px 5p
   "requestVideoFrameCallback" in v ? v.requestVideoFrameCallback(loop) : requestAnimationFrame(loop);
   setInterval(show, 120);
 
-  // ---- editing ----
   function addKey(x, y){
     const t = frameT(), i = shotAt(v.currentTime), s = M.shots[i], ks = s.keys;
     const hit = ks.find(k => Math.abs(k.t - t) < .5 / FPS);
@@ -228,7 +219,7 @@ kbd{font:12px "Geist";background:#262626;border:1px solid #3a3a3a;padding:1px 5p
   $("#kadd").onclick = () => addKey();
   $("#kdel").onclick = () => {
     const s = M.shots[shotAt(v.currentTime)], j = active(v.currentTime);
-    if(j === 0){ if(s.keys.length > 1) s.keys.splice(1, 1); else return; }          // the first one stays: drop the next
+    if(j === 0){ if(s.keys.length > 1) s.keys.splice(1, 1); else return; }
     else s.keys.splice(j, 1);
     apply();
   };
@@ -244,7 +235,7 @@ kbd{font:12px "Geist";background:#262626;border:1px solid #3a3a3a;padding:1px 5p
   }
   $("#cut").onclick = addCut;
   $("#uncut").onclick = () => {
-    const i = shotAt(v.currentTime); if(i === 0) return;       // the cut at the start of this shot
+    const i = shotAt(v.currentTime); if(i === 0) return;
     M.cuts.splice(i - 1, 1); M.shots[i - 1].keys.push(...M.shots[i].keys); M.shots.splice(i, 1); apply();
   };
   $("#reset").onclick = () => {
@@ -254,7 +245,6 @@ kbd{font:12px "Geist";background:#262626;border:1px solid #3a3a3a;padding:1px 5p
     M = fromClip(clip); drawList(); drawTl(); show();
   };
 
-  // ---- playback ----
   const setPlay = p => { playing = p; $("#play").textContent = p ? "❚❚ Pauze" : "▶ Speel"; p ? v.play() : v.pause(); };
   $("#play").onclick = () => setPlay(!playing);
   const step = d => { setPlay(false); v.currentTime = Math.max(0, Math.min(clip.dur - .001, (Math.round(v.currentTime * FPS) + d) / FPS + .001)); };
@@ -274,11 +264,8 @@ kbd{font:12px "Geist";background:#262626;border:1px solid #3a3a3a;padding:1px 5p
     }
   });
 
-  // ---- export ----
   $("#dl").onclick = () => {
-    const txt = "// written by tools/clips.py — the background clips per hero button, with each clip's point of interest\n" +
-                "// clips with \"manual\": true were framed by hand in crop.html; tools/clips.py keeps them as they are\n" +
-                "window.CLIPS = " + JSON.stringify(window.CLIPS, null, 1) + ";\n";
+    const txt = "window.CLIPS = " + JSON.stringify(window.CLIPS, null, 1) + ";\n";
     const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([txt], {type:"text/javascript"})); a.download = "clips.js"; a.click();
     setTimeout(() => URL.revokeObjectURL(a.href), 2000);
   };

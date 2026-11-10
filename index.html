@@ -5,11 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Tristan Nijs Media</title>
 <meta name="description" content="Tristan Nijs is monteur en videograaf uit Gent: aftermovies, trouwfilms en promo's, en student montage aan het RITCS.">
-<!-- no AI training on these films and images (honoured by crawlers that follow these tags) -->
 <meta name="robots" content="noai, noimageai">
 <link rel="icon" href="assets/favicon.png">
-<!-- link previews (Instagram, WhatsApp, iMessage…): the logo small in the middle of a 1.91:1 card, so the
-     square crop some apps make still shows all of it -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Tristan Nijs Media">
 <meta property="og:title" content="Tristan Nijs Media">
@@ -28,7 +25,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap">
 <link rel="preload" href="assets/fonts/Geist-Regular.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/Geist-Medium.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="css/style.css?v=20261110105440">
+<link rel="stylesheet" href="css/style.css?v=20261110113144">
 </head>
 <body>
 
@@ -64,8 +61,6 @@
 
 <main id="top">
 
-  <!-- HERO: each layer is one background: a still (data-img), a loop (data-video), or a category's
-       clips in random order (data-clips, listed in assets/clips/clips.js by tools/clips.py). -->
   <section class="hero" id="hero">
     <div class="hero-bg" aria-hidden="true">
       <div class="layer on" data-key="home"        data-clips="all" data-skip="jonathan nelson elevator koffer"></div>
@@ -110,7 +105,6 @@
     <p class="wk-none" id="wkNone" hidden data-i18n="f.none">Hier staat nog niets.</p>
   </section>
 
-  <!-- a film's own page (#film/ten-anker), opened with Meer info in its preview; the hero shows its clips -->
   <section class="pj" id="proj" data-id="ten-anker" hidden>
     <div class="pj-film" id="film">
       <iframe data-src="https://www.youtube-nocookie.com/embed/nZM5mqWff8g?rel=0&amp;modestbranding=1&amp;playsinline=1" title="Ten Anker" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen></iframe>
@@ -192,7 +186,6 @@
   </div>
 </main>
 
-
 <dialog class="lightbox" id="lightbox" aria-label="Foto">
   <img id="lbImg" alt="">
   <button type="button" class="lb-x" id="lbClose" data-i18n-aria="close" aria-label="Sluiten">×</button>
@@ -239,10 +232,10 @@
   </div>
 </dialog>
 
-<script src="js/i18n.js?v=20261110105440"></script>
-<script src="assets/clips/clips.js?v=20261110105440"></script>
-<script src="js/data.js?v=20261110105440"></script>
-<script src="js/music.js?v=20261110105440"></script>
-<script src="js/main.js?v=20261110105440"></script>
+<script src="js/i18n.js?v=20261110113144"></script>
+<script src="assets/clips/clips.js?v=20261110113144"></script>
+<script src="js/data.js?v=20261110113144"></script>
+<script src="js/music.js?v=20261110113144"></script>
+<script src="js/main.js?v=20261110113144"></script>
 </body>
 </html>

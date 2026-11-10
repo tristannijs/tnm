@@ -11,7 +11,6 @@
   const L = window.I18N, t = (k, v) => L.t(k, v);
   const sub = p => L.sub(p.sub), when = p => L.date(p), lab = p => L.label(p.label);
 
-  // image for a card: own cover, else YouTube's (maxres, falling back to hq)
   function coverImg(p){
     const img = new Image(); img.alt = ""; img.loading = "lazy"; img.draggable = false;
     const gone = () => { img.onerror = null; img.remove(); };
@@ -24,15 +23,12 @@
     if(p.cover || p.yt) f.appendChild(coverImg(p));
     return f;
   }
-  // a card on the page only shows its title; what it is, the year and the roles are in the opened preview
   const RITCS = {fictie:1, docu:1, iao:1};
   const kind = p => p.cat === "iao" ? "IAO" : RITCS[p.cat] ? "RITCS" : t("type." + p.cat);
   const year = p => (p.t1 || p.t0 || "").slice(0, 4);
   const title = p => p.name ? L.label(p.name) : flat(lab(p));
   const capHTML = p => `<b>${esc(title(p))}</b>`;
-  // what Tristan did on it, bottom right of a featured card
   const VIDCAT = {event:1, trouw:1, promo:1};
-  // a project's tags: film projects list theirs (fictie / docu, ritcs, iao), videography uses its kind
   const tagsOf = p => p.tags || (VIDCAT[p.cat] ? [p.cat] : []);
   const TAGC = {event:1, trouw:1, promo:1, ritcs:1, iao:1, fictie:1, docu:1};
   const rolesOf = p => (p.roles || []).map(L.role);
@@ -47,10 +43,7 @@
     return c;
   }
 
-  // ---------- top bar ----------
   const bar = $("#bar");
-  // black as soon as the page scrolls; Video / Film / Overig only come in once the hero words have
-  // scrolled away under the bar
   const doorsEl = $("#doors");
   const onScroll = () => {
     bar.classList.toggle("solid", scrollY > 8);
@@ -73,7 +66,6 @@
   document.addEventListener("click", e => { if(!drawer.hidden && !e.target.closest("#drawer")) setMenu(false); });
   document.addEventListener("keydown", e => { if(e.key === "Escape") setMenu(false); });
 
-  // ---------- language: NL / EN / FR ----------
   const langBtn = $("#langBtn"), langMenu = $("#langMenu");
   function setLangMenu(open){ langMenu.hidden = !open; langBtn.setAttribute("aria-expanded", open); }
   function showLang(){
@@ -93,13 +85,7 @@
     cfItems.forEach(({el}, i) => el.setAttribute("aria-label", `${title(feat[i])}, ${kind(feat[i])} ${year(feat[i])}`));
   });
 
-  // ---------- hero: a layer per background; hovering a door swaps to its layer ----------
   const layers = [...document.querySelectorAll(".hero-bg .layer")];
-  // each layer shows its still right away; a layer with a video plays that on top of it.
-  // Videos of layers you don't see yet only start downloading once the page itself has loaded,
-  // so they never slow down the first view but are ready by the time you hover a button.
-  // A layer can offer an AV1 file (data-video-av1) next to the H.264 one (data-video): AV1 looks
-  // better at half the size, but is only used where the browser says it can play it smoothly.
   const AV1 = 'video/mp4; codecs="av01.0.08M.10"';
   const av1ok = (async () => {
     if(!navigator.mediaCapabilities) return false;
@@ -112,16 +98,9 @@
   const hoverable = matchMedia("(any-hover: hover)").matches;
   const afterLoad = fn => document.readyState === "complete" ? fn() : addEventListener("load", fn, {once:true});
 
-  // A layer with data-clips="ritcs" plays that category's short clips from assets/clips/clips.js in a random
-  // order, cut hard one after the other. Two <video>s take turns: one plays, the other has the next clip ready.
-  // Each clip says where its point of interest is (and, for clips with a cut or a move, how that changes over
-  // time), so a screen narrower than 16:9 crops around it instead of around the middle.
   function clipLayer(l){
     const C = window.CLIPS || {};
-    // data-clips="all": every category's clips in one pool (the background when no button is hovered)
-    // data-skip leaves out projects by name, e.g. data-skip="jonathan nelson"
     const skip = (l.dataset.skip || "").toLowerCase().split(/\s+/).filter(Boolean);
-    // data-only keeps one project's clips, e.g. data-only="tenanker" behind that film's own page
     const only = l.dataset.only;
     const list = (l.dataset.clips === "all" ? Object.values(C).flat() : C[l.dataset.clips] || []).filter(c => !skip.includes(c.project) && (!only || c.project === only));
     if(!list.length) return null;
@@ -133,7 +112,6 @@
     });
     let bag = [], last = null, cur = 0, playing = false, raf = 0, useAv1 = false;
     av1ok.then(ok => useAv1 = ok);
-    // random order: every clip once before any repeats, never two clips of the same project in a row
     function next(){
       if(!bag.length){ bag = list.slice(); for(let i = bag.length - 1; i > 0; i--){ const j = Math.random() * (i + 1) | 0; [bag[i], bag[j]] = [bag[j], bag[i]]; } }
       let k = bag.findIndex(c => !last || c.project !== last.project || list.length < 2);
@@ -141,19 +119,15 @@
       return last = bag.splice(k, 1)[0];
     }
     function load(v, c){ v.clip = c; v.src = useAv1 ? c.av1 : c.src; v.poster = c.poster; v.preload = "auto"; v.load(); }
-    // where the point of interest is at time t. Key points are [t, x, y, glide]: from a key point the spot
-    // stays put until the next one (a cut: the new shot is framed from its first frame), unless glide is set,
-    // then it moves in a straight line to the next one (a subject walking through one shot)
     function at(c, t){
       const f = c.focus;
       if(!f) return [c.x, c.y];
-      t += .01;                                   // frame times can come in a hair early
+      t += .01;
       let i = 0; while(i < f.length - 1 && f[i + 1][0] <= t) i++;
       if(i === f.length - 1 || !f[i][3]) return [f[i][1], f[i][2]];
       const [t0, x0, y0] = f[i], [t1, x1, y1] = f[i + 1], k = Math.min(1, Math.max(0, (t - t0) / (t1 - t0)));
       return [x0 + (x1 - x0) * k, y0 + (y1 - y0) * k];
     }
-    // the crop window centred on the point as far as the frame allows, as a fraction 0..1 of the room to move
     const pos = (p, vis) => vis >= 1 ? .5 : Math.min(1, Math.max(0, (p - vis / 2) / (1 - vis)));
     function place(v, t){
       const c = v.clip; if(!c) return;
@@ -162,9 +136,6 @@
       const op = `${(pos(x, ca / va) * 100).toFixed(2)}% ${(pos(y, va / ca) * 100).toFixed(2)}%`;
       if(v.style.objectPosition !== op) v.style.objectPosition = op;
     }
-    // Where the browser reports every video frame (requestVideoFrameCallback), each frame is painted into a
-    // canvas together with its own crop. Moving the crop with CSS instead lands one frame late on phones, so
-    // the first frame after a cut still showed the old framing. The <video> keeps playing underneath.
     const RVFC = "requestVideoFrameCallback" in HTMLVideoElement.prototype;
     const cv = RVFC ? document.createElement("canvas") : null, g = cv && cv.getContext("2d", {alpha:false});
     if(cv){ cv.className = "clip-canvas"; l.appendChild(cv); }
@@ -198,7 +169,6 @@
       const n = vids[1 - cur];
       cur = 1 - cur;
       place(n);
-      // cut as soon as the next clip has a frame; until then the last frame of this one stays
       const go = () => { show(cur); track(); load(v, next()); };
       if(playing){ n.play().catch(() => {}); }
       if(n.readyState >= 2) go(); else n.addEventListener("loadeddata", go, {once:true});
@@ -216,8 +186,6 @@
       play(){ start().then(() => { playing = true; vids[cur].play().catch(() => {}); track(); }); },
       pause(){ playing = false; vids[cur].pause(); stop(); }
     };
-    // the layer you see first plays straight away, on every device; the hover layers fetch their first clips
-    // once the page has loaded, and only where hovering exists (not on phones)
     if(l.classList.contains("on")) p.play();
     else if(hoverable) afterLoad(start);
     return p;
@@ -235,12 +203,10 @@
       pickVideo(l).then(src => {
         v.src = src;
         if(l.classList.contains("on")) v.play().catch(() => {});
-        // the hover-only layers are fetched ahead only where hovering exists (not on phones)
         else if(hoverable) afterLoad(() => { v.preload = "auto"; v.load(); });
       });
     }
   });
-  // the background stays put while the page scrolls over it; once the hero is out of sight it stops playing
   let heroSeen = true, curKey = "home";
   new IntersectionObserver(([e]) => {
     heroSeen = e.isIntersecting;
@@ -256,10 +222,7 @@
     });
   }
   const doors = $("#doors");
-  // hovering a door previews its background (only on the start page)
   const onHome = () => !document.body.classList.contains("is-work");
-  // only with a real mouse: on a phone the first tap would otherwise count as hovering (iOS then swallows
-  // the click, so the page didn't open until the second tap)
   doors.querySelectorAll(".door").forEach(d => {
     d.addEventListener("pointerenter", e => { if(e.pointerType === "mouse" && onHome()) showLayer(d.dataset.bg); });
     d.addEventListener("focus", () => { if(onHome() && d.matches(":focus-visible")) showLayer(d.dataset.bg); });
@@ -267,13 +230,10 @@
   });
   doors.addEventListener("pointerleave", e => { if(e.pointerType === "mouse" && onHome()) showLayer("home"); });
 
-  // ---------- Uitgelicht: cards on a turntable that follows your fingers ----------
   const cf = $("#cf"), track = $("#cfTrack");
   const feat = window.FEATURED.map(id => BY[id]).filter(Boolean);
   const n = feat.length;
   $("#featN").textContent = `[${n}]`;
-  // `offset` is which card is in the middle, as a continuous number (1.4 = 40% of the way
-  // from card 1 to card 2). Input moves `goal`; every frame `offset` glides toward it.
   let offset = 0, goal = 0;
   const wrap = d => { d = ((d % n) + n) % n; return d >= n/2 ? d - n : d; };
   const centerIdx = () => ((Math.round(offset) % n) + n) % n;
@@ -286,21 +246,14 @@
     b.addEventListener("click", () => {
       if(moved) return;
       const d = wrap(i - offset);
-      // the front card opens into its preview right away (hovering 1 s does the same)
       if(Math.abs(d) < .5){ if(!pv || pv.card !== b) openPeek(b); } else { goal = Math.round(goal) + Math.sign(d); run(); }
     });
     track.appendChild(b);
     return {el:b, shade};
   });
-  // ---- the cards' drop shadow, drawn per pixel ----
-  // A CSS shadow this dark only spans about 11 grey levels on #111, and browsers round every pixel to the
-  // nearest level, so the soft edge shows as rings. Photoshop dithers when it writes 8-bit; browsers don't.
-  // So the shadow is drawn here into a canvas at the screen's own pixel size, with each pixel's level
-  // chosen by dithering, the way Photoshop would. Same shape as the CSS shadow it replaces
-  // (0 18px 50px rgba(0,0,0,.66) at 1440 px), scaled with the card.
-  const BG = 17;                                   // #111
+  const BG = 17;
   const erf = x => { const t = 1 / (1 + .3275911 * Math.abs(x)), y = 1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - .284496736) * t + .254829592) * t * Math.exp(-x * x); return x >= 0 ? y : -y; };
-  const shadowCache = new Map();     // one computed shadow per card size: the grid's cards share it
+  const shadowCache = new Map();
   function drawShadow(el){
     let cv = el.querySelector("canvas.drop");
     if(!cv){ cv = document.createElement("canvas"); cv.className = "drop"; cv.setAttribute("aria-hidden", "true"); el.prepend(cv); }
@@ -316,9 +269,9 @@
     for(let x = 0; x < W; x++){ const X = x / dpr - m; fx[x] = .5 * (erf(X / s2) - erf((X - w) / s2)); }
     for(let y = 0; y < H; y++){ const Y = y / dpr - m - off; fy[y] = .5 * (erf(Y / s2) - erf((Y - h) / s2)); }
     for(let y = 0, i = 0; y < H; y++) for(let x = 0; x < W; x++, i += 4){
-      const v = BG * (1 - .66 * fx[x] * fy[y]);              // the grey this pixel should be over #111
-      const lv = Math.min(BG, Math.floor(v + Math.random()));  // dithered to a whole level
-      d[i + 3] = 15 * (BG - lv);                               // black at the alpha that gives exactly that level
+      const v = BG * (1 - .66 * fx[x] * fy[y]);
+      const lv = Math.min(BG, Math.floor(v + Math.random()));
+      d[i + 3] = 15 * (BG - lv);
     }
     g.putImageData(img, 0, 0);
     shadowCache.set(key, img);
@@ -332,8 +285,6 @@
   const readSx = () => { sx = parseFloat(getComputedStyle(cf).getPropertyValue("--sx")) || 118; };
   function render(){
     const front = centerIdx();
-    // turning the carousel closes a preview that is open on it, once it has really turned (a sixth of a card);
-    // a nudge that snaps back leaves it open
     if(pv && pv.ctx === cfCtx && Math.abs(offset - pv.off) > .16) closePeek(false, true);
     cfItems.forEach(({el, shade}, i) => {
       const p = n > 1 ? wrap(i - offset) : 0, a = Math.abs(p), sg = Math.sign(p);
@@ -342,7 +293,7 @@
       else { X = sg*(sx + (a-1)*sx*.6); Z = -600 - (a-1)*400; R = -22*sg; B = .4; O = Math.max(0, Math.min(1, (1.5 - a)/.45)); }
       el.style.transform = `translate(-50%,-50%) translate3d(${X.toFixed(3)}%,0,${Z.toFixed(2)}px) rotateY(${R.toFixed(3)}deg)`;
       el.style.opacity = O.toFixed(3);
-      el.style.zIndex = 100 - Math.round(a * 10);     // nearest card on top (the track is drawn flat)
+      el.style.zIndex = 100 - Math.round(a * 10);
       el.style.visibility = O < .01 ? "hidden" : "";
       el.style.pointerEvents = O < .5 ? "none" : "";
       shade.style.opacity = B.toFixed(3);
@@ -350,7 +301,6 @@
       el.setAttribute("aria-hidden", i === front ? "false" : "true");
     });
   }
-  // the glide: frame-rate independent easing of offset toward goal
   let raf = 0, last = 0, tau = 90;
   function frame(now){
     const dt = Math.min(64, now - (last || now)); last = now;
@@ -370,10 +320,7 @@
   });
 
   const pxPerCard = () => Math.max(220, cf.clientWidth * .26);
-  // sideways scroll (trackpad, shift + wheel) turns it as far and fast as you scroll;
-  // plain up/down keeps scrolling the page. When the scrolling stops it settles on a card.
   let quiet = null;
-  // only a clearly sideways scroll turns it: a page scroll on a trackpad drifts a little sideways too
   const sideways = e => { const dx = e.shiftKey && !e.deltaX ? e.deltaY : e.deltaX; return Math.abs(dx) > 2 * Math.abs(e.shiftKey ? 0 : e.deltaY) ? dx : 0; };
   cf.addEventListener("wheel", e => {
     const dx = sideways(e); if(!dx) return;
@@ -383,7 +330,6 @@
     run(60);
     clearTimeout(quiet); quiet = setTimeout(snap, 90);
   }, {passive:false});
-  // drag or swipe: follows the finger, and a flick carries on in proportion to its speed
   let moved = false;
   const drag = {on:false, x:0, start:0, lx:0, lt:0, v:0};
   cf.addEventListener("pointerdown", e => {
@@ -407,15 +353,11 @@
   });
   cf.addEventListener("dragstart", e => e.preventDefault());
 
-
-  // ---------- Uitgelicht: rest 1 s on the front card and it opens up and plays ----------
-  // The card grows a little into a playing preview with its details underneath; the page dims.
   const VIDEO = {event:1, trouw:1, promo:1};
   const pvType = p => p.type || (VIDEO[p.cat] ? t("type." + p.cat) : sub(p));
   const pvTitle = p => {
     if(p.title) return p.title;
     const n = flat(lab(p));
-    // videography: add the subtitle unless it only repeats the type ("Wejo × Bocco: Pop-up opening")
     return VIDEO[p.cat] && p.sub && sub(p).toLowerCase() !== pvType(p).toLowerCase() ? `${n}: ${sub(p)}` : n;
   };
   const mmss = s => { s = Math.round(s); return Math.floor(s/60) + ":" + String(s%60).padStart(2,"0"); };
@@ -424,17 +366,14 @@
     audio:`<svg viewBox="0 0 30 24" aria-hidden="true"><path d="M2 8.5h5L13 3v18l-6-5.5H2z" fill="currentColor"/><path d="M17 8.2a5.3 5.3 0 0 1 0 7.6M20.3 5a9.8 9.8 0 0 1 0 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`,
     subs:`<svg viewBox="0 0 26 24" aria-hidden="true"><path d="M2 2h22v15H9l-5 5v-5H2z" fill="currentColor"/><path d="M6.5 7.5h13M6.5 11.5h13" stroke="#000" stroke-width="1.8"/></svg>`
   };
-  // any device with a mouse or trackpad (touch-only screens tap straight to the player)
   var cfSettled = () => {};
   const shade = document.createElement("div"); shade.className = "pv-shade"; document.body.appendChild(shade);
-  // var, not let: the carousel above already checks `pv` while it draws its first frame
   var pv = null, peekTimer = 0, peekLeft = 0;
   const cfCtx = {
     grow: 1.12, cls: "pv-cf",
     home: c => c.getBoundingClientRect(),
     shift: () => 0,
     begin(){}, open(){}, close(){},
-    // sideways scrolling keeps turning the carousel; the preview closes as soon as it moves
     wheel(dx){ goal += dx / pxPerCard(); run(60); clearTimeout(quiet); quiet = setTimeout(snap, 90); }
   };
 
@@ -456,9 +395,6 @@
     if(pv) closePeek(true);
     const p = BY[card.dataset.id]; if(!p) return;
     const r = ctx.home(card);
-    // where the preview ends up: grown around the card's centre, kept inside the window
-    // the preview takes the video's own shape (p.ar, 16:9 when left out). Wider or 16:9: as wide as usual.
-    // Narrower: as tall as needed, an upright one up to 1.6 times the usual width, always within the window
     const ar = p.ar || 16/9, tall = ar < 1, odd = Math.abs(ar - 16/9) > .01;
     let W = Math.min(r.width * ctx.grow, innerWidth - 32), H = W / ar;
     if(tall) H = Math.min(W * 1.6, H);
@@ -476,21 +412,16 @@
         <div class="pv-r"></div>${p.page ? `<a class="pv-more" href="#${esc(veldOf(p))}/${esc(p.id)}">${esc(t("more"))}<svg viewBox="0 0 16 10" aria-hidden="true"><path d="M1 5h13M10 1l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></a>` : ""}</div>`;
     { const more = el.querySelector(".pv-more"); if(more) more.addEventListener("click", e => e.stopPropagation()); }
     const media = el.querySelector(".pv-media");
-    // reuse the card's own, already decoded picture so the first frame is never empty
     const own = card.querySelector(".face img"), f = face(p), fi = f.querySelector("img");
     if(own && fi){ fi.src = own.currentSrc || own.src; fi.loading = "eager"; }
     if(odd){ media.style.aspectRatio = String(ar); media.append(f); } else media.append(f, cap(p));
-    // the preview is laid out once at its final size; growing is a pure scale from the card,
-    // which the graphics card animates without the page having to re-lay out every frame
     const top0 = T + scrollY;
     el.style.left = L + "px"; el.style.top = top0 + "px"; el.style.width = W + "px";
     el.style.fontSize = Math.min(24, Math.max(W, 300) / 375 * 16) + "px";
     el.style.setProperty("--k", (W / r.width).toFixed(4));
     ctx.begin();
-    // shrunk onto the card (16:9): its picture fits inside the card, centred, as the card's own cover shows it
     const shrunk = () => {
       const q = ctx.home(card), dx = ctx.shift(), k = ar < 16/9 ? q.height / H : q.width / W;
-      // in page coordinates: the preview sits in the page, so after a scroll the card is somewhere else in the window
       const x = q.left + q.width/2 - W*k/2, y = q.top + scrollY + q.height/2 - H*k/2;
       return `translate(${(x - L - dx).toFixed(2)}px,${(y - top0).toFixed(2)}px) scale(${k.toFixed(4)})`;
     };
@@ -499,14 +430,12 @@
     document.body.appendChild(el);
     const me = pv = {el, card, p, shrunk, ctx, off: offset};
     refreshRow(p);
-    // sideways scrolling over the open preview keeps turning the carousel underneath it
     el.addEventListener("wheel", e => {
       const dx = ctx === cfCtx ? sideways(e) : 0; if(!dx) return;
       e.preventDefault();
       const unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? innerWidth : 1;
       ctx.wheel(dx * unit);
     }, {passive:false});
-    // start the moment the picture is ready to draw (a cached one is ready within a frame)
     const ready = fi && fi.decode ? fi.decode().catch(() => {}) : Promise.resolve();
     Promise.race([ready, new Promise(res => setTimeout(res, 150))]).then(() => {
       if(pv !== me) return;
@@ -517,21 +446,16 @@
         el.classList.add("open"); el.style.transform = "none";
         shade.classList.add("on");
         ctx.open(card, {left:L + ctx.shift(), right:L + W + ctx.shift(), mid:T + H/2});
-        // the clip starts loading right away (YouTube loads in its own process, the motion stays smooth)
         setTimeout(() => { if(pv === me) startClip(p, media); }, 60);
       });
     });
   }
   addEventListener("keydown", e => { if(e.key === "Escape") closePeek(); });
-  // an open preview closes with Escape or a click anywhere else on the page (hovering does nothing)
   let swallow = false;
   document.addEventListener("pointerdown", e => {
     if(pv && !pv.el.contains(e.target) && !pv.card.contains(e.target)){ closePeek(); swallow = !e.target.closest(".bar,#drawer"); }
   }, true);
   document.addEventListener("click", e => { if(swallow){ swallow = false; e.preventDefault(); e.stopPropagation(); } }, true);
-  // The preview is the player, as the old player window was: YouTube's own player with sound and its own
-  // controls (or the video file with the browser's controls)
-  // our own video files: no download, speed or picture-in-picture menu (the ⋮ button then goes away), no right-click save
   function noSave(v){
     v.setAttribute("controlsList", "nodownload noplaybackrate noremoteplayback");
     v.disablePictureInPicture = true; v.setAttribute("disablePictureInPicture", ""); v.disableRemotePlayback = true;
@@ -542,9 +466,8 @@
       const v = document.createElement("video");
       Object.assign(v, {src:p.vids[0].src, autoplay:true, controls:true, playsInline:true});
       noSave(v);
-      if(p.ar && p.ar < 1) v.classList.add("tall");      // an upright video: whole, with black either side
+      if(p.ar && p.ar < 1) v.classList.add("tall");
       v.addEventListener("loadedmetadata", () => { p._dur = v.duration; if(p.hd == null) p._hd = v.videoHeight >= 720; refreshRow(p); });
-      // a project made of several videos: numbered buttons to switch between them
       if(p.vids.length > 1){
         const parts = document.createElement("div"); parts.className = "pv-parts";
         parts.innerHTML = p.vids.map((x, i) => `<button type="button"${i ? "" : ' aria-current="true"'}>${i + 1}</button>`).join("");
@@ -558,8 +481,6 @@
       v.addEventListener("playing", () => v.classList.add("on"));
       media.appendChild(v);
     } else if(p.ig){
-      // a vertical Instagram video: Instagram's own embed, upright in the middle of the 16:9 box. The embed is
-      // laid out at a fixed size (it has a minimum width) and scaled to the box's height
       const f = document.createElement("iframe");
       f.src = `https://www.instagram.com/p/${p.ig}/embed/`; f.className = "ig"; f.title = pvTitle(p);
       f.allow = "autoplay; encrypted-media; fullscreen; picture-in-picture"; f.allowFullscreen = true; f.scrolling = "no";
@@ -571,17 +492,13 @@
       const f = document.createElement("iframe");
       f.src = `https://www.youtube-nocookie.com/embed/${p.yt}?autoplay=1&rel=0&playsinline=1&modestbranding=1&iv_load_policy=3&enablejsapi=1&origin=${encodeURIComponent(location.origin)}`;
       f.allow = "autoplay; encrypted-media; fullscreen; picture-in-picture"; f.allowFullscreen = true; f.title = pvTitle(p);
-      // ask the player for its state, duration and quality levels
       f.addEventListener("load", () => {
         try{ f.contentWindow.postMessage(JSON.stringify({event:"listening", id:p.id, channel:"widget"}), "*"); }catch(e){}
       });
       media.appendChild(f);
-      // if the browser holds autoplay back, show the player anyway so its play button can be used
       setTimeout(() => f.classList.add("on"), 2500);
     }
   }
-  // fade: when the carousel turns away under it, the card it came from is moving, so it fades out in place
-  // instead of shrinking towards a target that keeps changing
   function closePeek(now, fade){
     clearTimeout(peekTimer);
     if(!pv) return;
@@ -606,15 +523,12 @@
     let d; try{ d = typeof e.data === "string" ? JSON.parse(e.data) : e.data; }catch(err){ return; }
     if(!d || d.event !== "infoDelivery" || !d.info) return;
     const p = pv.p; let ch = false;
-    // only show the player once it is really playing; until then the cover stays
     if(d.info.playerState === 1){ const f = pv.el.querySelector("iframe"); if(f) f.classList.add("on"); }
     if(d.info.duration && !p._dur){ p._dur = d.info.duration; ch = true; }
     const q = d.info.availableQualityLevels;
     if(Array.isArray(q) && q.length && p.hd == null && p._hd == null){ p._hd = q.some(l => /hd|highres/.test(l)); ch = true; }
     if(ch) refreshRow(p);
   });
-  // a resize moves the cards, so an open preview closes, except the resize that going into or out of
-  // full screen causes (that closed the player the moment its full-screen button was pressed)
   let fsQuiet = 0;
   const fsChange = () => { fsQuiet = performance.now() + 1500; };
   document.addEventListener("fullscreenchange", fsChange); document.addEventListener("webkitfullscreenchange", fsChange);
@@ -623,13 +537,6 @@
     closePeek(true);
   });
 
-
-
-
-  // ---------- work page: Video / Film / Overig ----------
-  // One page for all work, reached from the hero words, the top bar or a link (#video, #film, #overig,
-  // #werk). The hero word grows into the page title; the filters below narrow the grid. Each filter only
-  // offers what still has results given the others, with the count; picking a context also sets its field.
   const VELD = {video:1, film:1, overig:1};
   const veldOf = p => VIDCAT[p.cat] ? "video" : RITCS[p.cat] ? "film" : "overig";
   const CTX = {video:["event", "trouw", "promo"], film:["fictie", "docu", "ritcs", "iao"], overig:["bio", "foto", "muziek", "persoonlijk"]};
@@ -640,17 +547,13 @@
   const SUB = {alle:"wk.all.s", video:"wk.video.s", film:"wk.film.s", overig:"wk.other.s"};
   const ALL = P.slice().sort((a, b) => (D(b.t1 || b.t0) || 0) - (D(a.t1 || a.t0) || 0));
   const st = {veld:"alle", ctx:"alle", jaar:"alle", rol:"alle", album:"alle", genre:"alle"};
-  // (a context belongs to one field, so the field list ignores the context: switching field resets it)
   const hit = (p, skip) =>
     (skip === "veld" || st.veld === "alle" || veldOf(p) === st.veld) &&
     (skip === "ctx" || skip === "veld" || st.ctx === "alle" || tagsOf(p).includes(st.ctx)) &&
     (skip === "jaar" || st.jaar === "alle" || yearsOf(p).includes(st.jaar)) &&
     (skip === "rol" || st.rol === "alle" || (p.roles || []).includes(st.rol));
-  // the choices of one filter, with how many projects each would show
-  // under Overig: photos get Jaar and Album; biography, music and personal get no filters but the field
   const photoMode = () => st.veld === "overig" && st.ctx === "foto";
   const shownKeys = () => st.veld !== "overig" ? ["veld", "ctx", "jaar", "rol"] : st.ctx === "foto" ? ["veld", "ctx", "jaar", "album"] : st.ctx === "muziek" ? ["veld", "ctx", "genre"] : ["veld", "ctx"];
-  // music: each track's genre line ("Ambient HipHop/Trap") gives the genres it is filed under
   const MUSIC = window.MUSIC || [];
   const GENRES = [["filmscore", /film score/i], ["hiphop", /hip ?hop|\brap\b/i], ["trap", /trap/i], ["house", /house|edm/i], ["pop", /pop/i], ["ambient", /ambient/i]];
   MUSIC.forEach(m => { m.genres = GENRES.filter(([, re]) => re.test(m.genre)).map(([g]) => g).concat(m.extra || []); });
@@ -671,20 +574,17 @@
     else if(key === "ctx") o = (st.veld === "alle" ? [...CTX.video, ...CTX.film] : CTX[st.veld]).map(c => [c, n(p => tagsOf(p).includes(c)) + extra(c)]);
     else if(key === "jaar") o = [...new Set(ALL.flatMap(yearsOf))].sort((a, b) => b - a).map(y => [y, n(p => yearsOf(p).includes(y))]);
     else { const r = [...new Set(pool.flatMap(p => p.roles || []))]; const ord = ["Camera", "Montage", "Regie", "Script", "Concept", "Acteur"]; r.sort((a, b) => (ord.indexOf(a) + 99) % 99 - (ord.indexOf(b) + 99) % 99); o = r.map(x => [x, n(p => (p.roles || []).includes(x))]); }
-    // under Overig every context stays listed, also the ones still empty (music, personal)
     const keep = key === "ctx" && st.veld === "overig";
     return [["alle", pool.length + (key === "ctx" && st.veld === "overig" ? extra("foto") + extra("muziek") : 0)], ...o.filter(([v, c]) => c || keep || v === st[key])];
   }
   const label = (key, v) => v === "alle" ? t("f.all") : key === "veld" ? t({video:"nav.video", film:"nav.ritcs", overig:"nav.other"}[v]) : key === "ctx" ? t("f." + v) : key === "rol" ? L.role(v) : key === "album" ? (ALBUMS.find(a => a.id === v) || {title:v}).title : key === "genre" ? t("g." + v) : v;
   const sq = (key, v) => key === "ctx" && CTXC[v] ? `<i class="sq" style="background:var(--c-${CTXC[v]})"></i>` : "";
   const filtersEl = $("#filters"), grid = $("#wkGrid");
-  // the contexts under each hero word (shown on hover)
   function drawDoorMenus(){
     document.querySelectorAll(".door-wrap").forEach(w => {
       const v = w.dataset.for;
       w.querySelector(".door-menu").innerHTML = CTX[v].map(c => `<li><a href="#${v}?context=${c}" data-view="${v}">${sq("ctx", c)}${esc(label("ctx", c))}</a></li>`).join("");
     });
-    // the same contexts in the phone menu, folded open under each word with its arrow
     document.querySelectorAll(".dr-grp").forEach(g => {
       const v = g.dataset.for;
       g.querySelector(".dr-sub").innerHTML = CTX[v].map(c => `<li><a href="#${v}?context=${c}" data-view="${v}">${sq("ctx", c)}${esc(label("ctx", c))}</a></li>`).join("");
@@ -715,11 +615,9 @@
   addEventListener("keydown", e => { if(e.key === "Escape") closeFilters(); });
   function choose(key, v){
     st[key] = v;
-    if(key === "ctx" && v !== "alle") st.veld = Object.keys(CTX).find(f => CTX[f].includes(v));     // a tag belongs to one field
+    if(key === "ctx" && v !== "alle") st.veld = Object.keys(CTX).find(f => CTX[f].includes(v));
     if(key === "veld" && st.ctx !== "alle" && v !== "alle" && !CTX[v].includes(st.ctx)) st.ctx = "alle";
-    // filters that aren't shown in this view don't apply
     const keys = shownKeys(); for(const k of ["jaar", "rol", "album", "genre"]) if(!keys.includes(k)) st[k] = "alle";
-    // a choice the others no longer allow falls back to "all"
     for(const k of ["ctx", "jaar", "rol", "album"].filter(k => keys.includes(k))) if(st[k] !== "alle" && !options(k).some(([x, c]) => x === st[k] && (c || (k === "ctx" && st.veld === "overig")))) st[k] = "alle";
     writeHash(); renderWork();
   }
@@ -731,7 +629,7 @@
     if(st.album !== "alle") q.set("album", st.album);
     if(st.genre !== "alle") q.set("genre", st.genre);
     const h = "#" + (st.veld === "alle" ? "werk" : st.veld) + (q.toString() ? "?" + q : "");
-    if(location.hash !== h) history.replaceState(null, "", h);   // replaceState fires no hashchange
+    if(location.hash !== h) history.replaceState(null, "", h);
     routed = location.hash;
   }
   const cardTitle = p => p.gt || title(p);
@@ -749,7 +647,6 @@
       b.addEventListener("click", () => { if(!pv || pv.card !== b) openPeek(b, wkCtx); });
       grid.appendChild(b);
     });
-    // Overig with every context, or Biografie: sections stacked, each a row that scrolls sideways
     const ov = st.veld === "overig" && (st.ctx === "alle" || st.ctx === "bio") ? st.ctx : null;
     if(ov) grid.innerHTML = "";
     const photos = !ov && st.veld === "overig" && st.ctx === "foto" && PH.length > 0;
@@ -762,7 +659,6 @@
   function drawTitle(){
     const [a, b] = TITLE[st.veld];
     $("#wkT .a").textContent = t(a); $("#wkT .b").textContent = b ? t(b) : "";
-    // the line under the title: each context is a link that applies that filter
     const ctxs = st.veld === "alle" ? null : CTX[st.veld];
     if(st.veld === "alle") $("#wkS").innerHTML = ["video", "film", "overig"].map(v => `<a href="#${v}" data-f="veld" data-v="${v}">${esc(label("veld", v))}</a>`).join(", ");
     else if(ctxs.length) $("#wkS").innerHTML = ctxs.map(c => `<a href="#${st.veld}?context=${c}" data-f="ctx" data-v="${c}"${st.ctx === c ? ' aria-current="true"' : ""}>${esc(t("f." + c + ".p"))}</a>`).join(", ");
@@ -771,9 +667,6 @@
     document.querySelectorAll("[data-view]").forEach(a => a.toggleAttribute("aria-current", a.dataset.view === (document.body.classList.contains("is-work") ? st.veld : "home")));
   }
   let lastVeld = null;
-  // ---- photos: read straight from Flickr's public feeds, so a photo posted there shows up here without
-  // changing the site. The account feed gives the 20 newest; each album's feed gives its photos, so
-  // together they cover everything that is in an album. A new album has to be added to ALBUMS.
   const FLICKR = "205114923@N07";
   const ALBUMS = [
     {id:"72177720336650772", title:"Portugal 2026"},
@@ -784,29 +677,24 @@
   ];
   let PH = [];
   const byId = new Map();
-  const OVERIG_BG = "55628757102";      // Flickr id of the photo behind OVERIG (the eclipse; also in assets/hero/overig.jpg)
+  const OVERIG_BG = "55628757102";
   const extra = c => st.jaar !== "alle" || st.rol !== "alle" ? 0 : c === "foto" ? PH.length : c === "muziek" ? MUSIC.length : 0;
   const flickrSize = (u, s) => u.replace(/_[a-z]\.(jpg|png)$/, "_" + s + ".$1");
   let phT = 0;
   function takeFeed(d, album){
     (d.items || []).forEach(i => {
-      // the id from the image address (…/65535/<id>_<secret>_m.jpg): the same in every feed, unlike the link,
-      // which in an album feed ends in /in/set-…/ (that made every album photo show twice)
       const id = (i.media.m.match(/\/(\d+)_[0-9a-f]+(?:_[a-z])?\.\w+$/) || i.link.match(/\/photos\/[^/]+\/(\d+)/) || [])[1] || i.media.m;
       const wh = (i.description || "").match(/width="(\d+)" height="(\d+)"/);
       const ph = byId.get(id) || {id, src:i.media.m, title:i.title, link:i.link, date:i.date_taken || i.published || "", albums:[], rnd:Math.random(), ar:wh ? wh[2] / wh[1] : 2/3};
       if(album && !ph.albums.includes(album)) ph.albums.push(album);
-      // the year: from an album with a year in its name (film scans carry no date, so Flickr gives them
-      // the upload date as "taken"), otherwise the date taken
       const ay = ph.albums.map(a => ((ALBUMS.find(x => x.id === a) || {}).title || "").match(/\b(19|20)\d\d\b/)).find(m => m);
       ph.year = ay ? ay[0] : ph.date.slice(0, 4);
       byId.set(id, ph);
     });
-    PH = [...byId.values()].sort((a, b) => a.rnd - b.rnd);      // a random order, new on every visit
+    PH = [...byId.values()].sort((a, b) => a.rnd - b.rnd);
     clearTimeout(phT); phT = setTimeout(photosIn, 60);
   }
   function photosIn(){
-    // the newest photo is the background behind OVERIG
     const ov = document.querySelector('.layer[data-key="overig"] img');
     const bg = byId.get(OVERIG_BG) || [...byId.values()].sort((a, b) => (b.date > a.date) - (b.date < a.date))[0];
     if(ov && bg && bg.id === OVERIG_BG && ov.dataset.ph !== bg.id){ ov.dataset.ph = bg.id; const im = new Image(); im.onload = () => { ov.src = im.src; }; im.src = flickrSize(bg.src, "b"); }
@@ -818,24 +706,19 @@
     sc.src = `https://www.flickr.com/services/feeds/${f.url}&lang=en-us&format=json&jsoncallback=tnmFlickr${k}`;
     document.head.appendChild(sc);
   });
-  // the eclipse is in no album and no longer among the 20 newest, so no feed carries it: added by hand
-  // (if the photo is replaced on Flickr, its address changes: update the secret after the id here)
   takeFeed({items:[{media:{m:"https://live.staticflickr.com/65535/55628757102_180d703cce_m.jpg"}, title:"eclipse_overlay",
     link:`https://www.flickr.com/photos/${FLICKR}/55628757102/`, date_taken:"2026-08-12T00:00:00", description:'width="240" height="159"'}]}, null);
   const phGrid = $("#phGrid");
-  let PHV = [];      // the photos the filters leave
-  // eager, not lazy: Safari doesn't load lazy images in the later columns of a column layout
+  let PHV = [];
   const STEP = 18;
   let phShown = STEP, phKey = "";
-  // Columns filled in order, each photo into the shortest column (heights known from the feed), so loading
-  // more only adds to the bottom: the photos already there stay where they are
   const phCols = () => innerWidth <= 900 ? 2 : 3;
   let phN = 0;
   function drawPhotos(show){
     phGrid.hidden = !show; $("#phMore").hidden = $("#phLess").hidden = true;
     if(!show) return;
     const key = st.jaar + "|" + st.album;
-    if(key !== phKey){ phKey = key; phShown = STEP; }       // another filter: start again from the top
+    if(key !== phKey){ phKey = key; phShown = STEP; }
     PHV = PH.filter(ph => phHit(ph));
     phN = phCols();
     const cols = Array.from({length:phN}, () => ({h:0, html:""}));
@@ -854,8 +737,6 @@
     if(phGrid.getBoundingClientRect().top < 0) phGrid.scrollIntoView({behavior:"smooth"});
   });
   addEventListener("resize", () => { if(!phGrid.hidden && phCols() !== phN) drawPhotos(true); });
-  // ---- music: the tracks from the old Muziek page, genre as the title and the samples underneath.
-  // One shared player; a card plays and pauses, its bar shows the progress and can be clicked to jump.
   const muGrid = $("#muGrid"), au = new Audio(); au.preload = "none";
   let muCur = null;
   const mmssM = s => { s = Math.max(0, Math.round(s || 0)); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); };
@@ -892,8 +773,6 @@
     c.querySelector(".mu-t").textContent = mmssM(au.currentTime) + " / " + mmssM(au.duration);
   });
   au.addEventListener("ended", () => { const c = muCard(muCur); if(c){ c.querySelector(".mu-bar i").style.width = "0%"; c.querySelector(".mu-t").textContent = mmssM(au.duration); } });
-  // ---- Overig, all contexts: Biografie, then Foto, Muziek and Persoonlijk as rows that scroll sideways
-  // (drag with the mouse, arrows at the ends, a trackpad or a finger scrolls them natively)
   const ovEl = $("#ovAll");
   let ovKey = "";
   const dragged = el => { const l = el.closest(".ov-list"); return !!(l && l._moved); };
@@ -907,13 +786,11 @@
     const state = () => {
       const a = list.scrollLeft <= 2, b = list.scrollLeft + list.clientWidth >= list.scrollWidth - 2;
       prev.hidden = a; next.hidden = b;
-      // each side fades in over the first 200px scrolled towards it, so the fade grows instead of switching on
       const end = list.scrollWidth - list.clientWidth - list.scrollLeft;
       list.style.setProperty("--l", Math.min(1, list.scrollLeft / 200).toFixed(3));
       list.style.setProperty("--r", Math.min(1, Math.max(0, end) / 200).toFixed(3));
     };
     list.addEventListener("scroll", state, {passive:true}); new ResizeObserver(state).observe(list); state();
-    // a page at a time, keeping the last card in view (as Recent did)
     const step = () => { const c = list.querySelector(".ph,.mu,.wk-card"); const w = c ? c.offsetWidth + parseFloat(getComputedStyle(list).columnGap || 12) : 300; return Math.max(w, Math.floor(list.clientWidth / w) * w - w); };
     prev.addEventListener("click", () => list.scrollBy({left:-step(), behavior:"smooth"}));
     next.addEventListener("click", () => list.scrollBy({left:step(), behavior:"smooth"}));
@@ -923,15 +800,12 @@
     addEventListener("pointerup", () => { if(!on) return; on = false; setTimeout(() => list._moved = false, 0); });
     list.addEventListener("dragstart", e => e.preventDefault());
   }
-  // Biografie: the three portraits are sized so the first frame starts on the text's first line and the
-  // last one ends on its last line (the heads stick out above their frames)
-  const BIO_HEAD = .2267;    // the first picture's frame starts this far down, as a share of its width
+  const BIO_HEAD = .2267;
   function fitBio(){
     const sec = ovEl.querySelector(".ov-bio-long"); if(!sec) return;
     const txt = sec.querySelector(".about-text"), stk = sec.querySelector(".ov-bio-stack");
     sec.style.gridTemplateColumns = stk.style.marginTop = "";
     if(matchMedia("(max-width:760px)").matches) return;
-    // the photo column's width and the text's height depend on each other: settle them in a few rounds
     const k = stk.getBoundingClientRect().height / stk.getBoundingClientRect().width, full = sec.getBoundingClientRect().width;
     let W = stk.getBoundingClientRect().width;
     for(let i = 0; i < 5; i++){
@@ -947,12 +821,9 @@
     const key = [mode, PH.length, L.lang, MUSIC.length].join("|");
     if(key === ovKey) return;
     ovKey = key;
-    // under Alles each heading leads to its own tab
     const hd = c => mode === "alle" ? `<a href="#overig?context=${c}" data-f="ctx" data-v="${c}">${esc(t("f." + c))}</a>` : esc(t("f." + c));
     const sec = (c, body) => `<section class="ov-s"><h3 class="ov-h">${hd(c)}</h3>${body}</section>`;
-    const bio = $("#over .about-text").outerHTML;      // the short one from the start page
-    // the portrait sits beside the heading and the text, the head rising above its frame
-    // Biografie on its own: the long biography, its first two paragraphs beside the portrait, the rest across
+    const bio = $("#over .about-text").outerHTML;
     const BIOS = {nl:[
       "Ik ben Tristan Nijs, geboren en getogen in Gent. Ik studeer montage aan het RITCS en werk daarnaast als freelance videograaf. Ik hou me daarin bezig met aftermovies van evenementen, trouwfilms of creatief promotiewerk.",
       "Op het RITCS koos ik voor montage omdat ik merk dat ik daar het meest openbloei en het meeste voldoening uit haal. De keuze voor het RITCS heeft een enorme impact op mij als persoon gelaten; ik ben film niet alleen meer als entertainment gaan zien, maar als kunst, als een manier om iets wezenlijks te zeggen. Ook mijn appreciatie voor montage als een kunst is enorm gegroeid. Dankzij het RITCS denk ik in al mijn projecten na over intentie, ethiek en mijn positie als filmmaker en kunstenaar.",
@@ -1012,7 +883,6 @@
     drawFilters(); drawGrid(); drawTitle();
     if(st.veld !== lastVeld){ showLayer(LAYER[st.veld]); lastVeld = st.veld; }
   }
-  // a preview from the grid grows more than one from the carousel
   const wkCtx = {
     grow: 1.6, cls: "pv-wk",
     home: c => c.getBoundingClientRect(),
@@ -1020,7 +890,6 @@
   };
   addEventListener("resize", () => { if(document.body.classList.contains("is-work")) grid.querySelectorAll(".wk-card").forEach(drawShadow); });
 
-  // ---- going between the start page and the work page ----
   const hero = $("#hero"), heroWork = $("#heroWork"), werk = $("#werk");
   const homeParts = [$("#uitgelicht"), $("#over")];
   function readHash(){
@@ -1032,7 +901,6 @@
     const q = new URLSearchParams(qs || "");
     return {veld:v, ctx:q.get("context") || "alle", jaar:q.get("jaar") || "alle", rol:q.get("rol") || "alle", album:q.get("album") || "alle", genre:q.get("genre") || "alle"};
   }
-  // ---- a film's own page: the work page's hero with that film's clips behind its title, the text below ----
   const proj = $("#proj");
   function leaveProj(){
     if(!document.body.classList.contains("is-proj")) return;
@@ -1070,10 +938,9 @@
     Object.assign(st, next);
     { const keys = shownKeys(); for(const k of ["jaar", "rol", "album", "genre"]) if(!keys.includes(k)) st[k] = "alle"; }
     for(const k of ["ctx", "jaar", "rol"]) if(st[k] !== "alle" && !options(k).some(([x, c]) => x === st[k] && (c || (k === "ctx" && st.veld === "overig")))) st[k] = "alle";
-    // the hero word the visitor clicked, if it is in view: the title grows out of it
     const word = !wasWork && door && door.querySelector("span"), r0 = word && word.getBoundingClientRect();
     const fly = r0 && r0.bottom > 0 && r0.top < innerHeight;
-    if(fly){   // keep the words where they are while they fade
+    if(fly){
       doors.style.cssText = `position:absolute;left:0;right:0;top:${doors.offsetTop}px;margin:0`;
       word.style.visibility = "hidden";
     }
@@ -1095,9 +962,8 @@
       });
     }
     werk.classList.remove("in"); werk.getBoundingClientRect(); werk.classList.add("in");
-    // after the title has grown, the page glides down until the title sits just under the top bar
     if(fly) setTimeout(() => {
-      if(scrollY > 10 || !document.body.classList.contains("is-work")) return;     // the visitor already scrolled
+      if(scrollY > 10 || !document.body.classList.contains("is-work")) return;
       const y = heroWork.getBoundingClientRect().top + scrollY - bar.offsetHeight - 28;
       scrollTo({top:Math.max(0, y), behavior:"smooth"});
     }, 800);
@@ -1123,14 +989,14 @@
     pendingDoor = wrap ? wrap.querySelector(".door") : null;
     if(a.dataset.view === "home"){ e.preventDefault(); if(location.hash) history.pushState(null, "", location.pathname + location.search); toHome(); }
   });
-  let routed = null;      // hashchange and popstate both fire for one click: handle it once
+  let routed = null;
   function route(){
     if(location.hash === routed) return;
     routed = location.hash;
     const next = readHash();
     if(next){ toWork(next, pendingDoor); pendingDoor = null; return; }
     pendingDoor = null;
-    if(!document.body.classList.contains("is-work")) return;      // plain anchors on the start page scroll as usual
+    if(!document.body.classList.contains("is-work")) return;
     const anchor = /^#(uitgelicht|over)$/.test(location.hash) && $(location.hash);
     toHome();
     if(anchor) anchor.scrollIntoView();
@@ -1140,27 +1006,22 @@
   $("#wkS").addEventListener("click", e => {
     const a = e.target.closest("a[data-f]"); if(!a) return;
     e.preventDefault(); e.stopPropagation();
-    choose(a.dataset.f, a.dataset.f === "ctx" && st.ctx === a.dataset.v ? "alle" : a.dataset.v);   // clicking the active one again clears it
+    choose(a.dataset.f, a.dataset.f === "ctx" && st.ctx === a.dataset.v ? "alle" : a.dataset.v);
   }, true);
-  // a heading under Overig > Alles: that tab, from the top of the list
   ovEl.addEventListener("click", e => {
     const a = e.target.closest(".ov-h a[data-f]"); if(!a) return;
     e.preventDefault(); choose("ctx", a.dataset.v); werk.scrollIntoView({behavior:"smooth"});
   });
   $("#wkBack").addEventListener("click", e => {
     e.preventDefault();
-    // on a film's own page: back to its field (Film); elsewhere back to the start page
     if(document.body.classList.contains("is-proj")){ const h = $("#wkBack").getAttribute("href"); history.pushState(null, "", h); route(); return; }
-    // in one context (Video > Trouwfilms): back to that field's Alles
     if(st.ctx !== "alle"){ choose("ctx", "alle"); return; }
     if(location.hash) history.pushState(null, "", location.pathname + location.search); toHome();
   });
-  // the arrow under the title: down to the grid
   $(".hero-down").addEventListener("click", e => { if(document.body.classList.contains("is-work")){ e.preventDefault(); (document.body.classList.contains("is-proj") ? proj : werk).scrollIntoView({behavior:"smooth"}); } });
   L.onChange(() => { if(document.body.classList.contains("is-work") && !document.body.classList.contains("is-proj")) renderWork(); });
   { const start = readHash(); if(start) toWork(start, null); }
 
-  // ---------- contact: a pop-up form over the page ----------
   const ct = $("#contact"), ctForm = $("#ctForm");
   document.addEventListener("click", e => {
     const a = e.target.closest("[data-contact]"); if(!a) return;
@@ -1168,8 +1029,6 @@
   });
   $("#ctX").addEventListener("click", () => ct.close());
   ct.addEventListener("click", e => { if(e.target === ct) ct.close(); });
-  // sent from the page itself through Web3Forms (the access key is meant to be public); the hidden
-  // "_honey" field catches bots
   const W3F = "60a154af-3604-416d-95fd-a40dd07668a2";
   const ctMsg = $("#ctMsg"), ctBtn = ctForm.querySelector("[type=submit]");
   const ctSay = (k, bad) => { ctMsg.textContent = t(k); ctMsg.hidden = false; ctMsg.classList.toggle("bad", !!bad); };
@@ -1191,7 +1050,6 @@
   });
   ct.addEventListener("close", () => { ctMsg.hidden = true; });
 
-  // ---------- player ----------
   const dlg = $("#player");
   const ytFrame = (id,title) => `<iframe src="https://www.youtube-nocookie.com/embed/${id}?rel=0&autoplay=1" title="${esc(title)}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
   function show(p,k){

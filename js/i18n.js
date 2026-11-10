@@ -1,5 +1,3 @@
-// Texts of the site in NL / EN / FR. Change a translation here; the keys are used in index.html
-// (data-i18n / data-i18n-aria) and in main.js (I18N.t("key")).
 (function(){
   const T = {
     "nav.main":        {nl:"Hoofdmenu",            en:"Main menu",            fr:"Menu principal"},
@@ -120,12 +118,10 @@
     "close":           {nl:"Sluiten",              en:"Close",                fr:"Fermer"},
     "videoOf":         {nl:"Video {k} van {n}",    en:"Video {k} of {n}",     fr:"Vidéo {k} sur {n}"}
   };
-  // card subtitles from data.js (written in Dutch) that need translating; anything else stays as is
   const SUB = {
     "Trouwfilm":      {en:"Wedding film",  fr:"Film de mariage"},
     "Pop-up opening": {en:"Pop-up opening", fr:"Ouverture pop-up"}
   };
-  // what Tristan did on a project (data.js: roles, written in Dutch)
   const ROLE = {
     "Script":   {en:"Script",      fr:"Scénario"},
     "Scenario": {en:"Script",      fr:"Scénario"},
@@ -140,7 +136,6 @@
     "Videograaf":{en:"Videographer", fr:"Vidéaste"}
   };
   const LANGS = ["nl","en","fr"], LOCALE = {nl:"nl-BE", en:"en-GB", fr:"fr-BE"};
-  // project titles from data.js: course names, "Film van" and the films with a translated title
   const LABEL = {
     en: [[/^Atelier Docu:/, "Documentary Studio:"], [/^Workshop Docu:/, "Documentary Workshop:"],
          [/^Atelier Fictie:/, "Fiction Studio:"], [/^Atelier Fictie (\d)/, "Fiction Studio $1"], [/\bFilm van\b/, "Film by"], [/\bNieuw Gent\b/, "New Ghent"], [/\bTen Anker\b/, "At Anchor"], [/\bDe Koffer\b/, "The Suitcase"]],
@@ -157,7 +152,6 @@
     let q = null; try{ q = new URLSearchParams(location.search).get("lang"); }catch(e){}
     if(LANGS.includes(q)) return q;
     try{ const s = localStorage.getItem("tnm-lang"); if(LANGS.includes(s)) return s; }catch(e){}
-    // Dutch unless the visitor picked another language
     return "nl";
   }
   let lang = pick();
@@ -177,12 +171,10 @@
     role(s){ const e = ROLE[s]; return lang === "nl" || !e ? s : (e[lang] ?? s); },
     sub(s){ const e = SUB[s]; return lang === "nl" || !e ? s : (e[lang] ?? s); },
     label(s){ return lang === "nl" ? s : (LABEL[lang] || []).reduce((a, [re, to]) => a.replace(re, to), s); },
-    // short month for the timeline ruler
     monthShort(m){
       if(lang === "nl") return ["jan","feb","mrt","apr","mei","jun","jul","aug","sep","okt","nov","dec"][m];
       return new Intl.DateTimeFormat(LOCALE[lang], {month:"short", timeZone:"UTC"}).format(Date.UTC(2020, m, 15)).replace(/\.$/, "");
     },
-    // a project's date in the current language, in the same form as the Dutch one in data.js
     date(p){
       const nl = p.date || "";
       if(lang === "nl") return nl;
@@ -202,7 +194,6 @@
       I.apply();
       hooks.forEach(fn => fn(l));
     },
-    // static texts in the page
     apply(){
       document.documentElement.lang = lang;
       const md = document.querySelector('meta[name="description"]'); if(md) md.setAttribute("content", DESC[lang]);
