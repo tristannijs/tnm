@@ -1151,6 +1151,8 @@
     e.preventDefault();
     // on a film's own page: back to its field (Film); elsewhere back to the start page
     if(document.body.classList.contains("is-proj")){ const h = $("#wkBack").getAttribute("href"); history.pushState(null, "", h); route(); return; }
+    // in one context (Video > Trouwfilms): back to that field's Alles
+    if(st.ctx !== "alle"){ choose("ctx", "alle"); return; }
     if(location.hash) history.pushState(null, "", location.pathname + location.search); toHome();
   });
   // the arrow under the title: down to the grid
