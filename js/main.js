@@ -949,10 +949,10 @@
     renderWork(); writeHash(); onScroll();
     if(!wasWork && !fly) scrollTo({top:0, behavior:"instant"});
     if(fly){
-      const h1 = $("#wkT"), a = h1.querySelector(".a"), r1 = a.getBoundingClientRect(), rh = h1.getBoundingClientRect(), s = r0.height / r1.height;
-      h1.style.transformOrigin = `${r1.left - rh.left}px ${r1.top - rh.top}px`;
+      const h1 = $("#wkT"), a = h1.querySelector(".a"), r1 = a.getBoundingClientRect(), rh = h1.getBoundingClientRect(), s = r0.width / r1.width;
+      h1.style.transformOrigin = `${r1.left - rh.left}px ${r1.top - rh.top + r1.height / 2}px`;
       h1.style.transition = "none";
-      h1.style.transform = `translate(${r0.left - r1.left}px,${r0.top - r1.top}px) scale(${s})`;
+      h1.style.transform = `translate(${r0.left - r1.left}px,${r0.top + r0.height / 2 - (r1.top + r1.height / 2)}px) scale(${s})`;
       heroWork.classList.add("flying");
       h1.getBoundingClientRect();
       requestAnimationFrame(() => {
