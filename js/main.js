@@ -947,7 +947,9 @@
     const key = [mode, PH.length, L.lang, MUSIC.length].join("|");
     if(key === ovKey) return;
     ovKey = key;
-    const sec = (c, body) => `<section class="ov-s"><h3 class="ov-h">${esc(t("f." + c))}</h3>${body}</section>`;
+    // under Alles each heading leads to its own tab
+    const hd = c => mode === "alle" ? `<a href="#overig?context=${c}" data-f="ctx" data-v="${c}">${esc(t("f." + c))}</a>` : esc(t("f." + c));
+    const sec = (c, body) => `<section class="ov-s"><h3 class="ov-h">${hd(c)}</h3>${body}</section>`;
     const bio = $("#over .about-text").outerHTML;      // the short one from the start page
     // the portrait sits beside the heading and the text, the head rising above its frame
     // Biografie on its own: the long biography, its first two paragraphs beside the portrait, the rest across
@@ -971,7 +973,7 @@
     let h = mode === "bio"
       ? `<section class="ov-s ov-bio ov-bio-long" lang="${L.lang}"><h3 class="ov-h">${esc(t("f.bio"))}</h3><div class="about-text">${ps(BIO)}</div>
           <div class="ov-bio-stack"><img src="assets/over.webp" alt="Tristan Nijs met camera" width="900" height="675"><img src="assets/bio-lift.webp" alt="Tristan Nijs met gimbal in een lift" width="1200" height="899" loading="lazy"><img src="assets/bio.webp" alt="Tristan Nijs" width="1200" height="900" loading="lazy"></div></section>`
-      : `<section class="ov-s ov-bio"><h3 class="ov-h">${esc(t("f.bio"))}</h3>${bio}<div class="ov-bio-fig"><img src="assets/bio.webp" alt="Tristan Nijs" width="1200" height="900"></div></section>`;
+      : `<section class="ov-s ov-bio"><h3 class="ov-h">${hd("bio")}</h3>${bio}<div class="ov-bio-fig"><img src="assets/bio.webp" alt="Tristan Nijs" width="1200" height="900"></div></section>`;
     if(mode === "alle"){
       PHV = PH.slice();
       h += sec("foto", PHV.length ? ovRow(PHV.map((ph, i) => `<button type="button" class="ph" data-i="${i}" style="--ar:${(1 / ph.ar).toFixed(4)}"><img src="${esc(flickrSize(ph.src, "c"))}" alt="${esc(ph.title || "")}" loading="lazy" width="800" height="${Math.round(800 * ph.ar)}"></button>`).join(""), "ov-ph") : `<p class="wk-none">${esc(t("f.none"))}</p>`);
@@ -1140,6 +1142,11 @@
     e.preventDefault(); e.stopPropagation();
     choose(a.dataset.f, a.dataset.f === "ctx" && st.ctx === a.dataset.v ? "alle" : a.dataset.v);   // clicking the active one again clears it
   }, true);
+  // a heading under Overig > Alles: that tab, from the top of the list
+  ovEl.addEventListener("click", e => {
+    const a = e.target.closest(".ov-h a[data-f]"); if(!a) return;
+    e.preventDefault(); choose("ctx", a.dataset.v); werk.scrollIntoView({behavior:"smooth"});
+  });
   $("#wkBack").addEventListener("click", e => {
     e.preventDefault();
     // on a film's own page: back to its field (Film); elsewhere back to the start page
