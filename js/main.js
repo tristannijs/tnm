@@ -91,7 +91,7 @@
     if(!navigator.mediaCapabilities) return false;
     try{
       const r = await navigator.mediaCapabilities.decodingInfo({type:"file", video:{contentType:AV1, width:1920, height:1080, bitrate:3700000, framerate:25}});
-      return !!(r.supported && r.smooth);
+      return !!(r.supported && r.smooth && r.powerEfficient);
     }catch(e){ return false; }
   })();
   async function pickVideo(l){ return l.dataset.videoAv1 && await av1ok ? l.dataset.videoAv1 : l.dataset.video; }
@@ -136,7 +136,7 @@
       const op = `${(pos(x, ca / va) * 100).toFixed(2)}% ${(pos(y, va / ca) * 100).toFixed(2)}%`;
       if(v.style.objectPosition !== op) v.style.objectPosition = op;
     }
-    const RVFC = "requestVideoFrameCallback" in HTMLVideoElement.prototype;
+    const RVFC = "requestVideoFrameCallback" in HTMLVideoElement.prototype && !("GestureEvent" in window);
     const cv = RVFC ? document.createElement("canvas") : null, g = cv && cv.getContext("2d", {alpha:false});
     if(cv){ cv.className = "clip-canvas"; l.appendChild(cv); }
     function paint(v, t){
