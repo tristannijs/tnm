@@ -65,7 +65,11 @@
     menuBtn.setAttribute("aria-label", t(open ? "menu.close" : "menu.open"));
   }
   menuBtn.addEventListener("click", e => { e.stopPropagation(); setMenu(drawer.hidden); });
-  drawer.addEventListener("click", e => { if(e.target.closest("a")) setMenu(false); });
+  drawer.addEventListener("click", e => {
+    const tg = e.target.closest(".dr-tog");
+    if(tg){ const sub = document.getElementById(tg.getAttribute("aria-controls")), open = sub.hidden; sub.hidden = !open; tg.setAttribute("aria-expanded", open); return; }
+    if(e.target.closest("a")) setMenu(false);
+  });
   document.addEventListener("click", e => { if(!drawer.hidden && !e.target.closest("#drawer")) setMenu(false); });
   document.addEventListener("keydown", e => { if(e.key === "Escape") setMenu(false); });
 
@@ -679,6 +683,12 @@
     document.querySelectorAll(".door-wrap").forEach(w => {
       const v = w.dataset.for;
       w.querySelector(".door-menu").innerHTML = CTX[v].map(c => `<li><a href="#${v}?context=${c}" data-view="${v}">${sq("ctx", c)}${esc(label("ctx", c))}</a></li>`).join("");
+    });
+    // the same contexts in the phone menu, folded open under each word with its arrow
+    document.querySelectorAll(".dr-grp").forEach(g => {
+      const v = g.dataset.for;
+      g.querySelector(".dr-sub").innerHTML = CTX[v].map(c => `<li><a href="#${v}?context=${c}" data-view="${v}">${sq("ctx", c)}${esc(label("ctx", c))}</a></li>`).join("");
+      g.querySelector(".dr-tog").setAttribute("aria-label", t({video:"nav.video", film:"nav.ritcs", overig:"nav.other"}[v]));
     });
   }
   drawDoorMenus();
