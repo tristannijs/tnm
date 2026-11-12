@@ -596,3 +596,8 @@ body.is-proj .wk-t{text-transform:none}
 .reach-mail:hover{color:#fff}
 .reach-form .ph-more:disabled{opacity:.5;cursor:default}
 @media (max-width:760px){.reach-body{grid-template-columns:1fr;row-gap:36px;padding:36px 22px 0}}
+
+/* menu open: the bar keeps only the logo and the close button, the page underneath stays still */
+html:has(#drawer:not([hidden])){overflow:hidden}
+.bar:has(#menuBtn[aria-expanded="true"]) .switch,.bar:has(#menuBtn[aria-expanded="true"]) .nav > :not(.menu-btn){opacity:0;visibility:hidden;transition:opacity .2s,visibility .2s}
+.drawer{bottom:auto;height:100vh;height:100svh}

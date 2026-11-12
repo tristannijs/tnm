@@ -236,3 +236,8 @@ form{display:grid;grid-template-columns:1fr 1fr;gap:28px 28px}
 @media (max-width:420px){
   .steps{grid-template-columns:1fr}
 }
+
+/* menu open: the bar keeps only the logo and the close button, the page underneath stays still */
+html:has(#drawer:not([hidden])){overflow:hidden}
+.bar:has(#menuBtn[aria-expanded="true"]) .switch,.bar:has(#menuBtn[aria-expanded="true"]) .nav > :not(.menu-btn){opacity:0;visibility:hidden;transition:opacity .2s,visibility .2s}
+.drawer{bottom:auto;height:100vh;height:100svh}
