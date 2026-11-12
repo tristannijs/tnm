@@ -44,7 +44,7 @@ img{display:block;max-width:100%}
 .switch a[aria-current="page"]{opacity:1}
 .switch a[aria-current="page"]::after{content:"";position:absolute;left:2px;right:2px;bottom:0;height:1.5px;background:currentColor}
 .nav{display:flex;align-items:center;gap:20px;font-family:var(--sans)}
-.nav-link{font-weight:600;font-size:16px}
+.nav-link{font-family:var(--f);font-weight:400;font-size:17px;-webkit-text-stroke:.3px currentColor}
 .nav-link:hover{text-decoration:underline;text-underline-offset:5px;text-decoration-thickness:1px}
 .menu-btn{background:none;border:0;padding:6px 0 6px 6px;cursor:pointer;display:grid;place-items:center}
 .menu-btn .bars{display:flex;flex-direction:column;gap:5px}
