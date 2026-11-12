@@ -156,7 +156,7 @@ body.menu .bar{background:var(--cream);color:var(--wine)}
 .notes h3{text-transform:none;letter-spacing:0;font-size:14.5px;margin-bottom:14px}
 .extra li{color:var(--wine);font-size:16px;line-height:1.7}
 .extra-p{flex:none;color:var(--wine);font-size:clamp(26px,2.4vw,34px);white-space:nowrap}
-.notes{padding-top:6px}
+.notes{grid-column:1;padding-top:4px}
 .notes li{font-size:14.5px;line-height:1.3}
 
 /* contact */

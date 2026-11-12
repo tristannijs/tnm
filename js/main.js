@@ -893,7 +893,7 @@
   addEventListener("resize", () => { if(document.body.classList.contains("is-work")) grid.querySelectorAll(".wk-card").forEach(drawShadow); });
 
   const hero = $("#hero"), heroWork = $("#heroWork"), werk = $("#werk");
-  const homeParts = [$("#uitgelicht"), $("#over")];
+  const homeParts = [$("#uitgelicht"), $("#over"), $("#contact-form")];
   function readHash(){
     const h = decodeURIComponent(location.hash.slice(1)), [path0, qs] = h.split("?");
     const [path, pid] = path0.split("/");
@@ -1032,24 +1032,35 @@
   $("#ctX").addEventListener("click", () => ct.close());
   ct.addEventListener("click", e => { if(e.target === ct) ct.close(); });
   const W3F = "60a154af-3604-416d-95fd-a40dd07668a2";
-  const ctMsg = $("#ctMsg"), ctBtn = ctForm.querySelector("[type=submit]");
-  const ctSay = (k, bad) => { ctMsg.textContent = t(k); ctMsg.hidden = false; ctMsg.classList.toggle("bad", !!bad); };
-  ctForm.addEventListener("submit", async e => {
-    e.preventDefault();
-    if(!ctForm.reportValidity()) return;
-    const f = new FormData(ctForm);
-    if(f.get("_honey")) return;
-    const data = {access_key:W3F, subject:`Website: ${f.get("soort")} – ${f.get("naam")}`, from_name:"tristannijs.media",
-      name:f.get("naam"), email:f.get("email"), replyto:f.get("email"), soort:f.get("soort"), message:f.get("bericht")};
-    ctBtn.disabled = true; ctSay("ct.sending");
-    try{
-      const r = await fetch("https://api.web3forms.com/submit", {method:"POST", headers:{"Content-Type":"application/json", Accept:"application/json"}, body:JSON.stringify(data)});
-      const j = await r.json().catch(() => ({}));
-      if(!r.ok || !j.success) throw 0;
-      ctForm.reset(); ctSay("ct.sent");
-    }catch(err){ ctSay("ct.fail", true); }
-    ctBtn.disabled = false;
-  });
+  function sendForm(form, msg){
+    const btn = form.querySelector("[type=submit]");
+    const say = (k, bad) => { msg.textContent = t(k); msg.hidden = false; msg.classList.toggle("bad", !!bad); };
+    form.addEventListener("submit", async e => {
+      e.preventDefault();
+      if(!form.reportValidity()) return;
+      const f = new FormData(form);
+      if(f.get("_honey")) return;
+      const soort = f.get("soort") || "-";
+      const data = {access_key:W3F, subject:`Website: ${soort} – ${f.get("naam")}`, from_name:"tristannijs.media",
+        name:f.get("naam"), email:f.get("email"), replyto:f.get("email"), soort, message:f.get("bericht")};
+      btn.disabled = true; say("ct.sending");
+      try{
+        const r = await fetch("https://api.web3forms.com/submit", {method:"POST", headers:{"Content-Type":"application/json", Accept:"application/json"}, body:JSON.stringify(data)});
+        const j = await r.json().catch(() => ({}));
+        if(!r.ok || !j.success) throw 0;
+        form.reset(); say("ct.sent");
+      }catch(err){ say("ct.fail", true); }
+      btn.disabled = false;
+    });
+  }
+  const ctMsg = $("#ctMsg");
+  sendForm(ctForm, ctMsg);
+  { const f2 = $("#ctForm2"); sendForm(f2, f2.querySelector(".ct-msg"));
+    f2.querySelectorAll(".ct-kind input").forEach(r => {
+      let was = false;
+      r.closest("label").addEventListener("pointerdown", () => { was = r.checked; });
+      r.addEventListener("click", () => { if(was){ r.checked = false; was = false; } });
+    }); }
   ct.addEventListener("close", () => { ctMsg.hidden = true; });
 
   const dlg = $("#player");
