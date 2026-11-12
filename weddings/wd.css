@@ -33,7 +33,7 @@ img{display:block;max-width:100%}
 /* logos: the white artwork used as a mask, so it takes any colour */
 .lg{display:block;background:currentColor;-webkit-mask:var(--m) center/contain no-repeat;mask:var(--m) center/contain no-repeat}
 .lg-word{--m:url(../assets/wd/logo-weddings.png);height:40.4px;aspect-ratio:1138/160}
-.lg-tnm{--m:url(../assets/wd/tnm.png);height:15px;aspect-ratio:287/160}
+.lg-tnm{--m:url(../assets/wd/tnm.png);height:18px;aspect-ratio:287/160}
 .lg-rings{--m:url(../assets/wd/rings.png);height:17px;aspect-ratio:280/160}
 
 .bar{position:fixed;inset:0 0 auto;z-index:50;height:var(--bar-h);display:flex;align-items:center;justify-content:space-between;
