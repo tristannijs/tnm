@@ -48,6 +48,7 @@
     "3 shortform video’s (~20sec/video)": ["3 short-form videos (~20 sec each)", "3 vidéos courtes (~20 s chacune)"],
     "Kies PREMIUM": ["Choose PREMIUM", "Choisir PREMIUM"],
     "Opname volledige ceremonie (statisch)": ["Full ceremony recording (static)", "Captation complète de la cérémonie (fixe)"],
+    "Extra": ["Extra", "Option"],
     "Opmerkingen:": ["Notes:", "Remarques :"],
     "Aflevering binnen de 4-6 weken": ["Delivery within 4-6 weeks", "Livraison sous 4-6 semaines"],
     "Voorschot van 25% om de datum te reserveren": ["25% deposit to book the date", "Acompte de 25 % pour réserver la date"],
@@ -390,7 +391,7 @@
   applyLang();
 
   // a package can be picked and clicked off again
-  document.querySelectorAll(".kind input").forEach(r => {
+  document.querySelectorAll(".kind input[type=radio]").forEach(r => {
     let was = false;
     r.closest("label").addEventListener("pointerdown", () => { was = r.checked; });
     r.addEventListener("click", () => { if(was){ r.checked = false; was = false; } });
@@ -407,7 +408,7 @@
     if(f.get("_honey")) return;
     const datum = f.get("datum") ? new Date(f.get("datum") + "T12:00:00").toLocaleDateString("nl-BE", {day:"numeric", month:"long", year:"numeric"}) : "";
     const data = {access_key:W3F, subject:`Trouwfilm: ${f.get("namen")} – ${datum}`, from_name:"tristannijs.media/weddings",
-      name:f.get("namen"), email:f.get("email"), replyto:f.get("email"), trouwdatum:datum, locatie:f.get("locatie") || "-", pakket:f.get("pakket") || "-", message:f.get("bericht") || "-"};
+      name:f.get("namen"), email:f.get("email"), replyto:f.get("email"), trouwdatum:datum, locatie:f.get("locatie") || "-", pakket:f.get("pakket") || "-", extra:f.get("extra") ? "Opname volledige ceremonie (statisch)" : "-", message:f.get("bericht") || "-"};
     btn.disabled = true; say(tr("Bezig met versturen…"));
     try{
       const r = await fetch("https://api.web3forms.com/submit", {method:"POST", headers:{"Content-Type":"application/json", Accept:"application/json"}, body:JSON.stringify(data)});
