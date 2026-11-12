@@ -3,8 +3,8 @@
   const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
   const FILMS = [
-    {id:"elien-jens", t:"Elien & Jens", date:"20 september 2025", yt:"hvcm7aHr_Dc", cover:"../assets/covers/elien-jens.jpg", ar:1.896, roles:"Camera, Montage", lang:"NL"},
-    {id:"joachim-felien", t:"Joachim & Felien", date:"2 mei 2026", yt:"JYeob-Q2qRs", cover:"../assets/clips/videografie/joachimFelien_1.jpg", roles:"Camera, Montage", lang:"NL"}
+    {id:"elien-jens", t:"Elien & Jens", date:"20 september 2025", yt:"hvcm7aHr_Dc", cover:"../assets/covers/elien-jens.jpg", ar:1.896, lang:"NL"},
+    {id:"joachim-felien", t:"Joachim & Felien", date:"2 mei 2026", yt:"JYeob-Q2qRs", cover:"../assets/clips/videografie/joachimFelien_1.jpg", lang:"NL"}
   ];
   const BY = Object.fromEntries(FILMS.map(f => [f.id, f]));
   const HERO = ["elienJens_4", "joachimFelien_1", "elienJens_3", "joachimFelien_2", "elienJens_1", "joachimFelien_3", "elienJens_2"]
@@ -204,7 +204,7 @@
     if(odd) T = Math.max(84, Math.min(T, innerHeight - H - 190));
     const el = document.createElement("div");
     el.className = "pv";
-    el.innerHTML = `<div class="pv-media"></div><div class="pv-info"><div class="pv-t">${esc(p.t)}</div><div class="pv-role">${esc(p.roles)}</div><div class="pv-m">Trouwfilm · ${esc(p.date)}</div><div class="pv-r"></div></div>`;
+    el.innerHTML = `<div class="pv-media"></div><div class="pv-info"><div class="pv-t">${esc(p.t)}</div><div class="pv-m">Trouwfilm · ${esc(p.date)}</div><div class="pv-r"></div></div>`;
     const media = el.querySelector(".pv-media");
     if(odd) media.style.aspectRatio = String(ar);
     media.append(face(p), cap(p));
