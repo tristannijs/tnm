@@ -61,6 +61,8 @@
   drawer.addEventListener("click", e => {
     const tg = e.target.closest(".dr-tog");
     if(tg){ const sub = document.getElementById(tg.getAttribute("aria-controls")), open = sub.hidden; sub.hidden = !open; tg.setAttribute("aria-expanded", open); return; }
+    const lb = e.target.closest(".dr-lang [data-lang]");
+    if(lb){ L.set(lb.dataset.lang); return; }
     if(e.target.closest("a")) setMenu(false);
   });
   document.addEventListener("click", e => { if(!drawer.hidden && !e.target.closest("#drawer")) setMenu(false); });
@@ -71,7 +73,7 @@
   function showLang(){
     langBtn.textContent = L.lang.toUpperCase();
     langBtn.setAttribute("aria-label", `${t("lang.label")}: ${L.lang.toUpperCase()}`);
-    langMenu.querySelectorAll("[data-lang]").forEach(b => b.setAttribute("aria-current", b.dataset.lang === L.lang ? "true" : "false"));
+    document.querySelectorAll("#langMenu [data-lang], .dr-lang [data-lang]").forEach(b => b.setAttribute("aria-current", b.dataset.lang === L.lang ? "true" : "false"));
   }
   langBtn.addEventListener("click", e => { e.stopPropagation(); setLangMenu(langMenu.hidden); });
   langMenu.addEventListener("click", e => { const b = e.target.closest("[data-lang]"); if(!b) return; setLangMenu(false); L.set(b.dataset.lang); });
