@@ -288,6 +288,13 @@
     const r = document.querySelector(`input[name=pakket][value="${b.dataset.pk}"]`); if(r) r.checked = true;
   }));
 
+  // a package can be picked and clicked off again
+  document.querySelectorAll(".kind input").forEach(r => {
+    let was = false;
+    r.closest("label").addEventListener("pointerdown", () => { was = r.checked; });
+    r.addEventListener("click", () => { if(was){ r.checked = false; was = false; } });
+  });
+
   // the request, through the same mailbox as the contact form on the portfolio
   const W3F = "60a154af-3604-416d-95fd-a40dd07668a2";
   const form = $("#req"), msg = $("#reqMsg"), btn = form.querySelector("[type=submit]");
@@ -299,7 +306,7 @@
     if(f.get("_honey")) return;
     const datum = f.get("datum") ? new Date(f.get("datum") + "T12:00:00").toLocaleDateString("nl-BE", {day:"numeric", month:"long", year:"numeric"}) : "";
     const data = {access_key:W3F, subject:`Trouwfilm: ${f.get("namen")} – ${datum}`, from_name:"tristannijs.media/weddings",
-      name:f.get("namen"), email:f.get("email"), replyto:f.get("email"), trouwdatum:datum, locatie:f.get("locatie") || "-", pakket:f.get("pakket"), message:f.get("bericht") || "-"};
+      name:f.get("namen"), email:f.get("email"), replyto:f.get("email"), trouwdatum:datum, locatie:f.get("locatie") || "-", pakket:f.get("pakket") || "-", message:f.get("bericht") || "-"};
     btn.disabled = true; say("Bezig met versturen…");
     try{
       const r = await fetch("https://api.web3forms.com/submit", {method:"POST", headers:{"Content-Type":"application/json", Accept:"application/json"}, body:JSON.stringify(data)});
