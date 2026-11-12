@@ -232,7 +232,7 @@ form{display:grid;grid-template-columns:1fr 1fr;gap:28px 28px}
   .steps{grid-template-columns:1fr 1fr}
   .req{grid-template-columns:1fr;row-gap:36px}
   form{grid-template-columns:1fr;gap:24px}
-  .arrow{display:none}
+
 }
 @media (max-width:420px){
   .steps{grid-template-columns:1fr}
