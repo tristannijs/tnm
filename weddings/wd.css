@@ -31,7 +31,7 @@ img{display:block;max-width:100%}
 
 /* logos: the white artwork used as a mask, so it takes any colour */
 .lg{display:block;background:currentColor;-webkit-mask:var(--m) center/contain no-repeat;mask:var(--m) center/contain no-repeat}
-.lg-word{--m:url(../assets/wd/logo-weddings.png);height:42px;aspect-ratio:1138/160}
+.lg-word{--m:url(../assets/wd/logo-weddings.png);height:40.4px;aspect-ratio:1138/160}
 .lg-tnm{--m:url(../assets/wd/tnm.png);height:15px;aspect-ratio:287/160}
 .lg-rings{--m:url(../assets/wd/rings.png);height:17px;aspect-ratio:280/160}
 
@@ -202,7 +202,7 @@ form{display:grid;grid-template-columns:1fr 1fr;gap:28px 28px}
 @media (max-width:760px){
   :root{--gut:22px;--pad:22px;--bar-h:72px}
   .bar.solid{--bar-h:60px}
-  .lg-word{height:30px}
+  .lg-word{height:30.3px}
   .switch{position:static;transform:none;gap:10px;margin:0 16px 0 auto}
   .nav{gap:18px}
   .lang{display:none}
@@ -221,6 +221,5 @@ form{display:grid;grid-template-columns:1fr 1fr;gap:28px 28px}
   .arrow{display:none}
 }
 @media (max-width:420px){
-  .lg-word{height:24px}
   .steps{grid-template-columns:1fr}
 }
