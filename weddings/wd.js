@@ -67,6 +67,10 @@
     "Verstuurd. Ik antwoord jullie zo snel mogelijk.": ["Sent. I’ll get back to you as soon as possible.", "Envoyé. Je vous réponds au plus vite."],
     "Versturen lukte niet. Mail gerust naar tristannijs.media@gmail.com.": ["Sending didn’t work. Feel free to email tristannijs.media@gmail.com.", "L’envoi a échoué. Écrivez-moi à tristannijs.media@gmail.com."]
   };
+  const TX = {
+    more: {en:'Want to see more of my work? Take a look at my <a class="inl" href="../">general portfolio</a>.', fr:'Envie de voir plus de mon travail ? Jetez un œil à mon <a class="inl" href="../">portfolio général</a>.'}
+  };
+  document.querySelectorAll("[data-tx]").forEach(e => { TX[e.dataset.tx].nl = e.innerHTML; });
   const LANGS = ["nl", "en", "fr"];
   let lang = (() => {
     let q = null; try{ q = new URLSearchParams(location.search).get("lang"); }catch(e){}
@@ -83,6 +87,7 @@
   function applyLang(){
     document.documentElement.lang = lang;
     textNodes.forEach(({n, k, a, z}) => { n.textContent = a + tr(k) + z; });
+    document.querySelectorAll("[data-tx]").forEach(e => { e.innerHTML = TX[e.dataset.tx][lang]; });
     document.querySelectorAll("[data-lang]").forEach(b => b.setAttribute("aria-current", b.dataset.lang === lang ? "true" : "false"));
     document.querySelectorAll(".lang").forEach(b => b.textContent = lang.toUpperCase());
     langHooks.forEach(f => f());
