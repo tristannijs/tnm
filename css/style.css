@@ -42,6 +42,15 @@ img{display:block;max-width:100%}
   padding:env(safe-area-inset-top,0px) var(--gut) 0;background:transparent;transition:background-color .35s ease,height .35s ease}
 .bar.solid{background:var(--bar);--bar-h:76px}
 .logo-link img{height:40px;width:auto}
+.lg{display:block;background:currentColor;-webkit-mask:var(--m) center/contain no-repeat;mask:var(--m) center/contain no-repeat}
+.lg-tnm{--m:url(../assets/wd/tnm.png);height:15px;aspect-ratio:287/160}
+.lg-rings{--m:url(../assets/wd/rings.png);height:17px;aspect-ratio:280/160}
+.switch{position:absolute;left:50%;top:calc(50% + env(safe-area-inset-top,0px)/2);transform:translate(-50%,-50%);display:flex;align-items:center;gap:14px;color:#fff;transition:opacity .35s,visibility .35s}
+.switch a{display:block;padding:6px 2px 7px;opacity:.75;transition:opacity .2s;position:relative}
+.switch a:hover,.switch a[aria-current="page"]{opacity:1}
+.switch a[aria-current="page"]::after{content:"";position:absolute;left:2px;right:2px;bottom:0;height:1.5px;background:currentColor}
+@media (max-width:1150px) and (min-width:761px){.bar.links .switch{opacity:0;visibility:hidden}}
+@media (max-width:760px){.switch{position:static;transform:none;gap:10px;margin:0 16px 0 auto}}
 .nav{display:flex;align-items:center;gap:14px;font-size:16px;font-weight:600;color:#fff;transition:color .35s}
 .nav .lang:hover,.nav .menu-btn:hover{color:#fff}
 .bar.solid .nav{color:#fff}
