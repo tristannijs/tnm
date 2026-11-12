@@ -1,10 +1,97 @@
 (function(){
   const $ = s => document.querySelector(s);
   const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+  const T = {
+    "Contact": ["Contact", "Contact"],
+    "Films": ["Films", "Films"],
+    "Werkwijze": ["How I work", "Méthode"],
+    "Prijzen": ["Prices", "Tarifs"],
+    "Tristan Nijs Media: Weddings": ["Tristan Nijs Media: Weddings", "Tristan Nijs Media : Mariages"],
+    "Zijn jullie op zoek naar een videograaf die jullie trouwdag kan vastleggen en omtoveren naar een aftermovie die je nauw bij het hart zal liggen? Dan stel ik mezelf graag even voor!":
+      ["Are you looking for a videographer who can capture your wedding day and turn it into a film you will hold close to your heart? Then let me introduce myself!",
+       "Vous cherchez un vidéaste qui saura capturer le jour de votre mariage et en faire un film qui vous tiendra à cœur ? Alors permettez-moi de me présenter !"],
+    "Mijn naam is Tristan Nijs, 20 jaar oud en ik zit momenteel in mijn derde jaar filmmontage aan het RITCS in Brussel. Naast mijn studies ben ik freelance videograaf actief in evenementen, promotievideo’s en uiteraard ook trouwfilms. Buiten het filmgebeuren maak ik zelf graag foto’s en muziek.":
+      ["My name is Tristan Nijs, I’m 20 and currently in my third year of film editing at RITCS in Brussels. Alongside my studies I work as a freelance videographer for events, promotional videos and, of course, weddings. Outside of film, I love taking photos and making music.",
+       "Je m’appelle Tristan Nijs, j’ai 20 ans et je suis actuellement en troisième année de montage au RITCS à Bruxelles. En parallèle de mes études, je suis vidéaste indépendant pour des événements, des vidéos promotionnelles et, bien sûr, des mariages. En dehors du cinéma, j’aime faire de la photo et de la musique."],
+    "Wat mij aanspreekt aan trouwfilms, is dat ze om pure emotie en menselijke verbintenis draaien. Er is ook geen commercieel doel en de video zou eeuwig moeten meegaan. Dat geeft me de artistieke vrijheid en de rust om elke film met zorg en geduld op te bouwen tot een film die zijn eeuwigheid verdient. Ik wil dat jullie de film kunnen koesteren voor het leven, en dat het kan dienen als een herbeleving van de talrijke emoties die jullie op die dag gevoeld zullen hebben.":
+      ["What draws me to wedding films is that they are about pure emotion and human connection. There is no commercial goal, and the film should last forever. That gives me the artistic freedom and the calm to build every film with care and patience, into a film worthy of that forever. I want you to treasure it for life, and to be able to relive the many emotions you felt that day.",
+       "Ce qui me plaît dans les films de mariage, c’est qu’ils parlent d’émotion pure et de lien humain. Il n’y a pas de but commercial, et le film doit durer pour toujours. Cela me donne la liberté artistique et le calme pour construire chaque film avec soin et patience, jusqu’à ce qu’il mérite cette éternité. Je veux que vous puissiez le chérir toute votre vie et y revivre les nombreuses émotions ressenties ce jour-là."],
+    "In mijn trouwfilms focus ik op emotie en een verhaal zodanig opgebouwd dat die emotie helemaal overkomt. Ik wil dat elke film uniek is en de persoonlijkheid draagt van het koppel. Muziek en klank krijgen evenveel aandacht als het beeld. Dankzij mijn studies en een muzikale achtergrond kan ik doelbewust die zaken hanteren.":
+      ["In my wedding films I focus on emotion, with a story built so that the emotion fully comes across. I want every film to be unique and to carry the personality of the couple. Music and sound get as much attention as the image. My studies and a musical background let me use them with intention.",
+       "Dans mes films de mariage, je mise sur l’émotion et sur une histoire construite pour que cette émotion passe pleinement. Je veux que chaque film soit unique et porte la personnalité du couple. La musique et le son reçoivent autant d’attention que l’image. Mes études et mon parcours musical me permettent de les utiliser de façon réfléchie."],
+    "Tijdens het proces probeer ik het zo aangenaam mogelijk te maken voor het koppel. Aan de hand van een kennismakingsgesprek leer ik jullie beter kennen en krijg ik een idee welke personaliteit de film zal dragen. De dag zelf blijf ik zo discreet mogelijk. Wil ik iets in beeld brengen dat planning vraagt, dan bespreken we dat ruim op voorhand. Zo kunnen jullie op de dag zelf gewoon genieten.":
+      ["Throughout the process I try to make things as easy as possible for the couple. In a first meeting I get to know you and get a feel for the personality the film should carry. On the day itself I stay as discreet as possible. If I want to film something that needs planning, we discuss it well in advance. That way you can simply enjoy your day.",
+       "Tout au long du processus, j’essaie de rendre les choses aussi agréables que possible pour le couple. Lors d’un premier rendez-vous, j’apprends à vous connaître et je me fais une idée de la personnalité que portera le film. Le jour même, je reste aussi discret que possible. Si je veux filmer quelque chose qui demande de la préparation, nous en parlons bien à l’avance. Ainsi, vous profitez simplement de votre journée."],
+    "Kennismaking": ["First meeting", "Rencontre"],
+    "We bespreken jullie dag, de planning en wat jullie belangrijk vinden.": ["We talk about your day, the schedule and what matters to you.", "Nous parlons de votre journée, du planning et de ce qui compte pour vous."],
+    "Datum vast": ["Date booked", "Date réservée"],
+    "Na ondertekening en een voorschot van 25% staat jullie datum vast.": ["Once signed and with a 25% deposit, your date is booked.", "Après signature et un acompte de 25 %, votre date est réservée."],
+    "De dag": ["The day", "Le jour J"],
+    "Ik film de dag zoals hij is, van voorbereiding tot feest.": ["I film the day as it is, from getting ready to the party.", "Je filme la journée telle qu’elle est, des préparatifs à la fête."],
+    "Montage": ["Editing", "Montage"],
+    "De film wordt zorgvuldig gemonteerd.": ["The film is carefully edited.", "Le film est monté avec soin."],
+    "Levering": ["Delivery", "Livraison"],
+    "Binnen 4 tot 6 weken, via een downloadlink.": ["Within 4 to 6 weeks, via a download link.", "Sous 4 à 6 semaines, via un lien de téléchargement."],
+    "Werkethiek": ["Work ethic", "Éthique de travail"],
+    "In mijn werkethiek vind ik het uiterst belangrijk om eerlijk te zijn. Ik ben me bewust van mijn jonge leeftijd en mijn eerder beperkt trouwportfolio. Daar staat wel tegenover dat elke trouwfilm voor mij een project is waar ik volledig in duik, zonder de routine van iemand die er twintig per jaar maakt. Zoeken jullie een persoonlijke trouwfilm met een frisse blik, dan ben ik graag jullie videograaf.":
+      ["Honesty matters a great deal to me. I’m aware of my young age and my still limited wedding portfolio. In return, every wedding film is a project I dive into completely, without the routine of someone who makes twenty a year. If you’re looking for a personal wedding film with a fresh eye, I’d love to be your videographer.",
+       "L’honnêteté est essentielle pour moi. Je suis conscient de mon jeune âge et de mon portfolio de mariages encore limité. En contrepartie, chaque film de mariage est pour moi un projet dans lequel je me plonge entièrement, sans la routine de quelqu’un qui en fait vingt par an. Si vous cherchez un film de mariage personnel avec un regard neuf, je serai ravi d’être votre vidéaste."],
+    "Kennismakingsgesprek": ["First meeting", "Premier rendez-vous"],
+    "8u filmen (overuren €50/u)": ["8h of filming (overtime €50/h)", "8 h de tournage (heures sup. 50 €/h)"],
+    "Recap 2-3 minuten": ["2-3 minute recap", "Récap de 2-3 minutes"],
+    "Kies LITE": ["Choose LITE", "Choisir LITE"],
+    "Volledige dag filmen": ["Full day of filming", "Tournage de toute la journée"],
+    "Voorbereiding t.e.m. nachtfeest": ["Getting ready through the evening party", "Des préparatifs à la soirée"],
+    "Aftermovie van 7-10min": ["7-10 min film", "Film de 7-10 min"],
+    "Kies STANDARD": ["Choose STANDARD", "Choisir STANDARD"],
+    "Teaser van ~30sec": ["~30 sec teaser", "Teaser de ~30 s"],
+    "3 shortform video’s (~20sec/video)": ["3 short-form videos (~20 sec each)", "3 vidéos courtes (~20 s chacune)"],
+    "Kies PREMIUM": ["Choose PREMIUM", "Choisir PREMIUM"],
+    "Opname volledige ceremonie (statisch)": ["Full ceremony recording (static)", "Captation complète de la cérémonie (fixe)"],
+    "Opmerkingen:": ["Notes:", "Remarques :"],
+    "Aflevering binnen de 4-6 weken": ["Delivery within 4-6 weeks", "Livraison sous 4-6 semaines"],
+    "Voorschot van 25% om de datum te reserveren": ["25% deposit to book the date", "Acompte de 25 % pour réserver la date"],
+    "Een definitieve offerte volgt na contact": ["A final quote follows after we talk", "Un devis définitif suit après prise de contact"],
+    "Geen btw (vrijstellingsregeling kleine ondernemingen)": ["No VAT (small business exemption)", "Pas de TVA (régime de franchise des petites entreprises)"],
+    "Is jullie datum nog vrij? Laat jullie datum en locatie weten, dan antwoord ik zo snel mogelijk.": ["Is your date still free? Let me know your date and venue and I’ll get back to you as soon as possible.", "Votre date est-elle encore libre ? Indiquez-moi votre date et le lieu, je vous réponds au plus vite."],
+    "Jullie namen": ["Your names", "Vos prénoms"],
+    "E-mail": ["Email", "E-mail"],
+    "Trouwdatum": ["Wedding date", "Date du mariage"],
+    "Locatie": ["Venue", "Lieu"],
+    "Pakket": ["Package", "Formule"],
+    "Nog niet zeker": ["Not sure yet", "Pas encore sûr"],
+    "Bericht": ["Message", "Message"],
+    "Versturen": ["Send", "Envoyer"],
+    "Trouwfilm": ["Wedding film", "Film de mariage"],
+    "Bezig met versturen…": ["Sending…", "Envoi en cours…"],
+    "Verstuurd. Ik antwoord jullie zo snel mogelijk.": ["Sent. I’ll get back to you as soon as possible.", "Envoyé. Je vous réponds au plus vite."],
+    "Versturen lukte niet. Mail gerust naar tristannijs.media@gmail.com.": ["Sending didn’t work. Feel free to email tristannijs.media@gmail.com.", "L’envoi a échoué. Écrivez-moi à tristannijs.media@gmail.com."]
+  };
+  const LANGS = ["nl", "en", "fr"];
+  let lang = (() => {
+    let q = null; try{ q = new URLSearchParams(location.search).get("lang"); }catch(e){}
+    if(LANGS.includes(q)) return q;
+    try{ const s = localStorage.getItem("tnm-lang"); if(LANGS.includes(s)) return s; }catch(e){}
+    return "nl";
+  })();
+  const tr = s => lang === "nl" || !T[s] ? s : T[s][lang === "en" ? 0 : 1];
+  const fmtDate = iso => new Intl.DateTimeFormat({nl:"nl-BE", en:"en-GB", fr:"fr-BE"}[lang], {day:"numeric", month:"long", year:"numeric", timeZone:"UTC"}).format(new Date(iso + "T12:00:00Z"));
+  const textNodes = [];
+  { const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT); let n;
+    while(n = w.nextNode()){ const k = n.textContent.trim(); if(T[k] && !n.parentElement.closest("script")){ const m = n.textContent.match(/^(\s*)[\s\S]*?(\s*)$/); textNodes.push({n, k, a:m[1], z:m[2]}); } } }
+  const langHooks = [];
+  function applyLang(){
+    document.documentElement.lang = lang;
+    textNodes.forEach(({n, k, a, z}) => { n.textContent = a + tr(k) + z; });
+    document.querySelectorAll("[data-lang]").forEach(b => b.setAttribute("aria-current", b.dataset.lang === lang ? "true" : "false"));
+    document.querySelectorAll(".lang").forEach(b => b.textContent = lang.toUpperCase());
+    langHooks.forEach(f => f());
+  }
+  function setLang(l){ if(!LANGS.includes(l)) return; lang = l; try{ localStorage.setItem("tnm-lang", l); }catch(e){} applyLang(); }
 
   const FILMS = [
-    {id:"elien-jens", t:"Elien & Jens", date:"20 september 2025", yt:"hvcm7aHr_Dc", cover:"../assets/covers/elien-jens.jpg", ar:1.896, lang:"NL"},
-    {id:"joachim-felien", t:"Joachim & Felien", date:"2 mei 2026", yt:"JYeob-Q2qRs", cover:"../assets/clips/videografie/joachimFelien_1.jpg", lang:"NL"}
+    {id:"elien-jens", t:"Elien & Jens", t0:"2025-09-20", yt:"hvcm7aHr_Dc", cover:"../assets/covers/elien-jens.jpg", ar:1.896, lang:"NL"},
+    {id:"joachim-felien", t:"Joachim & Felien", t0:"2026-05-02", yt:"JYeob-Q2qRs", cover:"../assets/clips/videografie/joachimFelien_1.jpg", lang:"NL"}
   ];
   const BY = Object.fromEntries(FILMS.map(f => [f.id, f]));
   const HERO = ["elienJens_4", "joachimFelien_1", "elienJens_3", "joachimFelien_2", "elienJens_1", "joachimFelien_3", "elienJens_2"]
@@ -61,7 +148,8 @@
 
   // portfolio: the coverflow from Uitgelicht on the portfolio
   const face = p => { const f = document.createElement("div"); f.className = "face"; const i = new Image(); i.alt = ""; i.draggable = false; i.src = p.cover; f.appendChild(i); return f; };
-  const cap = p => { const c = document.createElement("div"); c.className = "cap"; c.innerHTML = `<b>${esc(p.t)}</b><span>${esc(p.date)}</span>`; return c; };
+  const cap = p => { const c = document.createElement("div"); c.className = "cap"; c.dataset.id = p.id; c.innerHTML = `<b>${esc(p.t)}</b><span>${esc(fmtDate(p.t0))}</span>`; return c; };
+  langHooks.push(() => document.querySelectorAll(".cap[data-id] span").forEach(sp => { sp.textContent = fmtDate(BY[sp.parentElement.dataset.id].t0); }));
   let pv = null;
   const cf = $("#cf"), track = $("#cfTrack");
   const feat = FILMS.length < 4 ? FILMS.concat(FILMS) : FILMS;
@@ -72,7 +160,7 @@
   const cfItems = feat.map((p, i) => {
     const b = document.createElement("button");
     b.type = "button"; b.className = "cf-item"; b.dataset.id = p.id;
-    b.setAttribute("aria-label", `${p.t}, trouwfilm ${p.date}`);
+    b.setAttribute("aria-label", `${p.t}, ${fmtDate(p.t0)}`);
     const shade = document.createElement("span"); shade.className = "shade";
     b.append(face(p), cap(p), shade);
     b.addEventListener("click", () => {
@@ -204,7 +292,7 @@
     if(odd) T = Math.max(84, Math.min(T, innerHeight - H - 190));
     const el = document.createElement("div");
     el.className = "pv";
-    el.innerHTML = `<div class="pv-media"></div><div class="pv-info"><div class="pv-t">${esc(p.t)}</div><div class="pv-m">Trouwfilm · ${esc(p.date)}</div><div class="pv-r"></div></div>`;
+    el.innerHTML = `<div class="pv-media"></div><div class="pv-info"><div class="pv-t">${esc(p.t)}</div><div class="pv-m">${esc(tr("Trouwfilm"))} · ${esc(fmtDate(p.t0))}</div><div class="pv-r"></div></div>`;
     const media = el.querySelector(".pv-media");
     if(odd) media.style.aspectRatio = String(ar);
     media.append(face(p), cap(p));
@@ -288,6 +376,14 @@
     const r = document.querySelector(`input[name=pakket][value="${b.dataset.pk}"]`); if(r) r.checked = true;
   }));
 
+  const langBtn = $("#langBtn"), langMenu = $("#langMenu");
+  const setLangMenu = open => { langMenu.hidden = !open; langBtn.setAttribute("aria-expanded", open); };
+  langBtn.addEventListener("click", e => { e.stopPropagation(); setLangMenu(langMenu.hidden); });
+  langMenu.addEventListener("click", e => { const b = e.target.closest("[data-lang]"); if(!b) return; setLangMenu(false); setLang(b.dataset.lang); });
+  document.addEventListener("click", e => { if(!langMenu.hidden && !e.target.closest(".lang-wrap")) setLangMenu(false); });
+  drawer.addEventListener("click", e => { const b = e.target.closest(".dr-lang [data-lang]"); if(b){ e.stopPropagation(); setLang(b.dataset.lang); } }, true);
+  applyLang();
+
   // a package can be picked and clicked off again
   document.querySelectorAll(".kind input").forEach(r => {
     let was = false;
@@ -307,13 +403,13 @@
     const datum = f.get("datum") ? new Date(f.get("datum") + "T12:00:00").toLocaleDateString("nl-BE", {day:"numeric", month:"long", year:"numeric"}) : "";
     const data = {access_key:W3F, subject:`Trouwfilm: ${f.get("namen")} – ${datum}`, from_name:"tristannijs.media/weddings",
       name:f.get("namen"), email:f.get("email"), replyto:f.get("email"), trouwdatum:datum, locatie:f.get("locatie") || "-", pakket:f.get("pakket") || "-", message:f.get("bericht") || "-"};
-    btn.disabled = true; say("Bezig met versturen…");
+    btn.disabled = true; say(tr("Bezig met versturen…"));
     try{
       const r = await fetch("https://api.web3forms.com/submit", {method:"POST", headers:{"Content-Type":"application/json", Accept:"application/json"}, body:JSON.stringify(data)});
       const j = await r.json().catch(() => ({}));
       if(!r.ok || !j.success) throw 0;
-      form.reset(); say("Verstuurd. Ik antwoord jullie zo snel mogelijk.");
-    }catch(err){ say("Versturen lukte niet. Mail gerust naar tristannijs.media@gmail.com.", true); }
+      form.reset(); say(tr("Verstuurd. Ik antwoord jullie zo snel mogelijk."));
+    }catch(err){ say(tr("Versturen lukte niet. Mail gerust naar tristannijs.media@gmail.com."), true); }
     btn.disabled = false;
   });
 })();
