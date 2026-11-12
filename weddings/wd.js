@@ -68,7 +68,7 @@
     "Versturen lukte niet. Mail gerust naar tristannijs.media@gmail.com.": ["Sending didn’t work. Feel free to email tristannijs.media@gmail.com.", "L’envoi a échoué. Écrivez-moi à tristannijs.media@gmail.com."]
   };
   const TX = {
-    more: {en:'Want to see more of my work? Take a look at my <a class="inl" href="../">general portfolio</a>.', fr:'Envie de voir plus de mon travail ? Jetez un œil à mon <a class="inl" href="../">portfolio général</a>.'}
+    more: {en:'Anyone who would like to see more of my work is warmly invited to take a look at my <a class="inl" href="../">general portfolio</a>.', fr:'Si vous souhaitez voir davantage de mon travail, je vous invite volontiers à jeter un œil à mon <a class="inl" href="../">portfolio général</a>.'}
   };
   document.querySelectorAll("[data-tx]").forEach(e => { TX[e.dataset.tx].nl = e.innerHTML; });
   const LANGS = ["nl", "en", "fr"];
