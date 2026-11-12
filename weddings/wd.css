@@ -187,8 +187,8 @@ form{display:grid;grid-template-columns:1fr 1fr;gap:28px 28px}
 /* footer */
 .foot{padding:clamp(110px,13vw,190px) 0 clamp(50px,6vw,80px);text-align:center;background:linear-gradient(180deg,var(--tone) 0,#efe8dc 30%,#ddd2bf 62%,var(--sand) 100%)}
 .foot-icons{display:flex;justify-content:center;gap:28px}
-.foot-icons a{color:#a8a39d;display:block;transition:color .2s}
-.foot-icons a:hover{color:var(--wine)}
+.foot-icons a{color:var(--wine);display:block;transition:opacity .2s}
+.foot-icons a:hover{opacity:.7}
 .foot-icons svg{height:22px;width:auto;display:block}
 .foot p{margin:16px 0 0;font-family:var(--sans);font-size:clamp(15px,1.3vw,18px);color:var(--wine)}
 
