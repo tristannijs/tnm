@@ -52,7 +52,7 @@ img{display:block;max-width:100%}
 .menu-btn[aria-expanded="true"] .bars i:nth-child(1){transform:translateY(6.6px) rotate(45deg)}
 .menu-btn[aria-expanded="true"] .bars i:nth-child(2){opacity:0}
 .menu-btn[aria-expanded="true"] .bars i:nth-child(3){transform:translateY(-6.6px) rotate(-45deg)}
-body.menu .bar{background:var(--cream);color:var(--wine)}
+body.menu .nav{color:var(--wine)}
 .drawer{position:fixed;top:0;right:0;bottom:0;z-index:45;width:min(360px,100%);background:var(--cream);padding:calc(var(--bar-h) + 30px) var(--gut) 40px;display:flex;flex-direction:column;gap:12px;overflow-y:auto;box-shadow:-20px 0 60px rgba(60,40,30,.12)}
 .drawer a{font-size:30px;text-transform:uppercase;color:var(--wine);-webkit-text-stroke:.5px currentColor}
 .drawer a:hover{opacity:.7}
@@ -195,6 +195,7 @@ form{display:grid;grid-template-columns:1fr 1fr;gap:28px 28px}
 
 @media (max-width:1000px){
   .drawer{width:100%;box-shadow:none}
+  body.menu .bar{color:var(--wine)}
   .steps{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:30px}
   .pk-grid{grid-template-columns:1fr;max-width:520px;margin:0 auto}
   .pk > ul{margin-bottom:34px}

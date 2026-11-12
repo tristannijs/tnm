@@ -3,4 +3,5 @@
 # (GitHub Pages otherwise lets browsers keep the old ones for 10 minutes).
 v=$(date +%Y%m%d%H%M%S)
 sed -i.bak -E "s#(css/style\.css|assets/clips/clips\.js|js/i18n\.js|js/data\.js|js/music\.js|js/main\.js)(\?v=[0-9]+)?\"#\1?v=$v\"#g" index.html crop.html && rm -f index.html.bak crop.html.bak
+sed -i.bak -E "s#\"(wd\.css|wd\.js)(\?v=[0-9]+)?\"#\"\1?v=$v\"#g" weddings/index.html && rm -f weddings/index.html.bak
 echo "version $v"
