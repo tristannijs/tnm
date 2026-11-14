@@ -282,7 +282,6 @@
     if(p._hd) bits.push(`<span class="hd">HD</span>`);
     if(p._dur) bits.push(`<span>${esc(mmss(p._dur))}</span>`);
     if(p.lang) bits.push(`<span>${esc(p.lang)}</span>`);
-    bits.push(`<a href="https://www.youtube.com/watch?v=${esc(p.yt)}" target="_blank" rel="noopener">YouTube ↗</a>`);
     return bits.join("");
   }
   const refreshRow = p => { if(pv && pv.p === p) pv.el.querySelector(".pv-r").innerHTML = rowHTML(p); };
