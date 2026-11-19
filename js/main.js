@@ -1,4 +1,5 @@
 (function(){
+  if("GestureEvent" in window) document.documentElement.classList.add("wk");
   const $ = s => document.querySelector(s);
   const esc = s => String(s).replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
   const D = s => Date.parse(s+"T12:00:00Z");
