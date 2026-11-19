@@ -140,7 +140,7 @@
       if(v.style.objectPosition !== op) v.style.objectPosition = op;
     }
     const RVFC = "requestVideoFrameCallback" in HTMLVideoElement.prototype;
-    const cv = RVFC && !("GestureEvent" in window) ? document.createElement("canvas") : null, g = cv && cv.getContext("2d", {alpha:false});
+    const cv = RVFC && (!("GestureEvent" in window) || innerWidth < innerHeight) ? document.createElement("canvas") : null, g = cv && cv.getContext("2d", {alpha:false});
     if(cv){ cv.className = "clip-canvas"; l.appendChild(cv); }
     function paint(v, t){
       if(!v.clip || v.readyState < 2) return false;
