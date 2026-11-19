@@ -138,8 +138,8 @@
       const op = `${(pos(x, ca / va) * 100).toFixed(2)}% ${(pos(y, va / ca) * 100).toFixed(2)}%`;
       if(v.style.objectPosition !== op) v.style.objectPosition = op;
     }
-    const RVFC = "requestVideoFrameCallback" in HTMLVideoElement.prototype && !("GestureEvent" in window);
-    const cv = RVFC ? document.createElement("canvas") : null, g = cv && cv.getContext("2d", {alpha:false});
+    const RVFC = "requestVideoFrameCallback" in HTMLVideoElement.prototype;
+    const cv = RVFC && !("GestureEvent" in window) ? document.createElement("canvas") : null, g = cv && cv.getContext("2d", {alpha:false});
     if(cv){ cv.className = "clip-canvas"; l.appendChild(cv); }
     function paint(v, t){
       if(!v.clip || v.readyState < 2) return false;
@@ -154,11 +154,15 @@
     }
     function tick(){
       const v = vids[cur];
-      place(v);
+      if(!cv || !playing) place(v);
       if(!playing){ raf = 0; return; }
-      if(RVFC){ const me = rv = v; raf = me.requestVideoFrameCallback((now, m) => { raf = 0; if(me !== vids[cur]) return; paint(me, m.mediaTime); tick(); }); }
+      if(RVFC) loop(v);
       else if(v.clip && v.clip.focus) raf = requestAnimationFrame(tick);
       else raf = 0;
+    }
+    function loop(me){
+      rv = me;
+      raf = me.requestVideoFrameCallback((now, m) => { raf = 0; if(me !== vids[cur] || !playing) return; if(cv) paint(me, m.mediaTime); else place(me, m.mediaTime); loop(me); });
     }
     let rv = null;
     function stop(){ if(!raf) return; if(RVFC) rv.cancelVideoFrameCallback(raf); else cancelAnimationFrame(raf); raf = 0; }
