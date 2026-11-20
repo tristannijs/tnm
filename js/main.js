@@ -138,6 +138,7 @@
     }
     function load(v, c){ v.clip = c; v.src = useAv1 ? c.av1 : c.src; v.poster = c.poster; v.preload = "auto"; v.load(); }
     function at(c, t){
+      if(l.clientWidth >= l.clientHeight * 1.2) return [.5, .5];
       const f = c.focus;
       if(!f) return [c.x, c.y];
       t += .01;
