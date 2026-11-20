@@ -193,7 +193,7 @@
       cur = 1 - cur;
       place(n);
       let done = false;
-      const go = () => { if(done) return; done = true; show(cur); track(); load(v, next()); };
+      const go = () => { if(done) return; done = true; show(cur); track(); requestAnimationFrame(() => requestAnimationFrame(() => load(v, next()))); };
       if(cv || !playing){ if(playing) n.play().catch(() => {}); if(n.readyState >= 2) go(); else n.addEventListener("loadeddata", go, {once:true}); return; }
       if(RVFC) n.requestVideoFrameCallback(() => requestAnimationFrame(go));
       const t = () => { if(n.currentTime > 0){ n.removeEventListener("timeupdate", t); go(); } };

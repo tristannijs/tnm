@@ -171,10 +171,12 @@
     load(vids[0], HERO[k]); load(vids[1], HERO[(k + 1) % HERO.length]);
     const play = v => { if(seen) v.play().catch(() => {}); };
     vids[0].addEventListener("loadeddata", () => { shown(vids[0], () => vids[0].classList.add("on")); play(vids[0]); }, {once:true});
+    vids.forEach(v => v.addEventListener("loadeddata", () => v.classList.add("ready")));
+    vids.forEach(v => v.addEventListener("emptied", () => v.classList.remove("ready")));
     vids.forEach((v, i) => v.addEventListener("ended", () => {
       if(i !== cur) return;
       const n = vids[1 - cur]; cur = 1 - cur; k = (k + 1) % HERO.length;
-      const go = () => { n.classList.add("on"); v.classList.remove("on"); load(v, HERO[(k + 1) % HERO.length]); };
+      const go = () => { n.classList.add("on"); v.classList.remove("on"); requestAnimationFrame(() => requestAnimationFrame(() => load(v, HERO[(k + 1) % HERO.length]))); };
       shown(n, go);
       play(n);
     }));
