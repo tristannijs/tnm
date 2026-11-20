@@ -253,3 +253,7 @@ html:has(#drawer:not([hidden])){overflow:hidden}
 ::view-transition-old(site-switch),::view-transition-new(site-switch){animation:none;mix-blend-mode:normal}
 ::view-transition-old(site-switch){display:none}
 @media (prefers-reduced-motion:reduce){@view-transition{navigation:none}}
+
+html.sw-out body{opacity:0;transition:opacity .28s ease}
+html.sw-in body{opacity:0}
+html.sw-in.sw-show body{opacity:1;transition:opacity .45s ease}

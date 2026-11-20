@@ -1,6 +1,21 @@
 (function(){
   if("GestureEvent" in window) document.documentElement.classList.add("wk");
   const $ = s => document.querySelector(s);
+
+  {
+    const root = document.documentElement;
+    if(root.classList.contains("sw-in")) requestAnimationFrame(() => requestAnimationFrame(() => root.classList.add("sw-show")));
+    if(!("onpagereveal" in window)){
+      document.querySelectorAll(".switch a:not([aria-current]), .dr-sites a:not([aria-current])").forEach(a => a.addEventListener("click", e => {
+        if(e.metaKey || e.ctrlKey || e.shiftKey || e.button) return;
+        e.preventDefault();
+        try{ sessionStorage.setItem("tnm-sw", "1"); }catch(err){}
+        root.classList.add("sw-out");
+        setTimeout(() => { location.href = a.href; }, 280);
+      }));
+      addEventListener("pageshow", e => { if(e.persisted) root.classList.remove("sw-out"); });
+    }
+  }
   const esc = s => String(s).replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
   const D = s => Date.parse(s+"T12:00:00Z");
   const DAY = 864e5;
