@@ -191,9 +191,13 @@
       const n = vids[1 - cur];
       cur = 1 - cur;
       place(n);
-      const go = () => { show(cur); track(); load(v, next()); };
-      if(playing){ n.play().catch(() => {}); }
-      if(n.readyState >= 2) go(); else n.addEventListener("loadeddata", go, {once:true});
+      let done = false;
+      const go = () => { if(done) return; done = true; show(cur); track(); load(v, next()); };
+      if(cv || !playing){ if(playing) n.play().catch(() => {}); if(n.readyState >= 2) go(); else n.addEventListener("loadeddata", go, {once:true}); return; }
+      if(RVFC) n.requestVideoFrameCallback(() => requestAnimationFrame(go));
+      const t = () => { if(n.currentTime > 0){ n.removeEventListener("timeupdate", t); go(); } };
+      n.addEventListener("timeupdate", t);
+      n.play().catch(() => {});
     }));
     vids.forEach(v => v.addEventListener("loadedmetadata", () => place(v)));
     addEventListener("resize", () => { vids.forEach(v => place(v)); if(cv) paint(vids[cur], vids[cur].currentTime); });

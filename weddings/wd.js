@@ -160,16 +160,23 @@
       bg.appendChild(v); return v;
     });
     let k = 0, cur = 0, seen = true;
-    const load = (v, c) => { v.src = useAv1 ? c.av1 : c.src; v.load(); };
+    const load = (v, c) => { v.poster = c.poster; v.src = useAv1 ? c.av1 : c.src; v.load(); };
+    const shown = (v, cb) => {
+      let done = false;
+      const f = () => { if(!done){ done = true; cb(); } };
+      if("requestVideoFrameCallback" in v) v.requestVideoFrameCallback(() => requestAnimationFrame(f));
+      const t = () => { if(v.currentTime > 0){ v.removeEventListener("timeupdate", t); f(); } };
+      v.addEventListener("timeupdate", t);
+    };
     load(vids[0], HERO[k]); load(vids[1], HERO[(k + 1) % HERO.length]);
     const play = v => { if(seen) v.play().catch(() => {}); };
-    vids[0].addEventListener("loadeddata", () => { vids[0].classList.add("on"); play(vids[0]); }, {once:true});
+    vids[0].addEventListener("loadeddata", () => { shown(vids[0], () => vids[0].classList.add("on")); play(vids[0]); }, {once:true});
     vids.forEach((v, i) => v.addEventListener("ended", () => {
       if(i !== cur) return;
       const n = vids[1 - cur]; cur = 1 - cur; k = (k + 1) % HERO.length;
       const go = () => { n.classList.add("on"); v.classList.remove("on"); load(v, HERO[(k + 1) % HERO.length]); };
+      shown(n, go);
       play(n);
-      if(n.readyState >= 2) go(); else n.addEventListener("loadeddata", go, {once:true});
     }));
     new IntersectionObserver(([e]) => { seen = e.isIntersecting; seen ? play(vids[cur]) : vids[cur].pause(); }).observe($("#hero"));
   })();

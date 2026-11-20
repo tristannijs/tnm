@@ -2244,7 +2244,7 @@ window.CLIPS = {
    "av1": "assets/clips/weddings/elienJens_16-av1.mp4",
    "poster": "assets/clips/weddings/elienJens_16.jpg",
    "project": "elienjens",
-   "dur": 6.64,
+   "dur": 6.6,
    "x": 0.347,
    "y": 0.5,
    "cuts": [
