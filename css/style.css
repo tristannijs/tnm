@@ -48,7 +48,7 @@ img{display:block;max-width:100%}
 .switch{position:absolute;left:50%;top:calc(50% + env(safe-area-inset-top,0px)/2);transform:translate(-50%,-50%);display:flex;align-items:center;gap:14px;color:#fff;transition:opacity .35s,visibility .35s}
 .switch a{display:block;padding:6px 2px 7px;opacity:.75;transition:opacity .2s;position:relative}
 .switch a:hover,.switch a[aria-current="page"]{opacity:1}
-.switch a[aria-current="page"]::after{content:"";position:absolute;left:2px;right:2px;bottom:0;height:1.5px;background:currentColor}
+.sw-line{position:absolute;left:2px;right:2px;bottom:0;height:1.5px;background:currentColor}
 @media (max-width:1150px){.bar.links .nav .nav-link:not([data-contact]){opacity:0;visibility:hidden}}
 .dr-foot{display:flex;flex-direction:column;gap:20px;margin-top:auto;padding-top:26px;border-top:1px solid #2c2c2c}
 .dr-sites,.dr-lang{display:flex;gap:26px}
@@ -603,3 +603,12 @@ body.is-proj .wk-t{text-transform:none}
 html:has(#drawer:not([hidden])){overflow:hidden}
 .bar:has(#menuBtn[aria-expanded="true"]) .switch,.bar:has(#menuBtn[aria-expanded="true"]) .nav > :not(.menu-btn){opacity:0;visibility:hidden;transition:opacity .2s,visibility .2s}
 .drawer{bottom:auto;height:100vh;height:100svh}
+
+@view-transition{navigation:auto}
+::view-transition-old(root),::view-transition-new(root){animation-duration:.5s;animation-timing-function:ease}
+.bar .switch{view-transition-name:site-switch}
+.bar .sw-line{view-transition-name:site-line}
+::view-transition-group(site-line){animation-duration:.5s;animation-timing-function:cubic-bezier(.4,0,.2,1)}
+::view-transition-old(site-switch),::view-transition-new(site-switch){animation:none;mix-blend-mode:normal}
+::view-transition-old(site-switch){display:none}
+@media (prefers-reduced-motion:reduce){@view-transition{navigation:none}}

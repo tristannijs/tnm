@@ -103,10 +103,9 @@
   const HERO = (() => {
     const all = [...((window.CLIPS || {}).videografie || []), ...((window.CLIPS || {}).weddings || [])].filter(c => c.project === "elienjens" || c.project === "joachimfelien")
       .map(c => ({src:"../" + c.src, av1:"../" + c.av1, poster:"../" + c.poster, p:c.project}));
-    const first = all.find(c => c.src.endsWith("/elienJens_4.mp4")) || all[0];
-    const rest = all.filter(c => c !== first);
+    const rest = all.slice();
     for(let i = rest.length - 1; i > 0; i--){ const j = Math.random() * (i + 1) | 0; [rest[i], rest[j]] = [rest[j], rest[i]]; }
-    const out = [first];
+    const out = rest.length ? [rest.shift()] : [];
     while(rest.length){ const k = rest.findIndex(c => c.p !== out[out.length - 1].p); out.push(rest.splice(k < 0 ? 0 : k, 1)[0]); }
     return out.filter(Boolean);
   })();
