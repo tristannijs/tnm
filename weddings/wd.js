@@ -101,7 +101,7 @@
   ];
   const BY = Object.fromEntries(FILMS.map(f => [f.id, f]));
   const HERO = (() => {
-    const all = ((window.CLIPS || {}).videografie || []).filter(c => c.project === "elienjens" || c.project === "joachimfelien")
+    const all = [...((window.CLIPS || {}).videografie || []), ...((window.CLIPS || {}).weddings || [])].filter(c => c.project === "elienjens" || c.project === "joachimfelien")
       .map(c => ({src:"../" + c.src, av1:"../" + c.av1, poster:"../" + c.poster, p:c.project}));
     const first = all.find(c => c.src.endsWith("/elienJens_4.mp4")) || all[0];
     const rest = all.filter(c => c !== first);

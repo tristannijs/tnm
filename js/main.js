@@ -105,7 +105,7 @@
     const C = window.CLIPS || {};
     const skip = (l.dataset.skip || "").toLowerCase().split(/\s+/).filter(Boolean);
     const only = l.dataset.only;
-    const list = (l.dataset.clips === "all" ? Object.values(C).flat() : C[l.dataset.clips] || []).filter(c => !skip.includes(c.project) && (!only || c.project === only));
+    const list = (l.dataset.clips === "all" ? Object.entries(C).filter(([k]) => k !== "weddings").flatMap(([, v]) => v) : C[l.dataset.clips] || []).filter(c => !skip.includes(c.project) && (!only || c.project === only));
     if(!list.length) return null;
     const vids = [0, 1].map(() => {
       const v = document.createElement("video");
