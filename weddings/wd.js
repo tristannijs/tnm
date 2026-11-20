@@ -100,8 +100,16 @@
     {id:"joachim-felien", t:"Joachim & Felien", t0:"2026-05-02", yt:"JYeob-Q2qRs", cover:"../assets/clips/videografie/joachimFelien_1.jpg", lang:"NL"}
   ];
   const BY = Object.fromEntries(FILMS.map(f => [f.id, f]));
-  const HERO = ["elienJens_4", "joachimFelien_1", "elienJens_3", "joachimFelien_2", "elienJens_1", "joachimFelien_3", "elienJens_2"]
-    .map(k => ({src:`../assets/clips/videografie/${k}.mp4`, av1:`../assets/clips/videografie/${k}-av1.mp4`, poster:`../assets/clips/videografie/${k}.jpg`}));
+  const HERO = (() => {
+    const all = ((window.CLIPS || {}).videografie || []).filter(c => c.project === "elienjens" || c.project === "joachimfelien")
+      .map(c => ({src:"../" + c.src, av1:"../" + c.av1, poster:"../" + c.poster, p:c.project}));
+    const first = all.find(c => c.src.endsWith("/elienJens_4.mp4")) || all[0];
+    const rest = all.filter(c => c !== first);
+    for(let i = rest.length - 1; i > 0; i--){ const j = Math.random() * (i + 1) | 0; [rest[i], rest[j]] = [rest[j], rest[i]]; }
+    const out = [first];
+    while(rest.length){ const k = rest.findIndex(c => c.p !== out[out.length - 1].p); out.push(rest.splice(k < 0 ? 0 : k, 1)[0]); }
+    return out.filter(Boolean);
+  })();
 
   const bar = $("#bar");
   const onScroll = () => bar.classList.toggle("solid", scrollY > 8);

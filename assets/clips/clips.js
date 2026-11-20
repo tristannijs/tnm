@@ -691,7 +691,7 @@ window.CLIPS = {
    ],
    "focus": [
     [
-     0,
+     0.0,
      0.428,
      0.5,
      0
@@ -725,7 +725,7 @@ window.CLIPS = {
    "x": 0.5,
    "y": 0.303,
    "cuts": [
-    1,
+    1.0,
     1.92
    ]
   },
@@ -742,7 +742,7 @@ window.CLIPS = {
    ],
    "focus": [
     [
-     0,
+     0.0,
      0.408,
      0.5,
      0
@@ -1260,7 +1260,7 @@ window.CLIPS = {
    ],
    "focus": [
     [
-     0,
+     0.0,
      0.696,
      0.5,
      0
@@ -1398,7 +1398,7 @@ window.CLIPS = {
    ],
    "focus": [
     [
-     0,
+     0.0,
      0.5,
      0.325,
      0
@@ -1531,6 +1531,310 @@ window.CLIPS = {
    "manual": true
   },
   {
+   "src": "assets/clips/videografie/elienJens_10.mp4",
+   "av1": "assets/clips/videografie/elienJens_10-av1.mp4",
+   "poster": "assets/clips/videografie/elienJens_10.jpg",
+   "project": "elienjens",
+   "dur": 12.12,
+   "x": 0.5,
+   "y": 0.302,
+   "cuts": [
+    3.4,
+    6.12,
+    9.2
+   ],
+   "focus": [
+    [
+     0.0,
+     0.5,
+     0.302,
+     0
+    ],
+    [
+     3.4,
+     0.657,
+     0.348,
+     0
+    ],
+    [
+     4.68,
+     0.441,
+     0.297,
+     0
+    ],
+    [
+     6.12,
+     0.547,
+     0.214,
+     0
+    ],
+    [
+     9.2,
+     0.324,
+     0.5,
+     0
+    ]
+   ]
+  },
+  {
+   "src": "assets/clips/videografie/elienJens_11.mp4",
+   "av1": "assets/clips/videografie/elienJens_11-av1.mp4",
+   "poster": "assets/clips/videografie/elienJens_11.jpg",
+   "project": "elienjens",
+   "dur": 5.52,
+   "x": 0.5,
+   "y": 0.346,
+   "cuts": [
+    2.6
+   ]
+  },
+  {
+   "src": "assets/clips/videografie/elienJens_12.mp4",
+   "av1": "assets/clips/videografie/elienJens_12-av1.mp4",
+   "poster": "assets/clips/videografie/elienJens_12.jpg",
+   "project": "elienjens",
+   "dur": 8.68,
+   "x": 0.5,
+   "y": 0.339,
+   "cuts": [
+    2.84,
+    5.72
+   ],
+   "focus": [
+    [
+     0.0,
+     0.5,
+     0.339,
+     0
+    ],
+    [
+     2.84,
+     0.419,
+     0.282,
+     0
+    ],
+    [
+     5.72,
+     0.5,
+     0.5,
+     0
+    ]
+   ]
+  },
+  {
+   "src": "assets/clips/videografie/elienJens_13.mp4",
+   "av1": "assets/clips/videografie/elienJens_13-av1.mp4",
+   "poster": "assets/clips/videografie/elienJens_13.jpg",
+   "project": "elienjens",
+   "dur": 4.6,
+   "x": 0.599,
+   "y": 0.346,
+   "cuts": [],
+   "focus": [
+    [
+     0.0,
+     0.599,
+     0.346,
+     0
+    ],
+    [
+     2.4,
+     0.389,
+     0.297,
+     0
+    ]
+   ]
+  },
+  {
+   "src": "assets/clips/videografie/elienJens_14.mp4",
+   "av1": "assets/clips/videografie/elienJens_14-av1.mp4",
+   "poster": "assets/clips/videografie/elienJens_14.jpg",
+   "project": "elienjens",
+   "dur": 6.08,
+   "x": 0.602,
+   "y": 0.287,
+   "cuts": [
+    2.92,
+    4.6
+   ],
+   "focus": [
+    [
+     0.0,
+     0.602,
+     0.287,
+     0
+    ],
+    [
+     2.92,
+     0.5,
+     0.5,
+     0
+    ],
+    [
+     4.6,
+     0.807,
+     0.151,
+     0
+    ],
+    [
+     5.04,
+     0.5,
+     0.5,
+     0
+    ]
+   ]
+  },
+  {
+   "src": "assets/clips/videografie/elienJens_15.mp4",
+   "av1": "assets/clips/videografie/elienJens_15-av1.mp4",
+   "poster": "assets/clips/videografie/elienJens_15.jpg",
+   "project": "elienjens",
+   "dur": 4.0,
+   "x": 0.383,
+   "y": 0.134,
+   "cuts": [
+    0.92,
+    2.6
+   ],
+   "focus": [
+    [
+     0.0,
+     0.383,
+     0.134,
+     0
+    ],
+    [
+     0.92,
+     0.778,
+     0.5,
+     0
+    ],
+    [
+     2.6,
+     0.572,
+     0.298,
+     0
+    ]
+   ]
+  },
+  {
+   "src": "assets/clips/videografie/elienJens_16.mp4",
+   "av1": "assets/clips/videografie/elienJens_16-av1.mp4",
+   "poster": "assets/clips/videografie/elienJens_16.jpg",
+   "project": "elienjens",
+   "dur": 6.64,
+   "x": 0.347,
+   "y": 0.5,
+   "cuts": [
+    2.04,
+    3.52,
+    5.08,
+    5.4,
+    5.64,
+    6.12
+   ],
+   "focus": [
+    [
+     0.0,
+     0.347,
+     0.5,
+     0
+    ],
+    [
+     1.32,
+     0.665,
+     0.5,
+     0
+    ],
+    [
+     2.04,
+     0.5,
+     0.23,
+     0
+    ],
+    [
+     3.52,
+     0.628,
+     0.3,
+     0
+    ],
+    [
+     5.08,
+     0.575,
+     0.5,
+     0
+    ]
+   ]
+  },
+  {
+   "src": "assets/clips/videografie/elienJens_17.mp4",
+   "av1": "assets/clips/videografie/elienJens_17-av1.mp4",
+   "poster": "assets/clips/videografie/elienJens_17.jpg",
+   "project": "elienjens",
+   "dur": 1.76,
+   "x": 0.409,
+   "y": 0.305,
+   "cuts": [
+    0.8
+   ],
+   "focus": [
+    [
+     0.0,
+     0.409,
+     0.305,
+     0
+    ],
+    [
+     0.8,
+     0.627,
+     0.244,
+     0
+    ]
+   ]
+  },
+  {
+   "src": "assets/clips/videografie/elienJens_18.mp4",
+   "av1": "assets/clips/videografie/elienJens_18-av1.mp4",
+   "poster": "assets/clips/videografie/elienJens_18.jpg",
+   "project": "elienjens",
+   "dur": 2.72,
+   "x": 0.441,
+   "y": 0.5,
+   "cuts": [
+    1.84
+   ],
+   "focus": [
+    [
+     0.0,
+     0.441,
+     0.5,
+     0
+    ],
+    [
+     1.32,
+     0.602,
+     0.301,
+     0
+    ],
+    [
+     1.84,
+     0.5,
+     0.186,
+     0
+    ]
+   ]
+  },
+  {
+   "src": "assets/clips/videografie/elienJens_19.mp4",
+   "av1": "assets/clips/videografie/elienJens_19-av1.mp4",
+   "poster": "assets/clips/videografie/elienJens_19.jpg",
+   "project": "elienjens",
+   "dur": 1.04,
+   "x": 0.5,
+   "y": 0.5,
+   "cuts": []
+  },
+  {
    "src": "assets/clips/videografie/elienJens_2.mp4",
    "av1": "assets/clips/videografie/elienJens_2-av1.mp4",
    "poster": "assets/clips/videografie/elienJens_2.jpg",
@@ -1600,6 +1904,125 @@ window.CLIPS = {
     ]
    ],
    "manual": true
+  },
+  {
+   "src": "assets/clips/videografie/elienJens_5.mp4",
+   "av1": "assets/clips/videografie/elienJens_5-av1.mp4",
+   "poster": "assets/clips/videografie/elienJens_5.jpg",
+   "project": "elienjens",
+   "dur": 5.84,
+   "x": 0.5,
+   "y": 0.5,
+   "cuts": [
+    2.88,
+    4.92
+   ],
+   "focus": [
+    [
+     0.0,
+     0.5,
+     0.5,
+     0
+    ],
+    [
+     2.88,
+     0.5,
+     0.322,
+     0
+    ]
+   ]
+  },
+  {
+   "src": "assets/clips/videografie/elienJens_6.mp4",
+   "av1": "assets/clips/videografie/elienJens_6-av1.mp4",
+   "poster": "assets/clips/videografie/elienJens_6.jpg",
+   "project": "elienjens",
+   "dur": 3.08,
+   "x": 0.359,
+   "y": 0.699,
+   "cuts": [],
+   "focus": [
+    [
+     0.0,
+     0.359,
+     0.699,
+     0
+    ],
+    [
+     1.32,
+     0.253,
+     0.5,
+     0
+    ]
+   ]
+  },
+  {
+   "src": "assets/clips/videografie/elienJens_7.mp4",
+   "av1": "assets/clips/videografie/elienJens_7-av1.mp4",
+   "poster": "assets/clips/videografie/elienJens_7.jpg",
+   "project": "elienjens",
+   "dur": 5.88,
+   "x": 0.443,
+   "y": 0.5,
+   "cuts": [
+    2.96
+   ],
+   "focus": [
+    [
+     0.0,
+     0.443,
+     0.5,
+     0
+    ],
+    [
+     2.96,
+     0.5,
+     0.294,
+     0
+    ]
+   ]
+  },
+  {
+   "src": "assets/clips/videografie/elienJens_8.mp4",
+   "av1": "assets/clips/videografie/elienJens_8-av1.mp4",
+   "poster": "assets/clips/videografie/elienJens_8.jpg",
+   "project": "elienjens",
+   "dur": 3.8,
+   "x": 0.672,
+   "y": 0.237,
+   "cuts": [
+    1.68
+   ],
+   "focus": [
+    [
+     0.0,
+     0.672,
+     0.237,
+     0
+    ],
+    [
+     1.68,
+     0.302,
+     0.209,
+     1
+    ],
+    [
+     3.72,
+     0.156,
+     0.204,
+     0
+    ]
+   ]
+  },
+  {
+   "src": "assets/clips/videografie/elienJens_9.mp4",
+   "av1": "assets/clips/videografie/elienJens_9-av1.mp4",
+   "poster": "assets/clips/videografie/elienJens_9.jpg",
+   "project": "elienjens",
+   "dur": 2.84,
+   "x": 0.391,
+   "y": 0.5,
+   "cuts": []
   },
   {
    "src": "assets/clips/videografie/icds7_1.mp4",
@@ -1712,6 +2135,90 @@ window.CLIPS = {
    "project": "joachimfelien",
    "dur": 1.6,
    "x": 0.5,
+   "y": 0.5,
+   "cuts": []
+  },
+  {
+   "src": "assets/clips/videografie/joachimFelien_10.mp4",
+   "av1": "assets/clips/videografie/joachimFelien_10-av1.mp4",
+   "poster": "assets/clips/videografie/joachimFelien_10.jpg",
+   "project": "joachimfelien",
+   "dur": 4.4,
+   "x": 0.5,
+   "y": 0.5,
+   "cuts": [
+    2.24
+   ],
+   "focus": [
+    [
+     0.0,
+     0.5,
+     0.5,
+     0
+    ],
+    [
+     2.24,
+     0.798,
+     0.5,
+     0
+    ],
+    [
+     3.36,
+     0.5,
+     0.5,
+     0
+    ]
+   ]
+  },
+  {
+   "src": "assets/clips/videografie/joachimFelien_11.mp4",
+   "av1": "assets/clips/videografie/joachimFelien_11-av1.mp4",
+   "poster": "assets/clips/videografie/joachimFelien_11.jpg",
+   "project": "joachimfelien",
+   "dur": 1.48,
+   "x": 0.423,
+   "y": 0.313,
+   "cuts": []
+  },
+  {
+   "src": "assets/clips/videografie/joachimFelien_12.mp4",
+   "av1": "assets/clips/videografie/joachimFelien_12-av1.mp4",
+   "poster": "assets/clips/videografie/joachimFelien_12.jpg",
+   "project": "joachimfelien",
+   "dur": 1.24,
+   "x": 0.451,
+   "y": 0.5,
+   "cuts": []
+  },
+  {
+   "src": "assets/clips/videografie/joachimFelien_13.mp4",
+   "av1": "assets/clips/videografie/joachimFelien_13-av1.mp4",
+   "poster": "assets/clips/videografie/joachimFelien_13.jpg",
+   "project": "joachimfelien",
+   "dur": 2.6,
+   "x": 0.5,
+   "y": 0.148,
+   "cuts": [
+    0.92
+   ]
+  },
+  {
+   "src": "assets/clips/videografie/joachimFelien_14.mp4",
+   "av1": "assets/clips/videografie/joachimFelien_14-av1.mp4",
+   "poster": "assets/clips/videografie/joachimFelien_14.jpg",
+   "project": "joachimfelien",
+   "dur": 1.68,
+   "x": 0.761,
+   "y": 0.5,
+   "cuts": []
+  },
+  {
+   "src": "assets/clips/videografie/joachimFelien_15.mp4",
+   "av1": "assets/clips/videografie/joachimFelien_15-av1.mp4",
+   "poster": "assets/clips/videografie/joachimFelien_15.jpg",
+   "project": "joachimfelien",
+   "dur": 2.24,
+   "x": 0.328,
    "y": 0.5,
    "cuts": []
   },
@@ -1858,6 +2365,126 @@ window.CLIPS = {
     ]
    ],
    "manual": true
+  },
+  {
+   "src": "assets/clips/videografie/joachimFelien_4.mp4",
+   "av1": "assets/clips/videografie/joachimFelien_4-av1.mp4",
+   "poster": "assets/clips/videografie/joachimFelien_4.jpg",
+   "project": "joachimfelien",
+   "dur": 3.84,
+   "x": 0.304,
+   "y": 0.5,
+   "cuts": [],
+   "focus": [
+    [
+     0.0,
+     0.304,
+     0.5,
+     0
+    ],
+    [
+     0.72,
+     0.639,
+     0.314,
+     0
+    ],
+    [
+     3.0,
+     0.375,
+     0.5,
+     0
+    ]
+   ]
+  },
+  {
+   "src": "assets/clips/videografie/joachimFelien_5.mp4",
+   "av1": "assets/clips/videografie/joachimFelien_5-av1.mp4",
+   "poster": "assets/clips/videografie/joachimFelien_5.jpg",
+   "project": "joachimfelien",
+   "dur": 1.44,
+   "x": 0.5,
+   "y": 0.5,
+   "cuts": []
+  },
+  {
+   "src": "assets/clips/videografie/joachimFelien_6.mp4",
+   "av1": "assets/clips/videografie/joachimFelien_6-av1.mp4",
+   "poster": "assets/clips/videografie/joachimFelien_6.jpg",
+   "project": "joachimfelien",
+   "dur": 6.96,
+   "x": 0.5,
+   "y": 0.5,
+   "cuts": [
+    3.96
+   ],
+   "focus": [
+    [
+     0.0,
+     0.5,
+     0.5,
+     0
+    ],
+    [
+     3.96,
+     0.716,
+     0.286,
+     0
+    ]
+   ]
+  },
+  {
+   "src": "assets/clips/videografie/joachimFelien_7.mp4",
+   "av1": "assets/clips/videografie/joachimFelien_7-av1.mp4",
+   "poster": "assets/clips/videografie/joachimFelien_7.jpg",
+   "project": "joachimfelien",
+   "dur": 4.72,
+   "x": 0.5,
+   "y": 0.5,
+   "cuts": [
+    2.12
+   ]
+  },
+  {
+   "src": "assets/clips/videografie/joachimFelien_8.mp4",
+   "av1": "assets/clips/videografie/joachimFelien_8-av1.mp4",
+   "poster": "assets/clips/videografie/joachimFelien_8.jpg",
+   "project": "joachimfelien",
+   "dur": 7.28,
+   "x": 0.243,
+   "y": 0.5,
+   "cuts": [
+    3.52
+   ],
+   "focus": [
+    [
+     0.0,
+     0.243,
+     0.5,
+     0
+    ],
+    [
+     1.08,
+     0.749,
+     0.5,
+     0
+    ],
+    [
+     3.52,
+     0.549,
+     0.5,
+     0
+    ]
+   ]
+  },
+  {
+   "src": "assets/clips/videografie/joachimFelien_9.mp4",
+   "av1": "assets/clips/videografie/joachimFelien_9-av1.mp4",
+   "poster": "assets/clips/videografie/joachimFelien_9.jpg",
+   "project": "joachimfelien",
+   "dur": 2.28,
+   "x": 0.5,
+   "y": 0.5,
+   "cuts": []
   },
   {
    "src": "assets/clips/videografie/mensSana_1.mp4",
