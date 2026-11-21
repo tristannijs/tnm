@@ -5,7 +5,7 @@
   {
     const root = document.documentElement;
     if(root.classList.contains("sw-in")) requestAnimationFrame(() => requestAnimationFrame(() => root.classList.add("sw-show")));
-    if(!("onpagereveal" in window) || "GestureEvent" in window){
+    if(!("onpagereveal" in window)){
       document.querySelectorAll(".switch a:not([aria-current]), .dr-sites a:not([aria-current])").forEach(a => a.addEventListener("click", e => {
         if(e.metaKey || e.ctrlKey || e.shiftKey || e.button) return;
         e.preventDefault();
