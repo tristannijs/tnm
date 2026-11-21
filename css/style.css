@@ -616,3 +616,5 @@ html:has(#drawer:not([hidden])){overflow:hidden}
 html.sw-out body{opacity:0;transition:opacity .28s ease}
 html.sw-in body{opacity:0}
 html.sw-in.sw-show body{opacity:1;transition:opacity .45s ease}
+
+.layer{isolation:isolate}
