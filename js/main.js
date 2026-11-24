@@ -115,6 +115,8 @@
   const HEVC = (() => { try{ return !!document.createElement("video").canPlayType('video/mp4; codecs="hvc1.1.6.L120.90"'); }catch(e){ return false; } })();
   // Safari draws the frame after the one it reports, so the framing looks one frame (1/25 s) ahead there
   const LEAD = "GestureEvent" in window ? .05 : .01;
+  // phones (portrait) play the -mob.mp4 versions, which have the crop.html framing baked in
+  const MOB = matchMedia("(orientation: portrait) and (max-aspect-ratio: 2/3)").matches;
   async function pickVideo(l){ return l.dataset.videoAv1 && await av1ok ? l.dataset.videoAv1 : l.dataset.video; }
   const hoverable = matchMedia("(any-hover: hover)").matches;
   const afterLoad = fn => document.readyState === "complete" ? fn() : addEventListener("load", fn, {once:true});
@@ -139,9 +141,9 @@
       if(k < 0) k = 0;
       return last = bag.splice(k, 1)[0];
     }
-    function load(v, c){ v.clip = c; v.src = useAv1 ? c.av1 : HEVC && c.hevc ? c.hevc : c.src; v.poster = c.poster; v.preload = "auto"; v.load(); }
+    function load(v, c){ v.clip = c; v.src = MOB && c.mob ? c.mob : useAv1 ? c.av1 : HEVC && c.hevc ? c.hevc : c.src; v.poster = MOB && c.mobposter || c.poster; v.preload = "auto"; v.load(); }
     function at(c, t){
-      if(l.clientWidth >= l.clientHeight * 1.2) return [.5, .5];
+      if(MOB && c.mob || l.clientWidth >= l.clientHeight * 1.2) return [.5, .5];
       const f = c.focus;
       if(!f) return [c.x, c.y];
       t += LEAD;
@@ -159,7 +161,7 @@
       if(v.style.objectPosition !== op) v.style.objectPosition = op;
     }
     const RVFC = "requestVideoFrameCallback" in HTMLVideoElement.prototype;
-    const cv = RVFC && (!("GestureEvent" in window) || innerWidth < innerHeight) ? document.createElement("canvas") : null, g = cv && cv.getContext("2d", {alpha:false});
+    const cv = RVFC && !MOB && (!("GestureEvent" in window) || innerWidth < innerHeight) ? document.createElement("canvas") : null, g = cv && cv.getContext("2d", {alpha:false});
     if(cv){ cv.className = "clip-canvas"; l.appendChild(cv); }
     function paint(v, t){
       if(!v.clip || v.readyState < 2) return false;

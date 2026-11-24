@@ -117,7 +117,7 @@
   const BY = Object.fromEntries(FILMS.map(f => [f.id, f]));
   const HERO = (() => {
     const all = [...((window.CLIPS || {}).videografie || []), ...((window.CLIPS || {}).weddings || [])].filter(c => c.project === "elienjens" || c.project === "joachimfelien")
-      .map(c => ({src:"../" + c.src, av1:"../" + c.av1, hevc:c.hevc && "../" + c.hevc, poster:"../" + c.poster, p:c.project, x:c.x ?? .5, y:c.y ?? .5, focus:c.focus}));
+      .map(c => ({src:"../" + c.src, av1:"../" + c.av1, hevc:c.hevc && "../" + c.hevc, mob:c.mob && "../" + c.mob, mobposter:c.mobposter && "../" + c.mobposter, poster:"../" + c.poster, p:c.project, x:c.x ?? .5, y:c.y ?? .5, focus:c.focus}));
     const rest = all.slice();
     for(let i = rest.length - 1; i > 0; i--){ const j = Math.random() * (i + 1) | 0; [rest[i], rest[j]] = [rest[j], rest[i]]; }
     const out = rest.length ? [rest.shift()] : [];
@@ -152,9 +152,11 @@
   const HEVC = (() => { try{ return !!document.createElement("video").canPlayType('video/mp4; codecs="hvc1.1.6.L120.90"'); }catch(e){ return false; } })();
   // Safari draws the frame after the one it reports, so the framing looks one frame (1/25 s) ahead there
   const LEAD = "GestureEvent" in window ? .05 : .01;
+  // phones (portrait) play the -mob.mp4 versions, which have the crop.html framing baked in
+  const MOB = matchMedia("(orientation: portrait) and (max-aspect-ratio: 2/3)").matches;
   (async () => {
     const bg = $("#heroBg");
-    const poster = new Image(); poster.src = HERO[0].poster; poster.alt = ""; bg.appendChild(poster);
+    const poster = new Image(); poster.src = MOB && HERO[0].mobposter || HERO[0].poster; poster.alt = ""; bg.appendChild(poster);
     if(matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const useAv1 = await av1ok;
     const vids = [0, 1].map(() => {
@@ -165,10 +167,10 @@
     let k = 0, cur = 0, seen = true;
     // phone framing from crop.html: the same focus points as the portfolio hero
     const RVFC = "requestVideoFrameCallback" in HTMLVideoElement.prototype;
-    const cv = RVFC && (!("GestureEvent" in window) || innerWidth < innerHeight) ? document.createElement("canvas") : null, g = cv && cv.getContext("2d", {alpha:false});
+    const cv = RVFC && !MOB && (!("GestureEvent" in window) || innerWidth < innerHeight) ? document.createElement("canvas") : null, g = cv && cv.getContext("2d", {alpha:false});
     if(cv){ cv.className = "hero-cv"; bg.appendChild(cv); }
     const at = (c, t) => {
-      if(bg.clientWidth >= bg.clientHeight * 1.2) return [.5, .5];
+      if(MOB && c.mob || bg.clientWidth >= bg.clientHeight * 1.2) return [.5, .5];
       const f = c.focus;
       if(!f) return [c.x, c.y];
       t += LEAD;
@@ -197,7 +199,7 @@
     vids.forEach(v => v.addEventListener("loadedmetadata", () => { if(!cv) frame(v, 0); }));
     if(!RVFC) vids.forEach(v => v.addEventListener("timeupdate", () => { if(v === vids[cur]) frame(v); }));
     addEventListener("resize", () => frame(vids[cur]));
-    const load = (v, c) => { v.clip = c; v.poster = c.poster; v.src = useAv1 ? c.av1 : HEVC && c.hevc ? c.hevc : c.src; v.load(); };
+    const load = (v, c) => { v.clip = c; v.poster = MOB && c.mobposter || c.poster; v.src = MOB && c.mob ? c.mob : useAv1 ? c.av1 : HEVC && c.hevc ? c.hevc : c.src; v.load(); };
     const shown = (v, cb) => {
       let done = false;
       const f = () => { if(!done){ done = true; cb(); } };
