@@ -112,8 +112,6 @@
       return !!(r.supported && r.smooth && r.powerEfficient);
     }catch(e){ return false; }
   })();
-  const HEVC = (() => { try{ return !!document.createElement("video").canPlayType('video/mp4; codecs="hvc1.1.6.L120.90"'); }catch(e){ return false; } })();
-  const WK = "GestureEvent" in window;
   async function pickVideo(l){ return l.dataset.videoAv1 && await av1ok ? l.dataset.videoAv1 : l.dataset.video; }
   const hoverable = matchMedia("(any-hover: hover)").matches;
   const afterLoad = fn => document.readyState === "complete" ? fn() : addEventListener("load", fn, {once:true});
@@ -138,10 +136,7 @@
       if(k < 0) k = 0;
       return last = bag.splice(k, 1)[0];
     }
-    function load(v, c){
-      v.clip = c; v.pre = false; v.playbackRate = 1; v.src = useAv1 ? c.av1 : HEVC && c.hevc ? c.hevc : c.src; v.poster = c.poster; v.preload = "auto"; v.load();
-      if(WK) v.addEventListener("loadedmetadata", () => { if(v === vids[cur] && playing) return; v.play().then(() => { if(v !== vids[cur] || !playing){ v.pause(); v.currentTime = 0; } }).catch(() => {}); }, {once:true});
-    }
+    function load(v, c){ v.clip = c; v.src = useAv1 ? c.av1 : c.src; v.poster = c.poster; v.preload = "auto"; v.load(); }
     function at(c, t){
       if(l.clientWidth >= l.clientHeight * 1.2) return [.5, .5];
       const f = c.focus;
@@ -184,17 +179,8 @@
     }
     function loop(me){
       rv = me;
-      raf = me.requestVideoFrameCallback((now, m) => { raf = 0; if(me !== vids[cur] || !playing) return; seenAt = performance.now(); if(cv) paint(me, m.mediaTime); place(me, m.mediaTime); pre(me, m.mediaTime); loop(me); });
+      raf = me.requestVideoFrameCallback((now, m) => { raf = 0; if(me !== vids[cur] || !playing) return; if(cv) paint(me, m.mediaTime); else place(me, m.mediaTime); loop(me); });
     }
-    // Safari takes a moment to start a paused video: just before the cut the next clip already runs, at a tenth of the speed
-    function pre(me, t){
-      const n = vids[1 - cur];
-      if(!WK || n.pre || !(me.duration - t < .45) || n.readyState < 2) return;
-      n.pre = true; n.playbackRate = .1; n.play().catch(() => {});
-    }
-    // backup for when frame callbacks stall (seen on iPhone): follow the framing from currentTime
-    let seenAt = 0;
-    if(RVFC) (function watch(){ requestAnimationFrame(watch); if(!playing || performance.now() - seenAt < 200) return; const v = vids[cur]; if(v.paused || !v.clip) return; if(cv) paint(v, v.currentTime); place(v); })();
     let rv = null;
     function stop(){ if(!raf) return; if(RVFC) rv.cancelVideoFrameCallback(raf); else cancelAnimationFrame(raf); raf = 0; }
     function track(){ stop(); tick(); }
@@ -204,7 +190,6 @@
     vids.forEach((v, i) => v.addEventListener("ended", () => {
       if(i !== cur) return;
       const n = vids[1 - cur];
-      n.playbackRate = 1;
       cur = 1 - cur;
       place(n);
       let done = false;
@@ -226,7 +211,7 @@
     }
     const p = {
       play(){ start().then(() => { playing = true; vids[cur].play().catch(() => {}); track(); }); },
-      pause(){ playing = false; vids.forEach(v => v.pause()); stop(); }
+      pause(){ playing = false; vids[cur].pause(); stop(); }
     };
     if(l.classList.contains("on")) p.play();
     else if(hoverable) afterLoad(start);

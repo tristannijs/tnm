@@ -117,7 +117,7 @@
   const BY = Object.fromEntries(FILMS.map(f => [f.id, f]));
   const HERO = (() => {
     const all = [...((window.CLIPS || {}).videografie || []), ...((window.CLIPS || {}).weddings || [])].filter(c => c.project === "elienjens" || c.project === "joachimfelien")
-      .map(c => ({src:"../" + c.src, av1:"../" + c.av1, hevc:c.hevc && "../" + c.hevc, poster:"../" + c.poster, p:c.project, x:c.x ?? .5, y:c.y ?? .5, focus:c.focus}));
+      .map(c => ({src:"../" + c.src, av1:"../" + c.av1, poster:"../" + c.poster, p:c.project, x:c.x ?? .5, y:c.y ?? .5, focus:c.focus}));
     const rest = all.slice();
     for(let i = rest.length - 1; i > 0; i--){ const j = Math.random() * (i + 1) | 0; [rest[i], rest[j]] = [rest[j], rest[i]]; }
     const out = rest.length ? [rest.shift()] : [];
@@ -149,7 +149,6 @@
       return !!(r.supported && r.smooth && r.powerEfficient);
     }catch(e){ return false; }
   })();
-  const HEVC = (() => { try{ return !!document.createElement("video").canPlayType('video/mp4; codecs="hvc1.1.6.L120.90"'); }catch(e){ return false; } })();
   (async () => {
     const bg = $("#heroBg");
     const poster = new Image(); poster.src = HERO[0].poster; poster.alt = ""; bg.appendChild(poster);
@@ -186,29 +185,16 @@
         const vw = v.videoWidth, vh = v.videoHeight, sc = Math.max(W / vw, H / vh), sw = W / sc, sh = H / sc;
         g.drawImage(v, pos(x, sw / vw) * (vw - sw), pos(y, sh / vh) * (vh - sh), sw, sh, 0, 0, W, H);
         cv.classList.add("on");
-      }
-      {
+      }else if(!cv){
         const va = (v.videoWidth / v.videoHeight) || 16 / 9, ca = bg.clientWidth / bg.clientHeight;
         v.style.objectPosition = `${(pos(x, ca / va) * 100).toFixed(2)}% ${(pos(y, va / ca) * 100).toFixed(2)}%`;
       }
     };
-    let seenAt = 0;
-    const loop = v => { if(RVFC) v.requestVideoFrameCallback((now, m) => { if(v !== vids[cur]) return; seenAt = performance.now(); frame(v, m.mediaTime); pre(v, m.mediaTime); loop(v); }); };
-    // Safari takes a moment to start a paused video: just before the cut the next clip already runs, at a tenth of the speed
-    const pre = (me, t) => {
-      const n = vids[1 - cur];
-      if(!("GestureEvent" in window) || n.pre || !(me.duration - t < .45) || n.readyState < 2 || !seen) return;
-      n.pre = true; n.playbackRate = .1; n.play().catch(() => {});
-    };
-    // backup for when frame callbacks stall (seen on iPhone): follow the framing from currentTime
-    if(RVFC) (function watch(){ requestAnimationFrame(watch); const v = vids[cur]; if(v.paused || performance.now() - seenAt < 200) return; frame(v); })();
-    vids.forEach(v => v.addEventListener("loadedmetadata", () => frame(v, 0)));
+    const loop = v => { if(RVFC) v.requestVideoFrameCallback((now, m) => { if(v !== vids[cur]) return; frame(v, m.mediaTime); loop(v); }); };
+    vids.forEach(v => v.addEventListener("loadedmetadata", () => { if(!cv) frame(v, 0); }));
     if(!RVFC) vids.forEach(v => v.addEventListener("timeupdate", () => { if(v === vids[cur]) frame(v); }));
     addEventListener("resize", () => frame(vids[cur]));
-    const load = (v, c) => {
-      v.clip = c; v.pre = false; v.playbackRate = 1; v.poster = c.poster; v.src = useAv1 ? c.av1 : HEVC && c.hevc ? c.hevc : c.src; v.load();
-      if("GestureEvent" in window) v.addEventListener("loadedmetadata", () => { if(v === vids[cur]) return; v.play().then(() => { if(v !== vids[cur]){ v.pause(); v.currentTime = 0; } }).catch(() => {}); }, {once:true});
-    };
+    const load = (v, c) => { v.clip = c; v.poster = c.poster; v.src = useAv1 ? c.av1 : c.src; v.load(); };
     const shown = (v, cb) => {
       let done = false;
       const f = () => { if(!done){ done = true; cb(); } };
@@ -223,13 +209,13 @@
     vids.forEach(v => v.addEventListener("emptied", () => v.classList.remove("ready")));
     vids.forEach((v, i) => v.addEventListener("ended", () => {
       if(i !== cur) return;
-      const n = vids[1 - cur]; n.playbackRate = 1; cur = 1 - cur; k = (k + 1) % HERO.length;
+      const n = vids[1 - cur]; cur = 1 - cur; k = (k + 1) % HERO.length;
       const go = () => { n.classList.add("on"); v.classList.remove("on"); requestAnimationFrame(() => requestAnimationFrame(() => load(v, HERO[(k + 1) % HERO.length]))); };
       shown(n, go);
       loop(n);
       play(n);
     }));
-    new IntersectionObserver(([e]) => { seen = e.isIntersecting; seen ? play(vids[cur]) : vids.forEach(v => v.pause()); }).observe($("#hero"));
+    new IntersectionObserver(([e]) => { seen = e.isIntersecting; seen ? play(vids[cur]) : vids[cur].pause(); }).observe($("#hero"));
   })();
 
   // portfolio: the coverflow from Uitgelicht on the portfolio
