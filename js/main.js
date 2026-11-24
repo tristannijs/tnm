@@ -184,8 +184,11 @@
     }
     function loop(me){
       rv = me;
-      raf = me.requestVideoFrameCallback((now, m) => { raf = 0; if(me !== vids[cur] || !playing) return; if(cv) paint(me, m.mediaTime); else place(me, m.mediaTime); loop(me); });
+      raf = me.requestVideoFrameCallback((now, m) => { raf = 0; if(me !== vids[cur] || !playing) return; seenAt = performance.now(); if(cv) paint(me, m.mediaTime); place(me, m.mediaTime); loop(me); });
     }
+    // backup for when frame callbacks stall (seen on iPhone): follow the framing from currentTime
+    let seenAt = 0;
+    if(RVFC) (function watch(){ requestAnimationFrame(watch); if(!playing || performance.now() - seenAt < 200) return; const v = vids[cur]; if(v.paused || !v.clip) return; if(cv) paint(v, v.currentTime); place(v); })();
     let rv = null;
     function stop(){ if(!raf) return; if(RVFC) rv.cancelVideoFrameCallback(raf); else cancelAnimationFrame(raf); raf = 0; }
     function track(){ stop(); tick(); }

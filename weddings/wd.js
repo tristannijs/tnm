@@ -177,22 +177,26 @@
     };
     const pos = (p, vis) => vis >= 1 ? .5 : Math.min(1, Math.max(0, (p - vis / 2) / (1 - vis)));
     const frame = (v, t) => {
-      const c = v.clip; if(!c || v.readyState < 2) return;
+      const c = v.clip; if(!c) return;
       const [x, y] = at(c, t ?? v.currentTime);
-      if(cv){
+      if(cv && v.readyState >= 2){
         const dpr = Math.min(devicePixelRatio || 1, 2), W = Math.round(bg.clientWidth * dpr), H = Math.round(bg.clientHeight * dpr);
         if(!W || !H) return;
         if(cv.width !== W || cv.height !== H){ cv.width = W; cv.height = H; }
         const vw = v.videoWidth, vh = v.videoHeight, sc = Math.max(W / vw, H / vh), sw = W / sc, sh = H / sc;
         g.drawImage(v, pos(x, sw / vw) * (vw - sw), pos(y, sh / vh) * (vh - sh), sw, sh, 0, 0, W, H);
         cv.classList.add("on");
-      }else{
+      }
+      {
         const va = (v.videoWidth / v.videoHeight) || 16 / 9, ca = bg.clientWidth / bg.clientHeight;
         v.style.objectPosition = `${(pos(x, ca / va) * 100).toFixed(2)}% ${(pos(y, va / ca) * 100).toFixed(2)}%`;
       }
     };
-    const loop = v => { if(RVFC) v.requestVideoFrameCallback((now, m) => { if(v !== vids[cur]) return; frame(v, m.mediaTime); loop(v); }); };
-    vids.forEach(v => v.addEventListener("loadedmetadata", () => { if(!cv) frame(v, 0); }));
+    let seenAt = 0;
+    const loop = v => { if(RVFC) v.requestVideoFrameCallback((now, m) => { if(v !== vids[cur]) return; seenAt = performance.now(); frame(v, m.mediaTime); loop(v); }); };
+    // backup for when frame callbacks stall (seen on iPhone): follow the framing from currentTime
+    if(RVFC) (function watch(){ requestAnimationFrame(watch); const v = vids[cur]; if(v.paused || performance.now() - seenAt < 200) return; frame(v); })();
+    vids.forEach(v => v.addEventListener("loadedmetadata", () => frame(v, 0)));
     if(!RVFC) vids.forEach(v => v.addEventListener("timeupdate", () => { if(v === vids[cur]) frame(v); }));
     addEventListener("resize", () => frame(vids[cur]));
     const load = (v, c) => {
