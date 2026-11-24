@@ -117,7 +117,7 @@
   const BY = Object.fromEntries(FILMS.map(f => [f.id, f]));
   const HERO = (() => {
     const all = [...((window.CLIPS || {}).videografie || []), ...((window.CLIPS || {}).weddings || [])].filter(c => c.project === "elienjens" || c.project === "joachimfelien")
-      .map(c => ({src:"../" + c.src, av1:"../" + c.av1, hevc:c.hevc && "../" + c.hevc, poster:"../" + c.poster, p:c.project}));
+      .map(c => ({src:"../" + c.src, av1:"../" + c.av1, hevc:c.hevc && "../" + c.hevc, poster:"../" + c.poster, p:c.project, x:c.x ?? .5, y:c.y ?? .5, focus:c.focus}));
     const rest = all.slice();
     for(let i = rest.length - 1; i > 0; i--){ const j = Math.random() * (i + 1) | 0; [rest[i], rest[j]] = [rest[j], rest[i]]; }
     const out = rest.length ? [rest.shift()] : [];
@@ -161,8 +161,42 @@
       bg.appendChild(v); return v;
     });
     let k = 0, cur = 0, seen = true;
+    // phone framing from crop.html: the same focus points as the portfolio hero
+    const RVFC = "requestVideoFrameCallback" in HTMLVideoElement.prototype;
+    const cv = RVFC && (!("GestureEvent" in window) || innerWidth < innerHeight) ? document.createElement("canvas") : null, g = cv && cv.getContext("2d", {alpha:false});
+    if(cv){ cv.className = "hero-cv"; bg.appendChild(cv); }
+    const at = (c, t) => {
+      if(bg.clientWidth >= bg.clientHeight * 1.2) return [.5, .5];
+      const f = c.focus;
+      if(!f) return [c.x, c.y];
+      t += .01;
+      let i = 0; while(i < f.length - 1 && f[i + 1][0] <= t) i++;
+      if(i === f.length - 1 || !f[i][3]) return [f[i][1], f[i][2]];
+      const [t0, x0, y0] = f[i], [t1, x1, y1] = f[i + 1], q = Math.min(1, Math.max(0, (t - t0) / (t1 - t0)));
+      return [x0 + (x1 - x0) * q, y0 + (y1 - y0) * q];
+    };
+    const pos = (p, vis) => vis >= 1 ? .5 : Math.min(1, Math.max(0, (p - vis / 2) / (1 - vis)));
+    const frame = (v, t) => {
+      const c = v.clip; if(!c || v.readyState < 2) return;
+      const [x, y] = at(c, t ?? v.currentTime);
+      if(cv){
+        const dpr = Math.min(devicePixelRatio || 1, 2), W = Math.round(bg.clientWidth * dpr), H = Math.round(bg.clientHeight * dpr);
+        if(!W || !H) return;
+        if(cv.width !== W || cv.height !== H){ cv.width = W; cv.height = H; }
+        const vw = v.videoWidth, vh = v.videoHeight, sc = Math.max(W / vw, H / vh), sw = W / sc, sh = H / sc;
+        g.drawImage(v, pos(x, sw / vw) * (vw - sw), pos(y, sh / vh) * (vh - sh), sw, sh, 0, 0, W, H);
+        cv.classList.add("on");
+      }else{
+        const va = (v.videoWidth / v.videoHeight) || 16 / 9, ca = bg.clientWidth / bg.clientHeight;
+        v.style.objectPosition = `${(pos(x, ca / va) * 100).toFixed(2)}% ${(pos(y, va / ca) * 100).toFixed(2)}%`;
+      }
+    };
+    const loop = v => { if(RVFC) v.requestVideoFrameCallback((now, m) => { if(v !== vids[cur]) return; frame(v, m.mediaTime); loop(v); }); };
+    vids.forEach(v => v.addEventListener("loadedmetadata", () => { if(!cv) frame(v, 0); }));
+    if(!RVFC) vids.forEach(v => v.addEventListener("timeupdate", () => { if(v === vids[cur]) frame(v); }));
+    addEventListener("resize", () => frame(vids[cur]));
     const load = (v, c) => {
-      v.poster = c.poster; v.src = useAv1 ? c.av1 : HEVC && c.hevc ? c.hevc : c.src; v.load();
+      v.clip = c; v.poster = c.poster; v.src = useAv1 ? c.av1 : HEVC && c.hevc ? c.hevc : c.src; v.load();
       if("GestureEvent" in window) v.addEventListener("loadedmetadata", () => { if(v === vids[cur]) return; v.play().then(() => { if(v !== vids[cur]){ v.pause(); v.currentTime = 0; } }).catch(() => {}); }, {once:true});
     };
     const shown = (v, cb) => {
@@ -174,7 +208,7 @@
     };
     load(vids[0], HERO[k]); load(vids[1], HERO[(k + 1) % HERO.length]);
     const play = v => { if(seen) v.play().catch(() => {}); };
-    vids[0].addEventListener("loadeddata", () => { shown(vids[0], () => vids[0].classList.add("on")); play(vids[0]); }, {once:true});
+    vids[0].addEventListener("loadeddata", () => { shown(vids[0], () => vids[0].classList.add("on")); loop(vids[0]); play(vids[0]); }, {once:true});
     vids.forEach(v => v.addEventListener("loadeddata", () => v.classList.add("ready")));
     vids.forEach(v => v.addEventListener("emptied", () => v.classList.remove("ready")));
     vids.forEach((v, i) => v.addEventListener("ended", () => {
@@ -182,6 +216,7 @@
       const n = vids[1 - cur]; cur = 1 - cur; k = (k + 1) % HERO.length;
       const go = () => { n.classList.add("on"); v.classList.remove("on"); requestAnimationFrame(() => requestAnimationFrame(() => load(v, HERO[(k + 1) % HERO.length]))); };
       shown(n, go);
+      loop(n);
       play(n);
     }));
     new IntersectionObserver(([e]) => { seen = e.isIntersecting; seen ? play(vids[cur]) : vids[cur].pause(); }).observe($("#hero"));
