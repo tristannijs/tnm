@@ -139,7 +139,7 @@
       return last = bag.splice(k, 1)[0];
     }
     function load(v, c){
-      v.clip = c; v.src = useAv1 ? c.av1 : HEVC && c.hevc ? c.hevc : c.src; v.poster = c.poster; v.preload = "auto"; v.load();
+      v.clip = c; v.pre = false; v.playbackRate = 1; v.src = useAv1 ? c.av1 : HEVC && c.hevc ? c.hevc : c.src; v.poster = c.poster; v.preload = "auto"; v.load();
       if(WK) v.addEventListener("loadedmetadata", () => { if(v === vids[cur] && playing) return; v.play().then(() => { if(v !== vids[cur] || !playing){ v.pause(); v.currentTime = 0; } }).catch(() => {}); }, {once:true});
     }
     function at(c, t){
@@ -184,7 +184,13 @@
     }
     function loop(me){
       rv = me;
-      raf = me.requestVideoFrameCallback((now, m) => { raf = 0; if(me !== vids[cur] || !playing) return; seenAt = performance.now(); if(cv) paint(me, m.mediaTime); place(me, m.mediaTime); loop(me); });
+      raf = me.requestVideoFrameCallback((now, m) => { raf = 0; if(me !== vids[cur] || !playing) return; seenAt = performance.now(); if(cv) paint(me, m.mediaTime); place(me, m.mediaTime); pre(me, m.mediaTime); loop(me); });
+    }
+    // Safari takes a moment to start a paused video: just before the cut the next clip already runs, at a tenth of the speed
+    function pre(me, t){
+      const n = vids[1 - cur];
+      if(!WK || n.pre || !(me.duration - t < .45) || n.readyState < 2) return;
+      n.pre = true; n.playbackRate = .1; n.play().catch(() => {});
     }
     // backup for when frame callbacks stall (seen on iPhone): follow the framing from currentTime
     let seenAt = 0;
@@ -198,6 +204,7 @@
     vids.forEach((v, i) => v.addEventListener("ended", () => {
       if(i !== cur) return;
       const n = vids[1 - cur];
+      n.playbackRate = 1;
       cur = 1 - cur;
       place(n);
       let done = false;
@@ -219,7 +226,7 @@
     }
     const p = {
       play(){ start().then(() => { playing = true; vids[cur].play().catch(() => {}); track(); }); },
-      pause(){ playing = false; vids[cur].pause(); stop(); }
+      pause(){ playing = false; vids.forEach(v => v.pause()); stop(); }
     };
     if(l.classList.contains("on")) p.play();
     else if(hoverable) afterLoad(start);
