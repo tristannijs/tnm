@@ -117,7 +117,7 @@
   const BY = Object.fromEntries(FILMS.map(f => [f.id, f]));
   const HERO = (() => {
     const all = [...((window.CLIPS || {}).videografie || []), ...((window.CLIPS || {}).weddings || [])].filter(c => c.project === "elienjens" || c.project === "joachimfelien")
-      .map(c => ({src:"../" + c.src, av1:"../" + c.av1, poster:"../" + c.poster, p:c.project, x:c.x ?? .5, y:c.y ?? .5, focus:c.focus}));
+      .map(c => ({src:"../" + c.src, av1:"../" + c.av1, hevc:c.hevc && "../" + c.hevc, poster:"../" + c.poster, p:c.project, x:c.x ?? .5, y:c.y ?? .5, focus:c.focus}));
     const rest = all.slice();
     for(let i = rest.length - 1; i > 0; i--){ const j = Math.random() * (i + 1) | 0; [rest[i], rest[j]] = [rest[j], rest[i]]; }
     const out = rest.length ? [rest.shift()] : [];
@@ -149,6 +149,9 @@
       return !!(r.supported && r.smooth && r.powerEfficient);
     }catch(e){ return false; }
   })();
+  const HEVC = (() => { try{ return !!document.createElement("video").canPlayType('video/mp4; codecs="hvc1.1.6.L120.90"'); }catch(e){ return false; } })();
+  // Safari draws the frame after the one it reports, so the framing looks one frame (1/25 s) ahead there
+  const LEAD = "GestureEvent" in window ? .05 : .01;
   (async () => {
     const bg = $("#heroBg");
     const poster = new Image(); poster.src = HERO[0].poster; poster.alt = ""; bg.appendChild(poster);
@@ -168,7 +171,7 @@
       if(bg.clientWidth >= bg.clientHeight * 1.2) return [.5, .5];
       const f = c.focus;
       if(!f) return [c.x, c.y];
-      t += .01;
+      t += LEAD;
       let i = 0; while(i < f.length - 1 && f[i + 1][0] <= t) i++;
       if(i === f.length - 1 || !f[i][3]) return [f[i][1], f[i][2]];
       const [t0, x0, y0] = f[i], [t1, x1, y1] = f[i + 1], q = Math.min(1, Math.max(0, (t - t0) / (t1 - t0)));
@@ -194,7 +197,7 @@
     vids.forEach(v => v.addEventListener("loadedmetadata", () => { if(!cv) frame(v, 0); }));
     if(!RVFC) vids.forEach(v => v.addEventListener("timeupdate", () => { if(v === vids[cur]) frame(v); }));
     addEventListener("resize", () => frame(vids[cur]));
-    const load = (v, c) => { v.clip = c; v.poster = c.poster; v.src = useAv1 ? c.av1 : c.src; v.load(); };
+    const load = (v, c) => { v.clip = c; v.poster = c.poster; v.src = useAv1 ? c.av1 : HEVC && c.hevc ? c.hevc : c.src; v.load(); };
     const shown = (v, cb) => {
       let done = false;
       const f = () => { if(!done){ done = true; cb(); } };

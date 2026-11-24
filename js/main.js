@@ -112,6 +112,9 @@
       return !!(r.supported && r.smooth && r.powerEfficient);
     }catch(e){ return false; }
   })();
+  const HEVC = (() => { try{ return !!document.createElement("video").canPlayType('video/mp4; codecs="hvc1.1.6.L120.90"'); }catch(e){ return false; } })();
+  // Safari draws the frame after the one it reports, so the framing looks one frame (1/25 s) ahead there
+  const LEAD = "GestureEvent" in window ? .05 : .01;
   async function pickVideo(l){ return l.dataset.videoAv1 && await av1ok ? l.dataset.videoAv1 : l.dataset.video; }
   const hoverable = matchMedia("(any-hover: hover)").matches;
   const afterLoad = fn => document.readyState === "complete" ? fn() : addEventListener("load", fn, {once:true});
@@ -136,12 +139,12 @@
       if(k < 0) k = 0;
       return last = bag.splice(k, 1)[0];
     }
-    function load(v, c){ v.clip = c; v.src = useAv1 ? c.av1 : c.src; v.poster = c.poster; v.preload = "auto"; v.load(); }
+    function load(v, c){ v.clip = c; v.src = useAv1 ? c.av1 : HEVC && c.hevc ? c.hevc : c.src; v.poster = c.poster; v.preload = "auto"; v.load(); }
     function at(c, t){
       if(l.clientWidth >= l.clientHeight * 1.2) return [.5, .5];
       const f = c.focus;
       if(!f) return [c.x, c.y];
-      t += .01;
+      t += LEAD;
       let i = 0; while(i < f.length - 1 && f[i + 1][0] <= t) i++;
       if(i === f.length - 1 || !f[i][3]) return [f[i][1], f[i][2]];
       const [t0, x0, y0] = f[i], [t1, x1, y1] = f[i + 1], k = Math.min(1, Math.max(0, (t - t0) / (t1 - t0)));
