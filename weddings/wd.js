@@ -117,7 +117,7 @@
   const BY = Object.fromEntries(FILMS.map(f => [f.id, f]));
   const HERO = (() => {
     const all = [...((window.CLIPS || {}).videografie || []), ...((window.CLIPS || {}).weddings || [])].filter(c => c.project === "elienjens" || c.project === "joachimfelien")
-      .map(c => ({src:"../" + c.src, av1:"../" + c.av1, poster:"../" + c.poster, p:c.project}));
+      .map(c => ({src:"../" + c.src, av1:"../" + c.av1, hevc:c.hevc && "../" + c.hevc, poster:"../" + c.poster, p:c.project}));
     const rest = all.slice();
     for(let i = rest.length - 1; i > 0; i--){ const j = Math.random() * (i + 1) | 0; [rest[i], rest[j]] = [rest[j], rest[i]]; }
     const out = rest.length ? [rest.shift()] : [];
@@ -149,6 +149,7 @@
       return !!(r.supported && r.smooth && r.powerEfficient);
     }catch(e){ return false; }
   })();
+  const HEVC = (() => { try{ return !!document.createElement("video").canPlayType('video/mp4; codecs="hvc1.1.6.L120.90"'); }catch(e){ return false; } })();
   (async () => {
     const bg = $("#heroBg");
     const poster = new Image(); poster.src = HERO[0].poster; poster.alt = ""; bg.appendChild(poster);
@@ -160,7 +161,10 @@
       bg.appendChild(v); return v;
     });
     let k = 0, cur = 0, seen = true;
-    const load = (v, c) => { v.poster = c.poster; v.src = useAv1 ? c.av1 : c.src; v.load(); };
+    const load = (v, c) => {
+      v.poster = c.poster; v.src = useAv1 ? c.av1 : HEVC && c.hevc ? c.hevc : c.src; v.load();
+      if("GestureEvent" in window) v.addEventListener("loadedmetadata", () => { if(v === vids[cur]) return; v.play().then(() => { if(v !== vids[cur]){ v.pause(); v.currentTime = 0; } }).catch(() => {}); }, {once:true});
+    };
     const shown = (v, cb) => {
       let done = false;
       const f = () => { if(!done){ done = true; cb(); } };

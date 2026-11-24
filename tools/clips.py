@@ -6,6 +6,7 @@
 For every clip (e.g. nieuwGent_3.mp4) it writes to assets/clips/<category>/:
   nieuwGent_3.mp4       H.264, no audio (plays everywhere)
   nieuwGent_3-av1.mp4   AV1 10-bit, about half the size (used where the browser plays it smoothly)
+  nieuwGent_3-hevc.mp4  HEVC, about the size of the AV1 one (for Safari, which plays it in hardware)
   nieuwGent_3.jpg       first frame, shown while the clip loads
 and works out the clip's point of interest, so narrow screens crop around it instead of the middle.
 Framing set by hand in crop.html (on the site: /tnm/crop.html) is kept on later runs.
@@ -273,12 +274,14 @@ def main():
         key = re.sub(r"_(x|y)\d{1,3}(?=_|$)", "", stem)
         project = re.sub(r"_\d+$", "", key).lower()
         inp, base = os.path.join(src, name), os.path.join(OUT, cat, key)
-        done = all(os.path.exists(base + e) and os.path.getmtime(base + e) >= os.path.getmtime(inp) for e in (".mp4", "-av1.mp4", ".jpg"))
+        done = all(os.path.exists(base + e) and os.path.getmtime(base + e) >= os.path.getmtime(inp) for e in (".mp4", "-av1.mp4", "-hevc.mp4", ".jpg"))
         if encode and not done:                                # clips encoded before are left as they are
             run(["ffmpeg", "-y", "-i", inp, "-map", "0:v:0", "-an", "-dn", "-c:v", "libx264", "-preset", "slow", "-crf", "23", "-tune", "film",
                  "-x264-params", "aq-mode=3", "-pix_fmt", "yuv420p", "-write_tmcd", "0", "-movflags", "+faststart", *CP, base + ".mp4"])
             run(["ffmpeg", "-y", "-i", inp, "-map", "0:v:0", "-an", "-dn", "-c:v", "libsvtav1", "-preset", "6", "-crf", "30",
                  "-svtav1-params", "tune=0", "-pix_fmt", "yuv420p10le", "-write_tmcd", "0", "-movflags", "+faststart", *CP, base + "-av1.mp4"])
+            run(["ffmpeg", "-y", "-i", inp, "-map", "0:v:0", "-an", "-dn", "-c:v", "libx265", "-preset", "medium", "-crf", "26", "-tag:v", "hvc1",
+                 "-x265-params", "log-level=error", "-pix_fmt", "yuv420p", "-write_tmcd", "0", "-movflags", "+faststart", *CP, base + "-hevc.mp4"])
             run(["ffmpeg", "-y", "-i", inp, "-frames:v", "1", "-vf", "scale=1280:-2", "-q:v", "4", base + ".jpg"])
         path = base + ".mp4" if os.path.exists(base + ".mp4") else inp
         track, cuts = focus(path)
@@ -287,7 +290,7 @@ def main():
             if my: k["y"] = int(my.group(1)) / 100
         x, y, how = track[0]["x"], track[0]["y"], track[0]["how"]
         rel = f"assets/clips/{cat}/{key}"
-        items.append({"file": key + ".mp4", "src": rel + ".mp4", "av1": rel + "-av1.mp4", "poster": rel + ".jpg",
+        items.append({"file": key + ".mp4", "src": rel + ".mp4", "av1": rel + "-av1.mp4", "hevc": rel + "-hevc.mp4", "poster": rel + ".jpg",
                       "project": project, "dur": round(duration(base + ".mp4" if os.path.exists(base + ".mp4") else inp), 2),
                       "x": x, "y": y, "how": how, "path": path, "cuts": cuts,
                       **({"focus": [[k["t"], k["x"], k["y"], k["glide"]] for k in track]} if len(track) > 1 else {}), "track": track})

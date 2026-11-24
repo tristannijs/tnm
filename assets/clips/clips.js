@@ -8,7 +8,8 @@ window.CLIPS = {
    "dur": 2.2,
    "x": 0.5,
    "y": 0.5,
-   "cuts": []
+   "cuts": [],
+   "hevc": "assets/clips/ritcs/Maxence_1-hevc.mp4"
   },
   {
    "src": "assets/clips/ritcs/elevator_1.mp4",
@@ -33,7 +34,8 @@ window.CLIPS = {
      0.783,
      0
     ]
-   ]
+   ],
+   "hevc": "assets/clips/ritcs/elevator_1-hevc.mp4"
   },
   {
    "src": "assets/clips/ritcs/elevator_2.mp4",
@@ -44,7 +46,8 @@ window.CLIPS = {
    "x": 0.581,
    "y": 0.871,
    "cuts": [],
-   "manual": true
+   "manual": true,
+   "hevc": "assets/clips/ritcs/elevator_2-hevc.mp4"
   },
   {
    "src": "assets/clips/ritcs/elevator_3.mp4",
@@ -55,7 +58,8 @@ window.CLIPS = {
    "x": 0.588,
    "y": 0.612,
    "cuts": [],
-   "manual": true
+   "manual": true,
+   "hevc": "assets/clips/ritcs/elevator_3-hevc.mp4"
   },
   {
    "src": "assets/clips/ritcs/filippenzen_1.mp4",
@@ -65,7 +69,8 @@ window.CLIPS = {
    "dur": 1.72,
    "x": 0.588,
    "y": 0.5,
-   "cuts": []
+   "cuts": [],
+   "hevc": "assets/clips/ritcs/filippenzen_1-hevc.mp4"
   },
   {
    "src": "assets/clips/ritcs/filippenzen_2.mp4",
@@ -128,7 +133,8 @@ window.CLIPS = {
      0
     ]
    ],
-   "manual": true
+   "manual": true,
+   "hevc": "assets/clips/ritcs/filippenzen_2-hevc.mp4"
   },
   {
    "src": "assets/clips/ritcs/filippenzen_3.mp4",
@@ -159,7 +165,8 @@ window.CLIPS = {
      0
     ]
    ],
-   "manual": true
+   "manual": true,
+   "hevc": "assets/clips/ritcs/filippenzen_3-hevc.mp4"
   },
   {
    "src": "assets/clips/ritcs/jonathan_1.mp4",
@@ -185,7 +192,8 @@ window.CLIPS = {
      0.112,
      0
     ]
-   ]
+   ],
+   "hevc": "assets/clips/ritcs/jonathan_1-hevc.mp4"
   },
   {
    "src": "assets/clips/ritcs/koffer_1.mp4",
@@ -226,7 +234,8 @@ window.CLIPS = {
      0.576,
      0
     ]
-   ]
+   ],
+   "hevc": "assets/clips/ritcs/koffer_1-hevc.mp4"
   },
   {
    "src": "assets/clips/ritcs/koffer_2.mp4",
@@ -288,7 +297,8 @@ window.CLIPS = {
      0
     ]
    ],
-   "manual": true
+   "manual": true,
+   "hevc": "assets/clips/ritcs/koffer_2-hevc.mp4"
   },
   {
    "src": "assets/clips/ritcs/koffer_3.mp4",
@@ -346,7 +356,8 @@ window.CLIPS = {
      0.424,
      0
     ]
-   ]
+   ],
+   "hevc": "assets/clips/ritcs/koffer_3-hevc.mp4"
   },
   {
    "src": "assets/clips/ritcs/nelson_1.mp4",
@@ -393,7 +404,8 @@ window.CLIPS = {
      0.5,
      0
     ]
-   ]
+   ],
+   "hevc": "assets/clips/ritcs/nelson_1-hevc.mp4"
   },
   {
    "src": "assets/clips/ritcs/nieuwGent_1.mp4",
@@ -425,7 +437,8 @@ window.CLIPS = {
      0.445,
      0
     ]
-   ]
+   ],
+   "hevc": "assets/clips/ritcs/nieuwGent_1-hevc.mp4"
   },
   {
    "src": "assets/clips/ritcs/nieuwGent_2.mp4",
@@ -436,7 +449,8 @@ window.CLIPS = {
    "x": 0.5,
    "y": 0.5,
    "cuts": [],
-   "manual": true
+   "manual": true,
+   "hevc": "assets/clips/ritcs/nieuwGent_2-hevc.mp4"
   },
   {
    "src": "assets/clips/ritcs/nieuwGent_3.mp4",
@@ -447,7 +461,8 @@ window.CLIPS = {
    "x": 0.5,
    "y": 0.5,
    "cuts": [],
-   "manual": true
+   "manual": true,
+   "hevc": "assets/clips/ritcs/nieuwGent_3-hevc.mp4"
   },
   {
    "src": "assets/clips/ritcs/nieuwGent_4.mp4",
@@ -474,7 +489,8 @@ window.CLIPS = {
      0
     ]
    ],
-   "manual": true
+   "manual": true,
+   "hevc": "assets/clips/ritcs/nieuwGent_4-hevc.mp4"
   },
   {
    "src": "assets/clips/ritcs/nieuwGent_5.mp4",
@@ -484,7 +500,8 @@ window.CLIPS = {
    "dur": 1.56,
    "x": 0.617,
    "y": 0.249,
-   "cuts": []
+   "cuts": [],
+   "hevc": "assets/clips/ritcs/nieuwGent_5-hevc.mp4"
   },
   {
    "src": "assets/clips/ritcs/nieuwGent_6.mp4",
@@ -494,7 +511,8 @@ window.CLIPS = {
    "dur": 4.36,
    "x": 0.664,
    "y": 0.5,
-   "cuts": []
+   "cuts": [],
+   "hevc": "assets/clips/ritcs/nieuwGent_6-hevc.mp4"
   },
   {
    "src": "assets/clips/ritcs/tenAnker_1.mp4",
@@ -547,7 +565,8 @@ window.CLIPS = {
      0
     ]
    ],
-   "manual": true
+   "manual": true,
+   "hevc": "assets/clips/ritcs/tenAnker_1-hevc.mp4"
   },
   {
    "src": "assets/clips/ritcs/tenAnker_2.mp4",
@@ -572,7 +591,8 @@ window.CLIPS = {
      0
     ]
    ],
-   "manual": true
+   "manual": true,
+   "hevc": "assets/clips/ritcs/tenAnker_2-hevc.mp4"
   },
   {
    "src": "assets/clips/ritcs/tenAnker_3.mp4",
@@ -598,7 +618,8 @@ window.CLIPS = {
      0.277,
      0
     ]
-   ]
+   ],
+   "hevc": "assets/clips/ritcs/tenAnker_3-hevc.mp4"
   }
  ],
  "videografie": [
@@ -647,7 +668,8 @@ window.CLIPS = {
      0
     ]
    ],
-   "manual": true
+   "manual": true,
+   "hevc": "assets/clips/videografie/banana_1-hevc.mp4"
   },
   {
    "src": "assets/clips/videografie/banana_2.mp4",
@@ -674,7 +696,8 @@ window.CLIPS = {
      0
     ]
    ],
-   "manual": true
+   "manual": true,
+   "hevc": "assets/clips/videografie/banana_2-hevc.mp4"
   },
   {
    "src": "assets/clips/videografie/banana_3.mp4",
@@ -714,7 +737,8 @@ window.CLIPS = {
      0.5,
      0
     ]
-   ]
+   ],
+   "hevc": "assets/clips/videografie/banana_3-hevc.mp4"
   },
   {
    "src": "assets/clips/videografie/banana_4.mp4",
@@ -727,7 +751,8 @@ window.CLIPS = {
    "cuts": [
     1,
     1.92
-   ]
+   ],
+   "hevc": "assets/clips/videografie/banana_4-hevc.mp4"
   },
   {
    "src": "assets/clips/videografie/banana_5.mp4",
@@ -753,7 +778,8 @@ window.CLIPS = {
      0.5,
      0
     ]
-   ]
+   ],
+   "hevc": "assets/clips/videografie/banana_5-hevc.mp4"
   },
   {
    "src": "assets/clips/videografie/banana_6.mp4",
@@ -794,7 +820,8 @@ window.CLIPS = {
      0
     ]
    ],
-   "manual": true
+   "manual": true,
+   "hevc": "assets/clips/videografie/banana_6-hevc.mp4"
   },
   {
    "src": "assets/clips/videografie/banana_7.mp4",
@@ -865,7 +892,8 @@ window.CLIPS = {
      0
     ]
    ],
-   "manual": true
+   "manual": true,
+   "hevc": "assets/clips/videografie/banana_7-hevc.mp4"
   },
   {
    "src": "assets/clips/videografie/chess_1.mp4",
@@ -899,7 +927,8 @@ window.CLIPS = {
      0
     ]
    ],
-   "manual": true
+   "manual": true,
+   "hevc": "assets/clips/videografie/chess_1-hevc.mp4"
   },
   {
    "src": "assets/clips/videografie/dochoFall_3.mp4",
@@ -971,7 +1000,8 @@ window.CLIPS = {
      0
     ]
    ],
-   "manual": true
+   "manual": true,
+   "hevc": "assets/clips/videografie/dochoFall_3-hevc.mp4"
   },
   {
    "src": "assets/clips/videografie/dochoFall_4.mp4",
@@ -1026,7 +1056,8 @@ window.CLIPS = {
      0
     ]
    ],
-   "manual": true
+   "manual": true,
+   "hevc": "assets/clips/videografie/dochoFall_4-hevc.mp4"
   },
   {
    "src": "assets/clips/videografie/dochoSpring_2.mp4",
@@ -1086,7 +1117,8 @@ window.CLIPS = {
      0
     ]
    ],
-   "manual": true
+   "manual": true,
+   "hevc": "assets/clips/videografie/dochoSpring_2-hevc.mp4"
   },
   {
    "src": "assets/clips/videografie/dochoSpring_3.mp4",
@@ -1113,7 +1145,8 @@ window.CLIPS = {
      0
     ]
    ],
-   "manual": true
+   "manual": true,
+   "hevc": "assets/clips/videografie/dochoSpring_3-hevc.mp4"
   },
   {
    "src": "assets/clips/videografie/dochospring_1.mp4",
@@ -1166,7 +1199,8 @@ window.CLIPS = {
      0
     ]
    ],
-   "manual": true
+   "manual": true,
+   "hevc": "assets/clips/videografie/dochospring_1-hevc.mp4"
   },
   {
    "src": "assets/clips/videografie/dokfeesten_1.mp4",
@@ -1199,7 +1233,8 @@ window.CLIPS = {
      0
     ]
    ],
-   "manual": true
+   "manual": true,
+   "hevc": "assets/clips/videografie/dokfeesten_1-hevc.mp4"
   },
   {
    "src": "assets/clips/videografie/dokfeesten_2.mp4",
@@ -1232,7 +1267,8 @@ window.CLIPS = {
      0.5,
      0
     ]
-   ]
+   ],
+   "hevc": "assets/clips/videografie/dokfeesten_2-hevc.mp4"
   },
   {
    "src": "assets/clips/videografie/dokfeesten_3.mp4",
@@ -1274,7 +1310,8 @@ window.CLIPS = {
      0
     ]
    ],
-   "manual": true
+   "manual": true,
+   "hevc": "assets/clips/videografie/dokfeesten_3-hevc.mp4"
   },
   {
    "src": "assets/clips/videografie/dokfeesten_4.mp4",
@@ -1308,7 +1345,8 @@ window.CLIPS = {
      0
     ]
    ],
-   "manual": true
+   "manual": true,
+   "hevc": "assets/clips/videografie/dokfeesten_4-hevc.mp4"
   },
   {
    "src": "assets/clips/videografie/dokfeesten_5.mp4",
@@ -1335,7 +1373,8 @@ window.CLIPS = {
      0
     ]
    ],
-   "manual": true
+   "manual": true,
+   "hevc": "assets/clips/videografie/dokfeesten_5-hevc.mp4"
   },
   {
    "src": "assets/clips/videografie/dokfeesten_6.mp4",
@@ -1376,7 +1415,8 @@ window.CLIPS = {
      0.5,
      0
     ]
-   ]
+   ],
+   "hevc": "assets/clips/videografie/dokfeesten_6-hevc.mp4"
   },
   {
    "src": "assets/clips/videografie/dokfeesten_7.mp4",
@@ -1432,7 +1472,8 @@ window.CLIPS = {
      0
     ]
    ],
-   "manual": true
+   "manual": true,
+   "hevc": "assets/clips/videografie/dokfeesten_7-hevc.mp4"
   },
   {
    "src": "assets/clips/videografie/dokfeesten_8.mp4",
@@ -1472,7 +1513,8 @@ window.CLIPS = {
      0
     ]
    ],
-   "manual": true
+   "manual": true,
+   "hevc": "assets/clips/videografie/dokfeesten_8-hevc.mp4"
   },
   {
    "src": "assets/clips/videografie/elienJens_1.mp4",
@@ -1483,7 +1525,8 @@ window.CLIPS = {
    "x": 0.543,
    "y": 0.528,
    "cuts": [],
-   "manual": true
+   "manual": true,
+   "hevc": "assets/clips/videografie/elienJens_1-hevc.mp4"
   },
   {
    "src": "assets/clips/videografie/elienJens_2.mp4",
@@ -1510,7 +1553,8 @@ window.CLIPS = {
      0
     ]
    ],
-   "manual": true
+   "manual": true,
+   "hevc": "assets/clips/videografie/elienJens_2-hevc.mp4"
   },
   {
    "src": "assets/clips/videografie/elienJens_3.mp4",
@@ -1521,7 +1565,8 @@ window.CLIPS = {
    "x": 0.498,
    "y": 0.569,
    "cuts": [],
-   "manual": true
+   "manual": true,
+   "hevc": "assets/clips/videografie/elienJens_3-hevc.mp4"
   },
   {
    "src": "assets/clips/videografie/elienJens_4.mp4",
@@ -1554,7 +1599,8 @@ window.CLIPS = {
      0
     ]
    ],
-   "manual": true
+   "manual": true,
+   "hevc": "assets/clips/videografie/elienJens_4-hevc.mp4"
   },
   {
    "src": "assets/clips/videografie/icds7_1.mp4",
@@ -1564,7 +1610,8 @@ window.CLIPS = {
    "dur": 4.4,
    "x": 0.5,
    "y": 0.329,
-   "cuts": []
+   "cuts": [],
+   "hevc": "assets/clips/videografie/icds7_1-hevc.mp4"
   },
   {
    "src": "assets/clips/videografie/icds7_2.mp4",
@@ -1624,7 +1671,8 @@ window.CLIPS = {
      0
     ]
    ],
-   "manual": true
+   "manual": true,
+   "hevc": "assets/clips/videografie/icds7_2-hevc.mp4"
   },
   {
    "src": "assets/clips/videografie/icds7_3.mp4",
@@ -1658,7 +1706,8 @@ window.CLIPS = {
      0
     ]
    ],
-   "manual": true
+   "manual": true,
+   "hevc": "assets/clips/videografie/icds7_3-hevc.mp4"
   },
   {
    "src": "assets/clips/videografie/joachimFelien_1.mp4",
@@ -1668,7 +1717,8 @@ window.CLIPS = {
    "dur": 1.6,
    "x": 0.5,
    "y": 0.5,
-   "cuts": []
+   "cuts": [],
+   "hevc": "assets/clips/videografie/joachimFelien_1-hevc.mp4"
   },
   {
    "src": "assets/clips/videografie/joachimFelien_2.mp4",
@@ -1743,7 +1793,8 @@ window.CLIPS = {
      0
     ]
    ],
-   "manual": true
+   "manual": true,
+   "hevc": "assets/clips/videografie/joachimFelien_2-hevc.mp4"
   },
   {
    "src": "assets/clips/videografie/joachimFelien_3.mp4",
@@ -1812,7 +1863,8 @@ window.CLIPS = {
      0
     ]
    ],
-   "manual": true
+   "manual": true,
+   "hevc": "assets/clips/videografie/joachimFelien_3-hevc.mp4"
   },
   {
    "src": "assets/clips/videografie/mensSana_1.mp4",
@@ -1853,7 +1905,8 @@ window.CLIPS = {
      0
     ]
    ],
-   "manual": true
+   "manual": true,
+   "hevc": "assets/clips/videografie/mensSana_1-hevc.mp4"
   },
   {
    "src": "assets/clips/videografie/mensSana_2.mp4",
@@ -1929,7 +1982,8 @@ window.CLIPS = {
      0
     ]
    ],
-   "manual": true
+   "manual": true,
+   "hevc": "assets/clips/videografie/mensSana_2-hevc.mp4"
   },
   {
    "src": "assets/clips/videografie/strijken_1.mp4",
@@ -1941,7 +1995,8 @@ window.CLIPS = {
    "y": 0.5,
    "cuts": [
     1.32
-   ]
+   ],
+   "hevc": "assets/clips/videografie/strijken_1-hevc.mp4"
   },
   {
    "src": "assets/clips/videografie/wejoStaan_1.mp4",
@@ -2003,7 +2058,8 @@ window.CLIPS = {
      0
     ]
    ],
-   "manual": true
+   "manual": true,
+   "hevc": "assets/clips/videografie/wejoStaan_1-hevc.mp4"
   }
  ],
  "weddings": [
@@ -2065,7 +2121,8 @@ window.CLIPS = {
      0
     ]
    ],
-   "manual": true
+   "manual": true,
+   "hevc": "assets/clips/weddings/elienJens_10-hevc.mp4"
   },
   {
    "src": "assets/clips/weddings/elienJens_11.mp4",
@@ -2077,7 +2134,8 @@ window.CLIPS = {
    "y": 0.346,
    "cuts": [
     2.6
-   ]
+   ],
+   "hevc": "assets/clips/weddings/elienJens_11-hevc.mp4"
   },
   {
    "src": "assets/clips/weddings/elienJens_12.mp4",
@@ -2124,7 +2182,8 @@ window.CLIPS = {
      0
     ]
    ],
-   "manual": true
+   "manual": true,
+   "hevc": "assets/clips/weddings/elienJens_12-hevc.mp4"
   },
   {
    "src": "assets/clips/weddings/elienJens_13.mp4",
@@ -2149,7 +2208,8 @@ window.CLIPS = {
      0.566,
      0
     ]
-   ]
+   ],
+   "hevc": "assets/clips/weddings/elienJens_13-hevc.mp4"
   },
   {
    "src": "assets/clips/weddings/elienJens_14.mp4",
@@ -2183,7 +2243,8 @@ window.CLIPS = {
      0
     ]
    ],
-   "manual": true
+   "manual": true,
+   "hevc": "assets/clips/weddings/elienJens_14-hevc.mp4"
   },
   {
    "src": "assets/clips/weddings/elienJens_15.mp4",
@@ -2223,7 +2284,8 @@ window.CLIPS = {
      0
     ]
    ],
-   "manual": true
+   "manual": true,
+   "hevc": "assets/clips/weddings/elienJens_15-hevc.mp4"
   },
   {
    "src": "assets/clips/weddings/elienJens_16.mp4",
@@ -2278,7 +2340,8 @@ window.CLIPS = {
      0
     ]
    ],
-   "manual": true
+   "manual": true,
+   "hevc": "assets/clips/weddings/elienJens_16-hevc.mp4"
   },
   {
    "src": "assets/clips/weddings/elienJens_17.mp4",
@@ -2304,7 +2367,8 @@ window.CLIPS = {
      0.244,
      0
     ]
-   ]
+   ],
+   "hevc": "assets/clips/weddings/elienJens_17-hevc.mp4"
   },
   {
    "src": "assets/clips/weddings/elienJens_18.mp4",
@@ -2343,7 +2407,8 @@ window.CLIPS = {
      0
     ]
    ],
-   "manual": true
+   "manual": true,
+   "hevc": "assets/clips/weddings/elienJens_18-hevc.mp4"
   },
   {
    "src": "assets/clips/weddings/elienJens_19.mp4",
@@ -2353,7 +2418,8 @@ window.CLIPS = {
    "dur": 1.04,
    "x": 0.5,
    "y": 0.5,
-   "cuts": []
+   "cuts": [],
+   "hevc": "assets/clips/weddings/elienJens_19-hevc.mp4"
   },
   {
    "src": "assets/clips/weddings/elienJens_5.mp4",
@@ -2387,7 +2453,8 @@ window.CLIPS = {
      0
     ]
    ],
-   "manual": true
+   "manual": true,
+   "hevc": "assets/clips/weddings/elienJens_5-hevc.mp4"
   },
   {
    "src": "assets/clips/weddings/elienJens_6.mp4",
@@ -2398,7 +2465,8 @@ window.CLIPS = {
    "x": 0.15,
    "y": 0.64,
    "cuts": [],
-   "manual": true
+   "manual": true,
+   "hevc": "assets/clips/weddings/elienJens_6-hevc.mp4"
   },
   {
    "src": "assets/clips/weddings/elienJens_7.mp4",
@@ -2424,7 +2492,8 @@ window.CLIPS = {
      0.294,
      0
     ]
-   ]
+   ],
+   "hevc": "assets/clips/weddings/elienJens_7-hevc.mp4"
   },
   {
    "src": "assets/clips/weddings/elienJens_8.mp4",
@@ -2456,7 +2525,8 @@ window.CLIPS = {
      0.204,
      0
     ]
-   ]
+   ],
+   "hevc": "assets/clips/weddings/elienJens_8-hevc.mp4"
   },
   {
    "src": "assets/clips/weddings/elienJens_9.mp4",
@@ -2466,7 +2536,8 @@ window.CLIPS = {
    "dur": 2.84,
    "x": 0.391,
    "y": 0.5,
-   "cuts": []
+   "cuts": [],
+   "hevc": "assets/clips/weddings/elienJens_9-hevc.mp4"
   },
   {
    "src": "assets/clips/weddings/joachimFelien_10.mp4",
@@ -2506,7 +2577,8 @@ window.CLIPS = {
      0
     ]
    ],
-   "manual": true
+   "manual": true,
+   "hevc": "assets/clips/weddings/joachimFelien_10-hevc.mp4"
   },
   {
    "src": "assets/clips/weddings/joachimFelien_11.mp4",
@@ -2516,7 +2588,8 @@ window.CLIPS = {
    "dur": 1.48,
    "x": 0.423,
    "y": 0.313,
-   "cuts": []
+   "cuts": [],
+   "hevc": "assets/clips/weddings/joachimFelien_11-hevc.mp4"
   },
   {
    "src": "assets/clips/weddings/joachimFelien_12.mp4",
@@ -2526,7 +2599,8 @@ window.CLIPS = {
    "dur": 1.24,
    "x": 0.451,
    "y": 0.5,
-   "cuts": []
+   "cuts": [],
+   "hevc": "assets/clips/weddings/joachimFelien_12-hevc.mp4"
   },
   {
    "src": "assets/clips/weddings/joachimFelien_13.mp4",
@@ -2538,7 +2612,8 @@ window.CLIPS = {
    "y": 0.148,
    "cuts": [
     0.92
-   ]
+   ],
+   "hevc": "assets/clips/weddings/joachimFelien_13-hevc.mp4"
   },
   {
    "src": "assets/clips/weddings/joachimFelien_14.mp4",
@@ -2565,7 +2640,8 @@ window.CLIPS = {
      0.628,
      0
     ]
-   ]
+   ],
+   "hevc": "assets/clips/weddings/joachimFelien_14-hevc.mp4"
   },
   {
    "src": "assets/clips/weddings/joachimFelien_15.mp4",
@@ -2596,7 +2672,8 @@ window.CLIPS = {
      0.603,
      0
     ]
-   ]
+   ],
+   "hevc": "assets/clips/weddings/joachimFelien_15-hevc.mp4"
   },
   {
    "src": "assets/clips/weddings/joachimFelien_4.mp4",
@@ -2629,7 +2706,8 @@ window.CLIPS = {
      0.63,
      0
     ]
-   ]
+   ],
+   "hevc": "assets/clips/weddings/joachimFelien_4-hevc.mp4"
   },
   {
    "src": "assets/clips/weddings/joachimFelien_5.mp4",
@@ -2640,7 +2718,8 @@ window.CLIPS = {
    "x": 0.422,
    "y": 0.613,
    "cuts": [],
-   "manual": true
+   "manual": true,
+   "hevc": "assets/clips/weddings/joachimFelien_5-hevc.mp4"
   },
   {
    "src": "assets/clips/weddings/joachimFelien_6.mp4",
@@ -2667,7 +2746,8 @@ window.CLIPS = {
      0
     ]
    ],
-   "manual": true
+   "manual": true,
+   "hevc": "assets/clips/weddings/joachimFelien_6-hevc.mp4"
   },
   {
    "src": "assets/clips/weddings/joachimFelien_7.mp4",
@@ -2679,7 +2759,8 @@ window.CLIPS = {
    "y": 0.5,
    "cuts": [
     2.12
-   ]
+   ],
+   "hevc": "assets/clips/weddings/joachimFelien_7-hevc.mp4"
   },
   {
    "src": "assets/clips/weddings/joachimFelien_8.mp4",
@@ -2706,7 +2787,8 @@ window.CLIPS = {
      0
     ]
    ],
-   "manual": true
+   "manual": true,
+   "hevc": "assets/clips/weddings/joachimFelien_8-hevc.mp4"
   },
   {
    "src": "assets/clips/weddings/joachimFelien_9.mp4",
@@ -2731,7 +2813,8 @@ window.CLIPS = {
      0.653,
      0
     ]
-   ]
+   ],
+   "hevc": "assets/clips/weddings/joachimFelien_9-hevc.mp4"
   }
  ]
 };

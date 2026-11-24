@@ -112,6 +112,8 @@
       return !!(r.supported && r.smooth && r.powerEfficient);
     }catch(e){ return false; }
   })();
+  const HEVC = (() => { try{ return !!document.createElement("video").canPlayType('video/mp4; codecs="hvc1.1.6.L120.90"'); }catch(e){ return false; } })();
+  const WK = "GestureEvent" in window;
   async function pickVideo(l){ return l.dataset.videoAv1 && await av1ok ? l.dataset.videoAv1 : l.dataset.video; }
   const hoverable = matchMedia("(any-hover: hover)").matches;
   const afterLoad = fn => document.readyState === "complete" ? fn() : addEventListener("load", fn, {once:true});
@@ -136,7 +138,10 @@
       if(k < 0) k = 0;
       return last = bag.splice(k, 1)[0];
     }
-    function load(v, c){ v.clip = c; v.src = useAv1 ? c.av1 : c.src; v.poster = c.poster; v.preload = "auto"; v.load(); }
+    function load(v, c){
+      v.clip = c; v.src = useAv1 ? c.av1 : HEVC && c.hevc ? c.hevc : c.src; v.poster = c.poster; v.preload = "auto"; v.load();
+      if(WK) v.addEventListener("loadedmetadata", () => { if(v === vids[cur] && playing) return; v.play().then(() => { if(v !== vids[cur] || !playing){ v.pause(); v.currentTime = 0; } }).catch(() => {}); }, {once:true});
+    }
     function at(c, t){
       if(l.clientWidth >= l.clientHeight * 1.2) return [.5, .5];
       const f = c.focus;
