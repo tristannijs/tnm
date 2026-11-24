@@ -592,7 +592,8 @@ body.is-proj .wk-t{text-transform:none}
 .ct-foot .ph-more:disabled{opacity:.5;cursor:default}
 
 .reach{padding-top:clamp(70px,8vw,120px)}
-.reach-body{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr);column-gap:clamp(30px,4vw,60px);align-items:start;padding:clamp(36px,3.4vw,50px) max(var(--gut),7.7vw) 0 max(var(--gut),9.3vw)}
+.reach-body{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr);column-gap:clamp(30px,4vw,60px);align-items:start;padding:0 max(var(--gut),7.7vw) 0 max(var(--gut),9.3vw)}
+.reach-h{padding:0;margin:0 0 clamp(26px,2.6vw,38px)}
 .reach-t{margin:0;font-weight:300;font-size:clamp(17px,1.49vw,21.5px);line-height:1.2}
 .reach-mail{display:inline-block;margin-top:22px;font-size:15px;color:#9a9a9a}
 .reach-mail:hover{color:#fff}
