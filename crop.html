@@ -148,7 +148,7 @@ kbd{font:12px "Geist";background:#262626;border:1px solid #3a3a3a;padding:1px 5p
     if(s.focus) c.focus = s.focus; else delete c.focus;
   });
 
-  const NAMES = {ritcs:"RITCS", videografie:"Videografie"};
+  const NAMES = {ritcs:"RITCS", videografie:"Videografie", weddings:"Weddings"};
   function drawList(){
     $("#list").innerHTML = Object.entries(window.CLIPS).map(([cat, l]) =>
       `<h2>${NAMES[cat] || cat}</h2>` + l.map(c => `<a data-src="${c.src}" class="${clip === c ? "cur" : ""}">${c.src.split("/").pop().replace(".mp4", "")}${saved[c.src] ? "<i>✓</i>" : ""}</a>`).join("")).join("");
