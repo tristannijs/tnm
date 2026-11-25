@@ -207,6 +207,20 @@
     }));
     vids.forEach(v => v.addEventListener("loadedmetadata", () => place(v)));
     addEventListener("resize", () => { vids.forEach(v => place(v)); if(cv) paint(vids[cur], vids[cur].currentTime); });
+
+    // Safari sometimes stops a clip by itself (a clip that never fires "ended", or playback paused by the system):
+    // if the current clip stands still, nudge it, and move on to the next one if that doesn't help
+    let lastT = -1, still = 0;
+    setInterval(() => {
+      const v = vids[cur];
+      if(!(playing) || document.hidden){ still = 0; return; }
+      if(v.paused && !v.ended) v.play().catch(() => {});
+      if(v.currentTime !== lastT){ lastT = v.currentTime; still = 0; return; }
+      still++;
+      const end = v.duration - v.currentTime < .3 || v.ended;
+      if((end && still >= 2) || (v.readyState >= 3 && still >= 6) || still >= 16){ still = 0; lastT = -1; v.dispatchEvent(new Event("ended")); }
+    }, 500);
+    document.addEventListener("visibilitychange", () => { if(!document.hidden && (playing)) vids[cur].play().catch(() => {}); });
     let started = false;
     async function start(){
       if(started) return; started = true;

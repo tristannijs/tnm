@@ -209,7 +209,8 @@
     };
     load(vids[0], HERO[k]); load(vids[1], HERO[(k + 1) % HERO.length]);
     const play = v => { if(seen) v.play().catch(() => {}); };
-    vids[0].addEventListener("loadeddata", () => { shown(vids[0], () => vids[0].classList.add("on")); loop(vids[0]); play(vids[0]); }, {once:true});
+    let begun = false;
+    vids[0].addEventListener("loadeddata", () => { begun = true; shown(vids[0], () => vids[0].classList.add("on")); loop(vids[0]); play(vids[0]); }, {once:true});
     vids.forEach(v => v.addEventListener("loadeddata", () => v.classList.add("ready")));
     vids.forEach(v => v.addEventListener("emptied", () => v.classList.remove("ready")));
     vids.forEach((v, i) => v.addEventListener("ended", () => {
@@ -220,6 +221,20 @@
       loop(n);
       play(n);
     }));
+
+    // Safari sometimes stops a clip by itself (a clip that never fires "ended", or playback paused by the system):
+    // if the current clip stands still, nudge it, and move on to the next one if that doesn't help
+    let lastT = -1, still = 0;
+    setInterval(() => {
+      const v = vids[cur];
+      if(!(seen && begun) || document.hidden){ still = 0; return; }
+      if(v.paused && !v.ended) v.play().catch(() => {});
+      if(v.currentTime !== lastT){ lastT = v.currentTime; still = 0; return; }
+      still++;
+      const end = v.duration - v.currentTime < .3 || v.ended;
+      if((end && still >= 2) || (v.readyState >= 3 && still >= 6) || still >= 16){ still = 0; lastT = -1; v.dispatchEvent(new Event("ended")); }
+    }, 500);
+    document.addEventListener("visibilitychange", () => { if(!document.hidden && (seen && begun)) vids[cur].play().catch(() => {}); });
     new IntersectionObserver(([e]) => { seen = e.isIntersecting; seen ? play(vids[cur]) : vids[cur].pause(); }).observe($("#hero"));
   })();
 
