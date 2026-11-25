@@ -165,7 +165,7 @@
       t += LEAD;
       let i = 0; while(i < f.length - 1 && f[i + 1][0] <= t) i++;
       if(i === f.length - 1 || !f[i][3]) return [f[i][1], f[i][2]];
-      const [t0, x0, y0] = f[i], [t1, x1, y1] = f[i + 1], k = Math.min(1, Math.max(0, (t - t0) / (t1 - t0)));
+      const [t0, x0, y0] = f[i], [t1, x1, y1] = f[i + 1], k = (1 - Math.cos(Math.PI * Math.min(1, Math.max(0, (t - t0) / (t1 - t0))))) / 2; // ease in and out between keyframes
       return [x0 + (x1 - x0) * k, y0 + (y1 - y0) * k];
     }
     const pos = (p, vis) => vis >= 1 ? .5 : Math.min(1, Math.max(0, (p - vis / 2) / (1 - vis)));

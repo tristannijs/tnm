@@ -90,7 +90,7 @@ kbd{font:12px "Geist";background:#262626;border:1px solid #3a3a3a;padding:1px 5p
     </p>
   </main>
 </div>
-<script src="assets/clips/clips.js?v=20261125230008"></script>
+<script src="assets/clips/clips.js?v=20261125232919"></script>
 <script>
 (() => {
   const $ = s => document.querySelector(s);
@@ -105,7 +105,7 @@ kbd{font:12px "Geist";background:#262626;border:1px solid #3a3a3a;padding:1px 5p
     if(!f) return [x, y];
     let i = 0; while(i < f.length - 1 && f[i + 1][0] <= t + .001) i++;
     if(i === f.length - 1 || !f[i][3]) return [f[i][1], f[i][2]];
-    const [t0, x0, y0] = f[i], [t1, x1, y1] = f[i + 1], k = Math.min(1, Math.max(0, (t - t0) / (t1 - t0)));
+    const [t0, x0, y0] = f[i], [t1, x1, y1] = f[i + 1], k = (1 - Math.cos(Math.PI * Math.min(1, Math.max(0, (t - t0) / (t1 - t0))))) / 2; // ease in and out between keyframes
     return [x0 + (x1 - x0) * k, y0 + (y1 - y0) * k];
   }
   function fromClip(c){

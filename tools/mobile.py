@@ -26,7 +26,7 @@ def left_expr(c):
         t0, x0 = f[i][0], f[i][1]
         if i == len(f) - 1 or not f[i][3]: return left(f"{x0}")
         t1, x1 = f[i + 1][0], f[i + 1][1]
-        return left(f"({x0}+({x1 - x0:.6f})*clip((t-{t0})/{t1 - t0:.6f},0,1))")
+        return left(f"({x0}+({x1 - x0:.6f})*(1-cos(PI*clip((t-{t0})/{t1 - t0:.6f},0,1)))/2)")  # ease in and out
     e = seg(len(f) - 1)
     for i in range(len(f) - 2, -1, -1):
         e = f"if(lt(t+0.01,{f[i + 1][0]}),{seg(i)},{e})"
@@ -43,7 +43,8 @@ def main():
         for c in clips:
             src = os.path.join(ROOT, c["src"])
             out = src[:-4] + "-mob.mp4"
-            key = hashlib.md5(json.dumps([c.get("x"), c.get("focus")]).encode()).hexdigest()[:8]
+            ease = ["ease"] if any(k[3] for k in c.get("focus") or []) else []
+            key = hashlib.md5(json.dumps([c.get("x"), c.get("focus")] + ease).encode()).hexdigest()[:8]
             name = os.path.basename(src)
             inp = next((os.path.join(d, name) for d in dirs if os.path.exists(os.path.join(d, name))), src)
             if redo or c.get("mobkey") != key or not os.path.exists(out):
