@@ -154,9 +154,26 @@
   const LEAD = "GestureEvent" in window ? .05 : .01;
   // phones (portrait) play the -mob.mp4 versions, which have the crop.html framing baked in
   const MOB = matchMedia("(orientation: portrait) and (max-aspect-ratio: 2/3)").matches;
+
+  // switching sites: the hero clip pauses, and picks up at the same frame when you come back
+  const snapClip = v => {
+    try{
+      const w = Math.min(1280, v.videoWidth), h = Math.round(v.videoHeight * w / v.videoWidth), c = document.createElement("canvas");
+      c.width = w; c.height = h; c.getContext("2d").drawImage(v, 0, 0, w, h);
+      return c.toDataURL("image/jpeg", .8);
+    }catch(e){ return ""; }
+  };
+  const takeResume = key => { try{ const r = JSON.parse(sessionStorage.getItem(key) || "null"); sessionStorage.removeItem(key); return r; }catch(e){ return null; } };
+  const putResume = (key, v) => { if(!v.clip || v.readyState < 2) return; try{ sessionStorage.setItem(key, JSON.stringify({src:v.clip.src, t:v.currentTime, img:snapClip(v)})); }catch(e){} };
+  const onLeave = fn => {
+    document.querySelectorAll(".switch a:not([aria-current]), .dr-sites a:not([aria-current])").forEach(a => a.addEventListener("click", e => { if(!(e.metaKey || e.ctrlKey || e.shiftKey || e.button)) fn(true); }));
+    addEventListener("pagehide", () => fn(false));
+  };
   (async () => {
     const bg = $("#heroBg");
-    const poster = new Image(); poster.src = MOB && HERO[0].mobposter || HERO[0].poster; poster.alt = ""; bg.appendChild(poster);
+    const resume = takeResume("tnm-hero-wd"), ri = resume ? HERO.findIndex(c => c.src === resume.src) : -1;
+    if(ri > 0) HERO.push(...HERO.splice(0, ri));
+    const poster = new Image(); poster.src = ri >= 0 && resume.img || MOB && HERO[0].mobposter || HERO[0].poster; poster.alt = ""; bg.appendChild(poster);
     if(matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const useAv1 = await av1ok;
     const vids = [0, 1].map(() => {
@@ -208,6 +225,12 @@
       v.addEventListener("timeupdate", t);
     };
     load(vids[0], HERO[k]); load(vids[1], HERO[(k + 1) % HERO.length]);
+    if(ri >= 0){
+      if(resume.img) vids[0].poster = resume.img;
+      vids[0].addEventListener("loadedmetadata", () => { vids[0].currentTime = Math.min(resume.t, vids[0].duration - .2); }, {once:true});
+    }
+    onLeave(stop => { putResume("tnm-hero-wd", vids[cur]); if(stop){ seen = false; vids.forEach(v => v.pause()); } });
+    addEventListener("pageshow", e => { if(e.persisted){ seen = true; play(vids[cur]); } });
     const play = v => { if(seen) v.play().catch(() => {}); };
     let begun = false;
     vids[0].addEventListener("loadeddata", () => { begun = true; shown(vids[0], () => vids[0].classList.add("on")); loop(vids[0]); play(vids[0]); }, {once:true});

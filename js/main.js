@@ -121,6 +121,21 @@
   const hoverable = matchMedia("(any-hover: hover)").matches;
   const afterLoad = fn => document.readyState === "complete" ? fn() : addEventListener("load", fn, {once:true});
 
+
+  // switching sites: the hero clip pauses, and picks up at the same frame when you come back
+  const snapClip = v => {
+    try{
+      const w = Math.min(1280, v.videoWidth), h = Math.round(v.videoHeight * w / v.videoWidth), c = document.createElement("canvas");
+      c.width = w; c.height = h; c.getContext("2d").drawImage(v, 0, 0, w, h);
+      return c.toDataURL("image/jpeg", .8);
+    }catch(e){ return ""; }
+  };
+  const takeResume = key => { try{ const r = JSON.parse(sessionStorage.getItem(key) || "null"); sessionStorage.removeItem(key); return r; }catch(e){ return null; } };
+  const putResume = (key, v) => { if(!v.clip || v.readyState < 2) return; try{ sessionStorage.setItem(key, JSON.stringify({src:v.clip.src, t:v.currentTime, img:snapClip(v)})); }catch(e){} };
+  const onLeave = fn => {
+    document.querySelectorAll(".switch a:not([aria-current]), .dr-sites a:not([aria-current])").forEach(a => a.addEventListener("click", e => { if(!(e.metaKey || e.ctrlKey || e.shiftKey || e.button)) fn(true); }));
+    addEventListener("pagehide", () => fn(false));
+  };
   function clipLayer(l){
     const C = window.CLIPS || {};
     const skip = (l.dataset.skip || "").toLowerCase().split(/\s+/).filter(Boolean);
@@ -134,6 +149,7 @@
       l.appendChild(v); return v;
     });
     let bag = [], last = null, cur = 0, playing = false, raf = 0, useAv1 = false;
+    const RKEY = "tnm-hero-" + l.dataset.key, resume = takeResume(RKEY), rc = resume && list.find(c => c.src === resume.src);
     av1ok.then(ok => useAv1 = ok);
     function next(){
       if(!bag.length){ bag = list.slice(); for(let i = bag.length - 1; i > 0; i--){ const j = Math.random() * (i + 1) | 0; [bag[i], bag[j]] = [bag[j], bag[i]]; } }
@@ -225,12 +241,17 @@
     async function start(){
       if(started) return; started = true;
       useAv1 = await av1ok;
-      load(vids[0], next()); load(vids[1], next());
+      if(rc){
+        last = rc; load(vids[0], rc); if(resume.img) vids[0].poster = resume.img;
+        vids[0].addEventListener("loadedmetadata", () => { vids[0].currentTime = Math.min(resume.t, vids[0].duration - .2); }, {once:true});
+      }else load(vids[0], next());
+      load(vids[1], next());
       show(0);
     }
     const p = {
       play(){ start().then(() => { playing = true; vids[cur].play().catch(() => {}); track(); }); },
-      pause(){ playing = false; vids[cur].pause(); stop(); }
+      pause(){ playing = false; vids[cur].pause(); stop(); },
+      save(stop){ putResume(RKEY, vids[cur]); if(stop) p.pause(); }
     };
     if(l.classList.contains("on")) p.play();
     else if(hoverable) afterLoad(start);
@@ -254,6 +275,8 @@
     }
   });
   let heroSeen = true, curKey = "home";
+  onLeave(stop => { const l = layers.find(l => l.dataset.key === curKey); if(l && l.player && l.player.save) l.player.save(stop); });
+  addEventListener("pageshow", e => { if(e.persisted && heroSeen) layers.forEach(l => { if(l.player && l.dataset.key === curKey) l.player.play(); }); });
   new IntersectionObserver(([e]) => {
     heroSeen = e.isIntersecting;
     $(".hero-bg").style.visibility = heroSeen ? "" : "hidden";
