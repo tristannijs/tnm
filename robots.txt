@@ -20,3 +20,5 @@ Disallow: /
 
 User-agent: *
 Allow: /
+
+Sitemap: https://tristannijs.media/sitemap.xml
