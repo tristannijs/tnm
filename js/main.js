@@ -1,4 +1,5 @@
 (function(){
+document.addEventListener("dragstart", e => { if(e.target instanceof Element && e.target.closest("img,video,canvas,.hero-bg,.layer")) e.preventDefault(); });
   if("GestureEvent" in window) document.documentElement.classList.add("wk");
   const $ = s => document.querySelector(s);
 

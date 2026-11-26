@@ -620,3 +620,6 @@ html.sw-in body{opacity:0}
 html.sw-in.sw-show body{opacity:1;transition:opacity .45s ease}
 
 .layer{isolation:isolate}
+
+/* pictures and video can't be dragged out of the page */
+img,video,canvas{-webkit-user-drag:none;user-select:none;-webkit-user-select:none}
