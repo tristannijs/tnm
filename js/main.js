@@ -618,6 +618,7 @@ document.addEventListener("dragstart", e => { if(e.target instanceof Element && 
   const ALL = P.slice().sort((a, b) => (D(b.t1 || b.t0) || 0) - (D(a.t1 || a.t0) || 0));
   const st = {veld:"alle", ctx:"alle", jaar:"alle", rol:"alle", album:"alle", genre:"alle"};
   const hit = (p, skip) =>
+    (st.veld !== "alle" || !p.noAll) &&   // noAll: only under Overig, not in Werk/Alles
     (skip === "veld" || st.veld === "alle" || veldOf(p) === st.veld) &&
     (skip === "ctx" || skip === "veld" || st.ctx === "alle" || tagsOf(p).includes(st.ctx)) &&
     (skip === "jaar" || st.jaar === "alle" || yearsOf(p).includes(st.jaar)) &&
