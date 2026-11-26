@@ -28,7 +28,7 @@
   const sub = p => L.sub(p.sub), when = p => L.date(p), lab = p => L.label(p.label);
 
   function coverImg(p){
-    const img = new Image(); img.alt = ""; img.loading = "lazy"; img.draggable = false;
+    const img = new Image(); img.alt = ""; img.loading = "lazy"; img.decoding = "async"; img.draggable = false;
     const gone = () => { img.onerror = null; img.remove(); };
     if(p.cover){ img.src = p.cover; img.onerror = gone; }
     else if(p.yt){ img.src = yt(p.yt,"maxresdefault"); img.onerror = ()=>{ img.onerror = gone; img.src = yt(p.yt,"hqdefault"); }; }
@@ -794,7 +794,7 @@
     PHV.slice(0, phShown).forEach((ph, i) => {
       const c = cols.reduce((a, b) => b.h < a.h - 1e-6 ? b : a);
       c.h += ph.ar + .04;
-      c.html += `<button type="button" class="ph" data-i="${i}"><img src="${esc(flickrSize(ph.src, "c"))}" alt="${esc(ph.title || "")}" width="800" height="${Math.round(800 * ph.ar)}"></button>`;
+      c.html += `<button type="button" class="ph" data-i="${i}"><img src="${esc(flickrSize(ph.src, "c"))}" alt="${esc(ph.title || "")}" decoding="async" width="800" height="${Math.round(800 * ph.ar)}"></button>`;
     });
     phGrid.innerHTML = cols.map(c => `<div class="ph-col">${c.html}</div>`).join("");
     $("#phMore").hidden = PHV.length <= phShown;
@@ -916,7 +916,7 @@
       : `<section class="ov-s ov-bio"><h3 class="ov-h">${hd("bio")}</h3>${bio}<div class="ov-bio-fig"><img src="assets/bio.webp" alt="Tristan Nijs" width="1200" height="900"></div></section>`;
     if(mode === "alle"){
       PHV = PH.slice();
-      h += sec("foto", PHV.length ? ovRow(PHV.map((ph, i) => `<button type="button" class="ph" data-i="${i}" style="--ar:${(1 / ph.ar).toFixed(4)}"><img src="${esc(flickrSize(ph.src, "c"))}" alt="${esc(ph.title || "")}" loading="lazy" width="800" height="${Math.round(800 * ph.ar)}"></button>`).join(""), "ov-ph") : `<p class="wk-none">${esc(t("f.none"))}</p>`);
+      h += sec("foto", PHV.length ? ovRow(PHV.map((ph, i) => `<button type="button" class="ph" data-i="${i}" style="--ar:${(1 / ph.ar).toFixed(4)}"><img src="${esc(flickrSize(ph.src, "c"))}" alt="${esc(ph.title || "")}" loading="lazy" decoding="async" width="800" height="${Math.round(800 * ph.ar)}"></button>`).join(""), "ov-ph") : `<p class="wk-none">${esc(t("f.none"))}</p>`);
       h += sec("muziek", ovRow(MUSIC.map(muHTML).join(""), "ov-mu"));
       const pers = ALL.filter(p => tagsOf(p).includes("persoonlijk"));
       h += sec("persoonlijk", pers.length ? ovRow(pers.map(p => `<button type="button" class="wk-card" data-id="${esc(p.id)}"></button>`).join(""), "ov-pe") : `<p class="wk-none">${esc(t("f.none"))}</p>`);

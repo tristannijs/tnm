@@ -363,7 +363,7 @@ dialog::backdrop{background:rgba(0,0,0,.88)}
 
 .hero-work{position:relative;z-index:2;text-align:center;margin-bottom:max(30px,7.4vh)}
 .wk-t{margin:0;font-size:clamp(34px,4.3vw,62px);font-weight:800;letter-spacing:.005em;line-height:1;text-transform:uppercase;
-  text-shadow:0 2px 24px rgba(0,0,0,.35);transition:transform .7s cubic-bezier(.22,.8,.22,1)}
+  text-shadow:0 2px 24px rgba(0,0,0,.35);transition:transform .7s cubic-bezier(.22,.8,.22,1);will-change:transform;backface-visibility:hidden}
 .wk-t .b{transition:opacity .45s ease .25s}
 .wk-s{margin:.75em 0 0;font-size:clamp(14px,1.18vw,17px);font-weight:400;color:#e8e8e8;transition:opacity .45s ease .35s}
 .wk-s a{color:inherit;text-decoration:none;border-bottom:1px solid transparent;transition:border-color .2s,color .2s}
@@ -381,7 +381,7 @@ body.is-work .hero-doors[style]{opacity:0;pointer-events:none;transition:opacity
 
 .werk{padding:clamp(48px,8.2vw,118px) max(var(--gut),9.3vw) 0}
 .werk.in{animation:werkIn .6s ease .2s both}
-@keyframes werkIn{from{opacity:0;transform:translateY(14px)}}
+@keyframes werkIn{from{opacity:0;transform:translate3d(0,14px,0)}}
 .filters{position:relative;z-index:8;display:flex;flex-wrap:wrap;gap:22px clamp(28px,7.3vw,106px)}
 .flt{position:relative;width:clamp(140px,11.3vw,163px)}
 .flt-l{display:block;font-size:12px;font-weight:700;color:#fff;margin-bottom:9px}
@@ -559,7 +559,7 @@ body.is-proj .wk-t{text-transform:none}
 .contact{width:min(640px,calc(100vw - 32px));max-height:calc(100dvh - 32px);margin:auto;padding:0;border:0;background:#111;color:#fff;box-shadow:0 30px 90px rgba(0,0,0,.7);overflow:auto}
 .contact::backdrop{background:rgba(0,0,0,.72);backdrop-filter:blur(3px)}
 .contact[open]{animation:ctIn .35s cubic-bezier(.22,.7,.2,1)}
-@keyframes ctIn{from{opacity:0;transform:translateY(16px)}}
+@keyframes ctIn{from{opacity:0;transform:translate3d(0,16px,0)}}
 .ct{position:relative;padding:clamp(28px,4vw,48px)}
 .ct-x{position:absolute;top:18px;right:18px;width:36px;height:36px;padding:8px;border:0;background:none;color:#fff;cursor:pointer;opacity:.75}
 .ct-x:hover{opacity:1}
