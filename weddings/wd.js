@@ -154,7 +154,8 @@ document.addEventListener("dragstart", e => { if(e.target instanceof Element && 
   // Safari draws the frame after the one it reports, so the framing looks one frame (1/25 s) ahead there
   const LEAD = "GestureEvent" in window ? .05 : .01;
   // phones (portrait) play the -mob.mp4 versions, which have the crop.html framing baked in
-  const MOB = matchMedia("(orientation: portrait) and (max-aspect-ratio: 2/3)").matches;
+  const MQ = matchMedia("(orientation: portrait) and (max-aspect-ratio: 2/3)");
+  let MOB = MQ.matches; MQ.addEventListener("change", () => { MOB = MQ.matches; });
 
   // switching sites: the hero clip pauses, and picks up at the same frame when you come back
   const snapClip = v => {
@@ -218,6 +219,17 @@ document.addEventListener("dragstart", e => { if(e.target instanceof Element && 
     if(!RVFC) vids.forEach(v => v.addEventListener("timeupdate", () => { if(v === vids[cur]) frame(v); }));
     addEventListener("resize", () => frame(vids[cur]));
     const load = (v, c) => { v.clip = c; v.poster = MOB && c.mobposter || c.poster; v.src = MOB && c.mob ? c.mob : useAv1 ? c.av1 : HEVC && c.hevc ? c.hevc : c.src; v.load(); };
+    // the window crosses between phone shape and wider (e.g. resizing Safari): switch every clip to the matching file, same spot
+    MQ.addEventListener("change", () => {
+      vids.forEach(v => {
+        if(!v.clip) return;
+        const t = v.seekT ?? v.currentTime, run = v.runT ?? !v.paused;
+        v.seekT = t; v.runT = run;
+        load(v, v.clip);
+        v.addEventListener("loadedmetadata", () => { v.currentTime = Math.min(t, v.duration - .1); v.seekT = v.runT = undefined; if(run) v.play().catch(() => {}); }, {once:true});
+      });
+    });
+
     const shown = (v, cb) => {
       let done = false;
       const f = () => { if(!done){ done = true; cb(); } };
