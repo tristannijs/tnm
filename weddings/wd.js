@@ -22,6 +22,9 @@ document.addEventListener("dragstart", e => { if(e.target instanceof Element && 
     "Films": ["Films", "Films"],
     "Werkwijze": ["How I work", "Méthode"],
     "Prijzen": ["Prices", "Tarifs"],
+    "Ondernemingsnr.": ["Company no.", "N° d'entreprise"],
+    "Juridische info": ["Legal info", "Mentions légales"],
+    "Privacybeleid": ["Privacy policy", "Politique de confidentialité"],
     "Tristan Nijs Media: Weddings": ["Tristan Nijs Media: Weddings", "Tristan Nijs Media : Mariages"],
     "Zijn jullie op zoek naar een videograaf die jullie trouwdag kan vastleggen en omtoveren naar een aftermovie die je nauw bij het hart zal liggen? Dan stel ik mezelf graag even voor!":
       ["Are you looking for a videographer who can capture your wedding day and turn it into a film you will hold close to your heart? Then let me introduce myself!",
