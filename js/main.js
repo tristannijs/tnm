@@ -1048,7 +1048,12 @@ document.addEventListener("dragstart", e => { if(e.target instanceof Element && 
     }
     document.body.classList.add("is-work");
     heroWork.hidden = false; werk.hidden = false; homeParts.forEach(x => x.hidden = true);
-    renderWork(); writeHash(); onScroll();
+    // Safari: building the project grid in the same frame makes the flying title stutter, so there the grid
+    // is built once the title has landed (it is still below the fold then)
+    const later = fly && "GestureEvent" in window;
+    if(later){ drawTitle(); if(st.veld !== lastVeld){ showLayer(LAYER[st.veld]); lastVeld = st.veld; } werk.style.visibility = "hidden"; }
+    else renderWork();
+    writeHash(); onScroll();
     if(!wasWork && !fly) scrollTo({top:0, behavior:"instant"});
     if(fly){
       const h1 = $("#wkT"), a = h1.querySelector(".a"), r1 = a.getBoundingClientRect(), rh = h1.getBoundingClientRect(), s = r0.width / r1.width;
@@ -1057,13 +1062,15 @@ document.addEventListener("dragstart", e => { if(e.target instanceof Element && 
       h1.style.transform = `translate(${r0.left - r1.left}px,${r0.top + r0.height / 2 - (r1.top + r1.height / 2)}px) scale(${s})`;
       heroWork.classList.add("flying");
       h1.getBoundingClientRect();
-      requestAnimationFrame(() => {
+      requestAnimationFrame(() => requestAnimationFrame(() => {
         h1.style.transition = ""; h1.style.transform = "";
         heroWork.classList.remove("flying");
         setTimeout(() => { doors.style.cssText = ""; word.style.visibility = ""; }, 700);
-      });
+      }));
     }
-    werk.classList.remove("in"); werk.getBoundingClientRect(); werk.classList.add("in");
+    const reveal = () => { werk.style.visibility = ""; werk.classList.remove("in"); werk.getBoundingClientRect(); werk.classList.add("in"); };
+    if(later) setTimeout(() => { if(!document.body.classList.contains("is-work")) return; drawFilters(); drawGrid(); reveal(); }, 720);
+    else reveal();
     if(fly) setTimeout(() => {
       if(scrollY > 10 || !document.body.classList.contains("is-work")) return;
       const y = heroWork.getBoundingClientRect().top + scrollY - bar.offsetHeight - 28;
