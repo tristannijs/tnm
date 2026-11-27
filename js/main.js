@@ -1,6 +1,25 @@
 (function(){
 document.addEventListener("dragstart", e => { if(e.target instanceof Element && e.target.closest("img,video,canvas,.hero-bg,.layer")) e.preventDefault(); });
   if("GestureEvent" in window) document.documentElement.classList.add("wk");
+
+  // Safari's own smooth scrolling is quick and abrupt; there we glide with an ease-in-out curve instead (Chrome keeps its own)
+  const glide = top => {
+    top = Math.max(0, Math.min(top, document.documentElement.scrollHeight - innerHeight));
+    if(!("GestureEvent" in window)) return scrollTo({top, behavior:"smooth"});
+    const de = document.documentElement, y0 = scrollY, d = top - y0, T = Math.min(1400, 650 + Math.abs(d) * .35);
+    let t0 = 0, stop = false;
+    const quit = () => { stop = true; };
+    addEventListener("wheel", quit, {once:true, passive:true}); addEventListener("touchstart", quit, {once:true, passive:true});
+    de.style.scrollBehavior = "auto";
+    const step = t => {
+      if(stop){ de.style.scrollBehavior = ""; return; }
+      t0 = t0 || t; const k = Math.min(1, (t - t0) / T), e = k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+      scrollTo(0, y0 + d * e);
+      if(k < 1) requestAnimationFrame(step); else { de.style.scrollBehavior = ""; removeEventListener("wheel", quit); removeEventListener("touchstart", quit); }
+    };
+    requestAnimationFrame(step);
+  };
+  const glideTo = el => glide(el.getBoundingClientRect().top + scrollY - (parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0));
   const $ = s => document.querySelector(s);
 
   {
@@ -817,7 +836,7 @@ document.addEventListener("dragstart", e => { if(e.target instanceof Element && 
   $("#phMore").addEventListener("click", () => { phShown += STEP; drawPhotos(true); });
   $("#phLess").addEventListener("click", () => {
     phShown = STEP; drawPhotos(true);
-    if(phGrid.getBoundingClientRect().top < 0) phGrid.scrollIntoView({behavior:"smooth"});
+    if(phGrid.getBoundingClientRect().top < 0) glideTo(phGrid);
   });
   addEventListener("resize", () => { if(!phGrid.hidden && phCols() !== phN) drawPhotos(true); });
   const muGrid = $("#muGrid"), au = new Audio(); au.preload = "none";
@@ -1048,7 +1067,7 @@ document.addEventListener("dragstart", e => { if(e.target instanceof Element && 
     if(fly) setTimeout(() => {
       if(scrollY > 10 || !document.body.classList.contains("is-work")) return;
       const y = heroWork.getBoundingClientRect().top + scrollY - bar.offsetHeight - 28;
-      scrollTo({top:Math.max(0, y), behavior:"smooth"});
+      glide(y);
     }, 800);
     routed = location.hash;
   }
@@ -1093,7 +1112,7 @@ document.addEventListener("dragstart", e => { if(e.target instanceof Element && 
   }, true);
   ovEl.addEventListener("click", e => {
     const a = e.target.closest(".ov-h a[data-f]"); if(!a) return;
-    e.preventDefault(); choose("ctx", a.dataset.v); werk.scrollIntoView({behavior:"smooth"});
+    e.preventDefault(); choose("ctx", a.dataset.v); glideTo(werk);
   });
   $("#wkBack").addEventListener("click", e => {
     e.preventDefault();
@@ -1101,7 +1120,7 @@ document.addEventListener("dragstart", e => { if(e.target instanceof Element && 
     if(st.ctx !== "alle"){ choose("ctx", "alle"); return; }
     if(location.hash) history.pushState(null, "", location.pathname + location.search); toHome();
   });
-  $(".hero-down").addEventListener("click", e => { if(document.body.classList.contains("is-work")){ e.preventDefault(); (document.body.classList.contains("is-proj") ? proj : werk).scrollIntoView({behavior:"smooth"}); } });
+  $(".hero-down").addEventListener("click", e => { if(document.body.classList.contains("is-work")){ e.preventDefault(); glideTo(document.body.classList.contains("is-proj") ? proj : werk); } });
   L.onChange(() => { if(document.body.classList.contains("is-work") && !document.body.classList.contains("is-proj")) renderWork(); });
   { const start = readHash(); if(start) toWork(start, null); }
 

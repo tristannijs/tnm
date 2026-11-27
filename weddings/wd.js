@@ -2,6 +2,31 @@
 document.addEventListener("dragstart", e => { if(e.target instanceof Element && e.target.closest("img,video,canvas,.hero-bg,.layer")) e.preventDefault(); });
   const $ = s => document.querySelector(s);
 
+  // Safari's own smooth scrolling is quick and abrupt; there we glide with an ease-in-out curve instead (Chrome keeps its own)
+  const glide = top => {
+    top = Math.max(0, Math.min(top, document.documentElement.scrollHeight - innerHeight));
+    if(!("GestureEvent" in window)) return scrollTo({top, behavior:"smooth"});
+    const de = document.documentElement, y0 = scrollY, d = top - y0, T = Math.min(1400, 650 + Math.abs(d) * .35);
+    let t0 = 0, stop = false;
+    const quit = () => { stop = true; };
+    addEventListener("wheel", quit, {once:true, passive:true}); addEventListener("touchstart", quit, {once:true, passive:true});
+    de.style.scrollBehavior = "auto";
+    const step = t => {
+      if(stop){ de.style.scrollBehavior = ""; return; }
+      t0 = t0 || t; const k = Math.min(1, (t - t0) / T), e = k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+      scrollTo(0, y0 + d * e);
+      if(k < 1) requestAnimationFrame(step); else { de.style.scrollBehavior = ""; removeEventListener("wheel", quit); removeEventListener("touchstart", quit); }
+    };
+    requestAnimationFrame(step);
+  };
+  const glideTo = el => glide(el.getBoundingClientRect().top + scrollY - (parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0));
+  if("GestureEvent" in window) document.addEventListener("click", e => {
+    const a = e.target.closest && e.target.closest('a[href^="#"]'); if(!a || e.defaultPrevented || e.metaKey || e.ctrlKey) return;
+    const id = a.getAttribute("href").slice(1), el = id === "top" ? document.body : document.getElementById(id); if(!el) return;
+    e.preventDefault(); history.replaceState(null, "", "#" + id);
+    requestAnimationFrame(() => id === "top" ? glide(0) : glideTo(el));
+  });
+
   {
     const root = document.documentElement;
     if(root.classList.contains("sw-in")) requestAnimationFrame(() => requestAnimationFrame(() => root.classList.add("sw-show")));
